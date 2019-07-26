@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29020.237
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniwersalnyDesktop", "UniwersalnyDesktop\UniwersalnyDesktop.csproj", "{13F6AE09-3237-4D15-9DCC-8B64F3F78999}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniwersalnyDesktopTests", "UniwersalnyDesktopTests\UniwersalnyDesktopTests.csproj", "{63B9E8EC-7F01-4393-9FD9-738F3BE2EF89}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{13F6AE09-3237-4D15-9DCC-8B64F3F78999}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13F6AE09-3237-4D15-9DCC-8B64F3F78999}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13F6AE09-3237-4D15-9DCC-8B64F3F78999}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13F6AE09-3237-4D15-9DCC-8B64F3F78999}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63B9E8EC-7F01-4393-9FD9-738F3BE2EF89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63B9E8EC-7F01-4393-9FD9-738F3BE2EF89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63B9E8EC-7F01-4393-9FD9-738F3BE2EF89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63B9E8EC-7F01-4393-9FD9-738F3BE2EF89}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E7D48ADD-9128-4B3B-8BC6-F9B6BE019AF4}
+	EndGlobalSection
+EndGlobal
