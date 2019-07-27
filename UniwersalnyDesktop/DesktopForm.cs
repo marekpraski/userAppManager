@@ -26,7 +26,7 @@ namespace UniwersalnyDesktop
         private int groupboxID = 0;
         private int buttonID = 0;
         private int numberOfRectangularButtons;
-        private int numberOfSquareButtonsInOneBlock = DesktopLayoutSettings.numberOfSquareButtonsInOneBlock;    //ustawienia domyślne, ale daję tu żeby program mógł automatycznie zmienić
+        private int numberOfSquareButtonsInOneGroupbox = DesktopLayoutSettings.numberOfSquareButtonsInOneBlock;    //ustawienia domyślne, ale daję tu żeby program mógł automatycznie zmienić
 
         private string currentPath="";     //katalog z którego uruchamiany jest program, wykrywany przez DBConnector i ustawiany tutaj
                                              //dla DEBUGA ustawiony jest w metodzie ReadAllData
@@ -48,14 +48,21 @@ namespace UniwersalnyDesktop
 
         private void generateDesktopLayout()
         {
-            //estimateDesktopSize();
-            int numberOfSquareButtonBlocks = calculateNumberOfSquareButtonBlocks();
+            int numberOfSquareButtonGroupboxes = 1;
+            int estimatedDesktopHeigth = 100;
+            numberOfSquareButtonsInOneGroupbox--;       //najpierw pomniejszam o jeden, żeby gdy wejdę do pętli to w pierwszej pętli liczyć dla liczby ustawionej przez użytkownika
+            do {
+                numberOfSquareButtonsInOneGroupbox++;
+                numberOfSquareButtonGroupboxes = calculateNumberOfSquareButtonGroupboxes();
+                estimatedDesktopHeigth = estimateDesktopHeigth(numberOfSquareButtonGroupboxes);
+            }
+            while (estimatedDesktopHeigth > DesktopLayoutSettings.maxDesktopHeigth);
 
             //liczbę wszystkich buttonów dzielę na liczbę buttonów kwadratowych w jednym bloku
             //te które zostają umieszczam jako prostokątne w osobnym bloku
-            numberOfRectangularButtons = desktopData.getQueryData().Count - (numberOfSquareButtonBlocks * numberOfSquareButtonsInOneBlock);
+            numberOfRectangularButtons = desktopData.getQueryData().Count - (numberOfSquareButtonGroupboxes * numberOfSquareButtonsInOneGroupbox);
             calculateGroupboxSize();
-            for (int i=0; i<numberOfSquareButtonBlocks; i++)
+            for (int i=0; i<numberOfSquareButtonGroupboxes; i++)
             {
                 generateOneGroupbox(DesktopLayoutSettings.GroupboxType.squareButtons);
             }
@@ -63,16 +70,21 @@ namespace UniwersalnyDesktop
             setDesktopFormSize();
         }
 
-        //oszacowuję wielkość desktopu przy zdefiniowanej w DesktopLayoutSettings liczbie kwadratowych buttonów w rzędzie
+        //oszacowuję wysokość desktopu przy zdefiniowanej w DesktopLayoutSettings liczbie kwadratowych buttonów w rzędzie
         //jeżeli wysokość desktopu wychodzi większa niż założona, zwiększam liczbę buttonów w rzedzie aż uzyskam przyzwoity rozmiar
-        private void estimateDesktopSize()
+        private int estimateDesktopHeigth(int nrOfGroupBoxes)
         {
-            throw new NotImplementedException();
+                return (nrOfGroupBoxes + 1) * DesktopLayoutSettings.squareButtonHeigth;      //dodaję 1 żeby szacunkowo uwzględnić poziome przyciski oraz odstępy między groupboxami
+        }
+
+        private int calculateNumberOfSquareButtonGroupboxes()
+        {
+            return desktopData.getQueryData().Count / numberOfSquareButtonsInOneGroupbox;
         }
 
         private void calculateGroupboxSize()
         {
-            squareButtonsGroupboxWidth = numberOfSquareButtonsInOneBlock * (DesktopLayoutSettings.squareButtonWidth + DesktopLayoutSettings.horizontalButtonPadding) + DesktopLayoutSettings.horizontalButtonPadding;
+            squareButtonsGroupboxWidth = numberOfSquareButtonsInOneGroupbox * (DesktopLayoutSettings.squareButtonWidth + DesktopLayoutSettings.horizontalButtonPadding) + DesktopLayoutSettings.horizontalButtonPadding;
             squareButtonsGroupboxHeight = DesktopLayoutSettings.squareButtonHeigth + 2 * DesktopLayoutSettings.verticalButtonPadding;
         }
 
@@ -92,7 +104,7 @@ namespace UniwersalnyDesktop
             switch (buttonType)
             {
                 case DesktopLayoutSettings.ButtonType.rectangular:
-                    int rectangularButtonWidth = numberOfSquareButtonsInOneBlock * (DesktopLayoutSettings.squareButtonWidth + DesktopLayoutSettings.horizontalButtonPadding) - DesktopLayoutSettings.horizontalButtonPadding;
+                    int rectangularButtonWidth = numberOfSquareButtonsInOneGroupbox * (DesktopLayoutSettings.squareButtonWidth + DesktopLayoutSettings.horizontalButtonPadding) - DesktopLayoutSettings.horizontalButtonPadding;
                     button.Size = new Size(rectangularButtonWidth, DesktopLayoutSettings.rectangularButtonHeigth);
                     button.Location = new Point(buttonHorizontalLocation, buttonVerticalLocation + buttonNr * (button.Height + DesktopLayoutSettings.verticalButtonPadding));
                     break;
@@ -133,7 +145,7 @@ namespace UniwersalnyDesktop
             {
                 case DesktopLayoutSettings.GroupboxType.squareButtons:
                     groupBox.Size = new System.Drawing.Size(squareButtonsGroupboxWidth, squareButtonsGroupboxHeight);
-                    for (int i = 0; i < numberOfSquareButtonsInOneBlock; i++)
+                    for (int i = 0; i < numberOfSquareButtonsInOneGroupbox; i++)
                     {
                         generateOneButton(groupBox, DesktopLayoutSettings.ButtonType.square, i);
                         buttonID++;
@@ -172,10 +184,6 @@ namespace UniwersalnyDesktop
 
     }
 
-        private int calculateNumberOfSquareButtonBlocks()
-        {
-            return desktopData.getQueryData().Count / numberOfSquareButtonsInOneBlock;
-        }
 
         private void readAllData()
         {

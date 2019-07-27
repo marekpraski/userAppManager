@@ -30,10 +30,10 @@ namespace UniwersalnyDesktop
         public static int verticalGroupboxPadding = 0;
 
         //korekta do wymiarów desktopu, żeby uwzględnić grubość obrzeży
-        public static int desktopFormHorizontalPadding = 30;
+        public static int desktopFormHorizontalPadding = 20;
         public static int desktopFormVerticalPadding = 40;
 
         //max wysokość desktopu
-        public static int maxDesktopHeigth = 800;
+        public static int maxDesktopHeigth = 600;
     }
 }
