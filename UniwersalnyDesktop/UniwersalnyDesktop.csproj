@@ -56,7 +56,6 @@
     </Compile>
     <Compile Include="DesktopLayoutSettings.cs" />
     <Compile Include="FileManipulator.cs" />
-    <Compile Include="FormFormatter.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>

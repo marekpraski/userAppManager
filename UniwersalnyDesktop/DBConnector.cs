@@ -79,7 +79,7 @@ namespace UniwersalnyDesktop
             try
             {
                 //wywala bład gdy kwerenda jest na tyle bezsensowna, że nie potrafi wyłuskać sensownego wyrazu, który mógłby być nazwą bazy danych
-                string textAfterFrom = sqlQuery.Substring(keyWordFromPosition[0] + 5);  //dodaję długość wyrazu from i jedną spację
+                string textAfterFrom = sqlQuery.Substring(keyWordFromPosition[0] + 5);  //dodaję 5 tj długość wyrazu "from" i jedną spację
                 int firstSpacePosition = textAfterFrom.IndexOf(" ");
                 if (firstSpacePosition == -1)   //brak spacji
                 {
@@ -141,7 +141,7 @@ namespace UniwersalnyDesktop
             }
         }
 
-        ////katalog z którego uruchamiany jest program
+        //osobna metoda, bo currentPath mogę chcieć ustawić dowolnie, np. dla debuga obecnie katalog z którego uruchamiany jest program
         private void setCurrentPath()
         {
             currentPath = Application.StartupPath;
@@ -150,16 +150,8 @@ namespace UniwersalnyDesktop
         public bool validateConfigFile()
         {
 
-            if (ProgramSettings.configFilePath.Equals(""))      //nie zdefiniowano alternatywnej ścieżki dla pliku konfiguracyjnego
-            {
-                configFilePath = currentPath;                      //plik konfiguracyjny jest w tym samym katalogu co program
-            }
-            else
-            {
-                configFilePath = ProgramSettings.configFilePath;
-            }
-
             FileManipulator fm = new FileManipulator();
+            configFilePath = currentPath + ProgramSettings.configFilePath;
             string configFile = configFilePath + @"\" + ProgramSettings.configFileName;
             configFileText = fm.readFile(configFile);
             if (!configFileText.Equals(""))                     //plik konfiguracyjny istnieje i nie jest pusty 

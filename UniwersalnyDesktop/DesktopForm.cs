@@ -38,12 +38,25 @@ namespace UniwersalnyDesktop
             this.userPassword = userPassword;
             setupDesktop();            
         }
-        
+
         private void setupDesktop()
         {
             readAllData();
-            this.Text = "Desktop. Zalogowano jako " + userData.getQueryData()[0].ToList()[2] + " " + userData.getQueryData()[0].ToList()[3];
+            try
+            {
+                this.Text = "Desktop. Zalogowano jako " + userData.getQueryData()[0].ToList()[2] + " " + userData.getQueryData()[0].ToList()[3];
+
             generateDesktopLayout();
+            }
+            catch (NullReferenceException e)
+            {
+                label1.Visible = true;
+            }
+            catch(ArgumentOutOfRangeException ex)
+            {
+                label1.Visible = true;
+                label1.Text = "brak użytkownika lub użytkownik nie ma dostępu";
+            }
         }
 
         private void generateDesktopLayout()
@@ -129,9 +142,20 @@ namespace UniwersalnyDesktop
             {
                 string appDisplayName = desktopData.getQueryData()[buttonID][3].ToString();
                 button.Text = appDisplayName;
+                if(!checkUserAccess())
+                {
+                    button.Enabled = false;
+                }
             }
             Controls.Add(button);
             groupBox.Controls.Add(button);
+        }
+
+        //sprawdza czy użytkownik ma uprawnienia do uruchomienia danej aplikacji
+        private bool checkUserAccess()
+        {
+            int grantApp = int.Parse(desktopData.getQueryData()[buttonID][4].ToString());
+            return (grantApp > 0);
         }
 
         private void generateOneGroupbox(DesktopLayoutSettings.GroupboxType groupboxType)
@@ -189,17 +213,27 @@ namespace UniwersalnyDesktop
         {
             DBConnector connector = new DBConnector(userName, userPassword);
 #if DEBUG
-            currentPath = @"C:\SMD-Turow\SoftMineDesktop";
+            currentPath = @"C:\SMD\SoftMineDesktop";
 #else
             currentPath = connector.currentPath;
 #endif
-            connector.validateConfigFile();
-            dbConnection = connector.getDBConnection(ConnectionSources.serverNameInFile, ConnectionTypes.sqlAuthorisation);
-            DBReader reader = new DBReader(dbConnection);
-            string query = ProgramSettings.desktopAppDataQueryTemplate + "'" + userName + "'";
-            desktopData = reader.readFromDB(query);
-            query = ProgramSettings.desktopUserDataQueryTemplate + "'" + userName + "'";
-            userData = reader.readFromDB(query);
+            if (connector.validateConfigFile())
+            {
+                dbConnection = connector.getDBConnection(ConnectionSources.serverNameInFile, ConnectionTypes.sqlAuthorisation);
+                DBReader reader = new DBReader(dbConnection);
+
+                //najpierw czytam i weryfikuję użytkownika
+                string query = ProgramSettings.desktopUserDataQueryTemplate + "'" + userName + "'";
+                userData = reader.readFromDB(query);
+
+                //jeżeli ok to czytam dane do desktopu
+                if (userData.getHeaders().Count >0)
+                {
+                    query = ProgramSettings.desktopAppDataQueryTemplate + "'" + userName + "'";
+                    desktopData = reader.readFromDB(query);
+                }
+                
+            }
         }
     }
 }
