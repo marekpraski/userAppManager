@@ -9,6 +9,9 @@ namespace UniwersalnyDesktop
 {
     public class ProgramSettings
     {
+        public enum UserType { Administrator, RegularUser}
+        public static string administratorName = "Desktop Administrator";
+
         //przykładowa linia connection string @"Data Source=laptop08\sqlexpress;Initial Catalog=dbrezerwer_test;User ID=marek;Password=root";
         //ustawienia pliku konfiguracyjnego
         public static string configFileName = "desktopConf.xml";
@@ -21,10 +24,9 @@ namespace UniwersalnyDesktop
         public static string desktopAppDataQueryTemplate = "select ap.ID_app, ap.appName, ap.appPath, ap.appDisplayName, au.Grant_app, ap.name_db from [dbo].[app_list] as ap " +
                                                     "inner join app_users as au on ap.ID_app = au.ID_app " +
                                                     "inner join users_list as ul on ul.ID_user = au.ID_user " + 
-            "where ap.name_db is not null and ul.login_user = ";
-
-        public static string desktopUserDataQueryTemplate = "select top 1 ul.login_user, ul.windows_user, ul.imie_user, ul.nazwisko_user from [dbo].[app_list] as ap " +
-                                                    "inner join app_users as au on ap.ID_app = au.ID_app inner join users_list as ul on ul.ID_user = au.ID_user " +
                                                     "where ap.name_db is not null and ul.login_user = ";
+
+        public static string desktopUserDataQueryTemplate = "select  login_user, windows_user, imie_user, nazwisko_user from users_list " +
+                                                            "where login_user = ";
     }
 }

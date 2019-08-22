@@ -50,6 +50,7 @@
             this.Controls.Add(this.label1);
             this.Name = "DesktopForm";
             this.Text = "Desktop";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.DesktopForm_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 

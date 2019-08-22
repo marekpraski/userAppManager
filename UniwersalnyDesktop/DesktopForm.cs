@@ -11,12 +11,14 @@ using System.Windows.Forms;
 
 namespace UniwersalnyDesktop
 {
+   
+    /* 
+     * główny formularz Desktopu otwierany po zalogowaniu w LoginForm
+     */
     public partial class DesktopForm : Form
     {
-        private SqlConnection dbConnection;
         private QueryData desktopData;         //ap.ID_app=0, ap.appName=1, ap.appPath=2, ap.appDisplayName=3, au.Grant_app=4, ap.name_db=5
         private QueryData userData;         //login_user=0, windows_user=1,imie_user=2, nazwisko_user=3
-        private string userName;
         private string userPassword;
 
         //zmienne dotyczące rozmiarów i identyfikatorów tworzonych obiektów
@@ -29,34 +31,22 @@ namespace UniwersalnyDesktop
         private int numberOfSquareButtonsInOneGroupbox = DesktopLayoutSettings.numberOfSquareButtonsInOneBlock;    //ustawienia domyślne, ale daję tu żeby program mógł automatycznie zmienić
 
         private string currentPath="";     //katalog z którego uruchamiany jest program, wykrywany przez DBConnector i ustawiany tutaj
-                                             //dla DEBUGA ustawiony jest w metodzie ReadAllData
+                                           //dla DEBUGA ustawiony jest w metodzie ReadAllData
 
-        public DesktopForm(string userName, string userPassword)
+        public DesktopForm(QueryData userData, string userPassword, QueryData desktopData, string currentPath)
         {
             InitializeComponent();
-            this.userName = userName;
+            this.userData = userData;
             this.userPassword = userPassword;
+            this.desktopData = desktopData;
+            this.currentPath = currentPath;
             setupDesktop();            
         }
 
         private void setupDesktop()
         {
-            readAllData();
-            try
-            {
-                this.Text = "Desktop. Zalogowano jako " + userData.getQueryData()[0].ToList()[2] + " " + userData.getQueryData()[0].ToList()[3];
-
+            this.Text = "Zalogowano jako " + userData.getQueryData()[0].ToList()[2] + " " + userData.getQueryData()[0].ToList()[3];
             generateDesktopLayout();
-            }
-            catch (NullReferenceException e)
-            {
-                label1.Visible = true;
-            }
-            catch(ArgumentOutOfRangeException ex)
-            {
-                label1.Visible = true;
-                label1.Text = "brak użytkownika lub użytkownik nie ma dostępu";
-            }
         }
 
         private void generateDesktopLayout()
@@ -72,7 +62,7 @@ namespace UniwersalnyDesktop
             while (estimatedDesktopHeigth > DesktopLayoutSettings.maxDesktopHeigth);
 
             //liczbę wszystkich buttonów dzielę na liczbę buttonów kwadratowych w jednym bloku
-            //te które zostają umieszczam jako prostokątne w osobnym bloku
+            //resztę umieszczam jako prostokątne w osobnym bloku
             numberOfRectangularButtons = desktopData.getQueryData().Count - (numberOfSquareButtonGroupboxes * numberOfSquareButtonsInOneGroupbox);
             calculateGroupboxSize();
             for (int i=0; i<numberOfSquareButtonGroupboxes; i++)
@@ -202,38 +192,16 @@ namespace UniwersalnyDesktop
 
         private void runApp(string appToRun)
         {
+            string userLogin = userData.getQueryData()[0].ToList()[0].ToString();
             string appLocation = currentPath + @"\..\" + appToRun;
             FileManipulator fm = new FileManipulator();
-            fm.runProgram(appLocation, userName + " " + userPassword);
+            fm.runProgram(appLocation, userLogin + " " + userPassword);
 
-    }
+        }
 
-
-        private void readAllData()
+        private void DesktopForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            DBConnector connector = new DBConnector(userName, userPassword);
-#if DEBUG
-            currentPath = @"C:\SMD\SoftMineDesktop";
-#else
-            currentPath = connector.currentPath;
-#endif
-            if (connector.validateConfigFile())
-            {
-                dbConnection = connector.getDBConnection(ConnectionSources.serverNameInFile, ConnectionTypes.sqlAuthorisation);
-                DBReader reader = new DBReader(dbConnection);
-
-                //najpierw czytam i weryfikuję użytkownika
-                string query = ProgramSettings.desktopUserDataQueryTemplate + "'" + userName + "'";
-                userData = reader.readFromDB(query);
-
-                //jeżeli ok to czytam dane do desktopu
-                if (userData.getHeaders().Count >0)
-                {
-                    query = ProgramSettings.desktopAppDataQueryTemplate + "'" + userName + "'";
-                    desktopData = reader.readFromDB(query);
-                }
-                
-            }
+            Application.Exit();
         }
     }
 }
