@@ -17,6 +17,8 @@ namespace UniwersalnyDesktop
      */
     public partial class DesktopForm : Form
     {
+        private DBReader dbReader;
+
         private QueryData desktopData;         //ap.ID_app=0, ap.appName=1, ap.appPath=2, ap.appDisplayName=3, au.Grant_app=4, ap.name_db=5
         private QueryData userData;         //login_user=0, windows_user=1,imie_user=2, nazwisko_user=3
         private string userPassword;
@@ -33,14 +35,33 @@ namespace UniwersalnyDesktop
         private string currentPath="";     //katalog z którego uruchamiany jest program, wykrywany przez DBConnector i ustawiany tutaj
                                            //dla DEBUGA ustawiony jest w metodzie ReadAllData
 
-        public DesktopForm(QueryData userData, string userPassword, QueryData desktopData, string currentPath)
-        {
-            InitializeComponent();
+        public DesktopForm(QueryData userData, string userPassword, DBReader dbReader, string currentPath)
+        {            
             this.userData = userData;
             this.userPassword = userPassword;
-            this.desktopData = desktopData;
+            this.dbReader = dbReader;
             this.currentPath = currentPath;
-            setupDesktop();            
+            readDesktopData();
+            if (desktopData.getQueryData().Count > 0)
+            {
+                InitializeComponent();
+                setupDesktop();
+            }
+            // niczego nie przeczytał bo użytkownik nie ma uprawnień do żadnych programów
+            // w chwili obecnej z tą kwerendą która jest zdefiniowana w ProgramSettings nie zadziała, bo wyświetlam wszystkie programy niezależnie od dostępu użytkownika
+            //trzeba by filtrować np. po Grant_app
+            else
+            {
+                MyMessageBox.display("użytkownik nie ma dostępu do żadnych programów", MessageBoxType.Error);
+                this.Dispose();
+            }         
+        }
+
+        private void readDesktopData()
+        {
+            string userLogin = userData.getQueryData()[0].ToList()[0].ToString();
+            string query = ProgramSettings.desktopAppDataQueryTemplate + "'" + userLogin + "'";
+            desktopData = dbReader.readFromDB(query);
         }
 
         private void setupDesktop()

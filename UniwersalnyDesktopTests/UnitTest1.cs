@@ -10,6 +10,10 @@ namespace UniwersalnyDesktopTests
     [TestClass]
     public class UnitTest1
     {
+
+       
+        
+
         [TestMethod]
         public void TestMethod1()
         {
@@ -19,17 +23,19 @@ namespace UniwersalnyDesktopTests
             {
                 stringList.Add(item);
             }
-            AdminForm adminForm = new AdminForm();
-            adminForm.populateTreeview(stringList);
-            adminForm.populateListview(stringList);
-            adminForm.populateListbox(stringList);
+            //AdminForm adminForm = new AdminForm();
+            //adminForm.populateTreeview(stringList);
+            //adminForm.populateListview(stringList);
+            //adminForm.populateListbox(stringList);
             
-            adminForm.ShowDialog();
+           // adminForm.ShowDialog();
         }
         [TestMethod]
         public void testForm1()
         {
-            
+            Form1 fm1 = new Form1();
+           
+            fm1.ShowDialog();
         }
     }
 }

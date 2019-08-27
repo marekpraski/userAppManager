@@ -20,9 +20,8 @@ namespace UniwersalnyDesktop
                                              //dla DEBUGA ustawiony jest w metodzie ReadAllData
 
         private QueryData userData;     //login_user=0, windows_user=1,imie_user=2, nazwisko_user=3
-        private QueryData desktopData;
 
-        private DBReader reader;
+        private DBReader dbReader;
         public LoginForm()
         {
             InitializeComponent();
@@ -62,27 +61,18 @@ namespace UniwersalnyDesktop
         }
 
         private void openDesktopForm()
-        {
-            readDesktopData();
-
-            if (desktopData.getQueryData().Count > 0)
-            {
-                DesktopForm desktop = new DesktopForm(userData, userPassword, desktopData, currentPath);
-                this.Hide();
-                desktop.ShowDialog();
-            }
-            // niczego nie przeczytał bo użytkownik nie ma uprawnień do żadnych programów
-            // w chwili obecnej z tą kwerendą która jest zdefiniowana w ProgramSettings nie zadziała, bo wyświetlam wszystkie programy niezależnie od dostępu użytkownika
-            //trzeba by filtrować np. po Grant_app
-            else
-            {
-                MyMessageBox.display("użytkownik nie ma dostępu do żadnych programów", MessageBoxType.Error);
-            }
+        {           
+            DesktopForm desktop = new DesktopForm(userData, userPassword, dbReader, currentPath);
+            this.Hide();
+            desktop.ShowDialog();
         }
 
         private void openAdminForm()
         {
-            MyMessageBox.display("loguję jako admin", MessageBoxType.Information);
+            AdminForm adminForm = new AdminForm(userLogin, dbReader);
+            //this.Hide();
+            adminForm.ShowDialog();
+            //MyMessageBox.display("loguję jako admin", MessageBoxType.Information);
         }
 
         private ProgramSettings.UserType getUserType()
@@ -121,26 +111,20 @@ namespace UniwersalnyDesktop
 
         private void readUserata()
         {
-            DBConnector connector = new DBConnector(userLogin, userPassword);
+            DBConnector dbConnector = new DBConnector(userLogin, userPassword);
 #if DEBUG
             currentPath = @"C:\SMD\SoftMineDesktop";
 #else
-            currentPath = connector.currentPath;
+            currentPath = dbConnector.currentPath;
 #endif
-            if (connector.validateConfigFile())
+            if (dbConnector.validateConfigFile())
             {
-                SqlConnection dbConnection = connector.getDBConnection(ConnectionSources.serverNameInFile, ConnectionTypes.sqlAuthorisation);
-                reader = new DBReader(dbConnection);
+                SqlConnection dbConnection = dbConnector.getDBConnection(ConnectionSources.serverNameInFile, ConnectionTypes.sqlAuthorisation);
+                dbReader = new DBReader(dbConnection);
 
                 string query = ProgramSettings.desktopUserDataQueryTemplate + "'" + userLogin + "'";
-                userData = reader.readFromDB(query);
+                userData = dbReader.readFromDB(query);
             }
-        }
-
-        private void readDesktopData()
-        {
-            string query = ProgramSettings.desktopAppDataQueryTemplate + "'" + userLogin + "'";
-            desktopData = reader.readFromDB(query);
-        }
+        }        
     }
 }

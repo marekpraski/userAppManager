@@ -25,6 +25,22 @@ namespace UniwersalnyDesktop
             return readData;
         }
 
+        public List<string[]> getQueryDataAsStrings()
+        {
+            List<string[]> dataAsStrings = new List<string[]>();
+            foreach(object[] rowData in readData)
+            {
+                string[] stringRowData = new string[rowData.Length];
+                for(int i=0; i<rowData.Length; i++)
+                {
+                    string stringItem = rowData[i].ToString();
+                    stringRowData[i] = stringItem;
+                }
+                dataAsStrings.Add(stringRowData);
+            }
+            return dataAsStrings;
+        }
+
         public List<string> getHeaders()
         {
             return headers;
@@ -33,7 +49,7 @@ namespace UniwersalnyDesktop
         public void addQueryData(object[] rowData)
         {
             readData.Add(rowData);
-        }
+        }        
 
         public void addHeader(string header)
         {

@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 
 namespace UniwersalnyDesktop
 {
-    class DBReader
+    public class DBReader
     {
         private SqlConnection dbConnection;
         private QueryData queryData;
