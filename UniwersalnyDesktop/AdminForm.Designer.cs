@@ -41,10 +41,12 @@
             // 
             // treeView1
             // 
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.treeView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.treeView1.Location = new System.Drawing.Point(12, 30);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(295, 319);
+            this.treeView1.Size = new System.Drawing.Size(295, 325);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView1_AfterSelect);
             this.treeView1.Click += new System.EventHandler(this.TreeView1_Click);
@@ -52,6 +54,8 @@
             // 
             // appListView
             // 
+            this.appListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.appListView.CheckBoxes = true;
             this.appListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
@@ -59,7 +63,7 @@
             this.appListView.HideSelection = false;
             this.appListView.Location = new System.Drawing.Point(313, 30);
             this.appListView.Name = "appListView";
-            this.appListView.Size = new System.Drawing.Size(178, 319);
+            this.appListView.Size = new System.Drawing.Size(178, 325);
             this.appListView.TabIndex = 2;
             this.appListView.UseCompatibleStateImageBehavior = false;
             this.appListView.View = System.Windows.Forms.View.Details;
@@ -72,6 +76,8 @@
             // 
             // appRoleListView
             // 
+            this.appRoleListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.appRoleListView.CheckBoxes = true;
             this.appRoleListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader2,
@@ -80,7 +86,7 @@
             this.appRoleListView.HideSelection = false;
             this.appRoleListView.Location = new System.Drawing.Point(497, 30);
             this.appRoleListView.Name = "appRoleListView";
-            this.appRoleListView.Size = new System.Drawing.Size(257, 319);
+            this.appRoleListView.Size = new System.Drawing.Size(257, 325);
             this.appRoleListView.TabIndex = 2;
             this.appRoleListView.UseCompatibleStateImageBehavior = false;
             this.appRoleListView.View = System.Windows.Forms.View.Details;
@@ -127,7 +133,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(766, 367);
+            this.ClientSize = new System.Drawing.Size(766, 373);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.appListView);
             this.Controls.Add(this.appRoleListView);

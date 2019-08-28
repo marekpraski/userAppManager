@@ -71,7 +71,7 @@ namespace UniwersalnyDesktop
         public static string userAppRolaQueryTemplate = "select name_rola  from rola_app as ra " +
                                                         "inner join[app_list] as ap on ap.ID_app = ra.ID_app " +
                                                         "where ap.appDisplayName = '@appDisplayName' and " +
-                                                        "ID_rola = (select ID_rola from rola_users where ID_user = (select ID_user from users_list where @loginType = '@user'))";
+                                                        "ID_rola in (select ID_rola from rola_users where ID_user = (select ID_user from users_list where @loginType = '@user'))";
 
     }
 }

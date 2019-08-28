@@ -34,6 +34,9 @@ namespace UniwersalnyDesktop
         private bool appRoleListViewLoaded = false;                 //bez tej zmiennej event AppRoleListView_ItemChecked jest uruchamiany podczas ładowania listy 
                                                                     //AppRoleListView tyle razy ile jest wpisów na liście roli aplikacji
                                                                     //co powoduje widoczne opóźnienie w wyświetleniu tej listy
+        Dictionary<string, string> duplicatedUsers;                 //jeżeli loginy sql lub domenowe się powtarzają to ten program nie może działać poprawnie
+                                                                //wychwytuję powtarzające się loginy i je wyświetlam
+
 
         public AdminForm(string adminLogin, DBReader dbReader)
         {
@@ -66,27 +69,51 @@ namespace UniwersalnyDesktop
             List<string> imiona = convertColumnDataToList(userData, ProgramSettings.userImieIndex);
             List<string> nazwiska = convertColumnDataToList(userData, ProgramSettings.userNazwiskoIndex);
 
+            string user = "";
+            string userDisplayName = "";
+
             //tworzę nazwy użytkowników sql do wyświetlania
             List<string> sqlLogins = convertColumnDataToList(userData, ProgramSettings.userSqlLoginIndex);
             sqlUsersDict = new Dictionary<string, string>();
-            for (int i=0; i<sqlLogins.Count; i++)
+            
+            for (int i = 0; i < sqlLogins.Count; i++)
             {
                 if (sqlLogins[i] != "")
                 {
-                    string userDisplayName = sqlLogins[i] + " (" + imiona[i] + " " + nazwiska[i] + ")";
-                    sqlUsersDict.Add(sqlLogins[i], userDisplayName);
+                    userDisplayName = sqlLogins[i] + " (" + imiona[i] + " " + nazwiska[i] + ")";
+                    sqlUsersDict.Add(sqlLogins[i], userDisplayName);                          
                 }
             }
 
             //tworzę nazwy użytkowników domenowych do wyświetlania
             List<string> windowsLogins = convertColumnDataToList(userData, ProgramSettings.userWindowsLoginIndex);
             windowsUsersDict = new Dictionary<string, string>();
+            duplicatedUsers = new Dictionary<string, string>();
             for (int i = 0; i < windowsLogins.Count; i++)
             {
                 if (windowsLogins[i] != "")
                 {
-                    string userDisplayName = windowsLogins[i] + " (" + imiona[i] + " " + nazwiska[i] + ")";
-                    windowsUsersDict.Add(windowsLogins[i], userDisplayName);
+                    
+                    try
+                    {
+                        user = windowsLogins[i].ToLower();        //celowa redundancja, żeby móc przekazać do komuniaktu błedu, zamieniam na lowercase, bo były powtórzenia
+                                                                //zakładam, że login sql nie będzie się powtarzał, więc tam nie sprawdzam
+                        userDisplayName = windowsLogins[i] + " (" + imiona[i] + " " + nazwiska[i] + ")";
+                        windowsUsersDict.Add(user, userDisplayName);            
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        MyMessageBox.display(ex.Message + "/n/r zdublowana nazwa użytkownika: " + user);
+                        duplicatedUsers.Add(user, userDisplayName);
+                    }
+                }
+            }
+            //usuwam ze słowników wszystkich zduplikowanych użytkowników, bo w kolejnych kwerendach wyszukujących programów dla użytkowników wyniki są niejednoznaczne
+            if (duplicatedUsers.Count > 0)
+            {
+                foreach (string duplicatedUser in duplicatedUsers.Keys)
+                {
+                    windowsUsersDict.Remove(duplicatedUser);
                 }
             }
         }
@@ -195,6 +222,15 @@ namespace UniwersalnyDesktop
                 Dictionary<string, string> oneBranchItems = treeviewBranchItems[i];
                 TreeNode[] childNodes = populateTreviewBranch(oneBranchItems);
                 TreeNode parentNode = new TreeNode(treeviewBranchNames[i], childNodes);
+                treeView1.Nodes.Add(parentNode);
+            }
+
+            //jeżeli są jakieś zduplikowane loginy to do drzewa dodaję dodatkową gałąź
+            if (duplicatedUsers.Count > 0)
+            {
+                TreeNode[] childNodes = populateTreviewBranch(duplicatedUsers);
+                TreeNode parentNode = new TreeNode("zduplikowane loginy", childNodes);
+                parentNode.ForeColor = Color.Red;
                 treeView1.Nodes.Add(parentNode);
             }
         }
