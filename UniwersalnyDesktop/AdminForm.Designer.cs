@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.userTreeView = new System.Windows.Forms.TreeView();
             this.appListView = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.appRoleListView = new System.Windows.Forms.ListView();
@@ -39,18 +39,18 @@
             this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // treeView1
+            // userTreeView
             // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.userTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.treeView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.treeView1.Location = new System.Drawing.Point(12, 30);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(295, 325);
-            this.treeView1.TabIndex = 0;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView1_AfterSelect);
-            this.treeView1.Click += new System.EventHandler(this.TreeView1_Click);
-            this.treeView1.Leave += new System.EventHandler(this.TreeView1_Leave);
+            this.userTreeView.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.userTreeView.Location = new System.Drawing.Point(12, 30);
+            this.userTreeView.Name = "userTreeView";
+            this.userTreeView.Size = new System.Drawing.Size(295, 325);
+            this.userTreeView.TabIndex = 0;
+            this.userTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.userTreeView_AfterSelect);
+            this.userTreeView.Click += new System.EventHandler(this.userTreeView_Click);
+            this.userTreeView.Leave += new System.EventHandler(this.TreeView1_Leave);
             // 
             // appListView
             // 
@@ -60,14 +60,15 @@
             this.appListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
             this.appListView.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.appListView.HideSelection = false;
             this.appListView.Location = new System.Drawing.Point(313, 30);
+            this.appListView.MultiSelect = false;
             this.appListView.Name = "appListView";
             this.appListView.Size = new System.Drawing.Size(178, 325);
             this.appListView.TabIndex = 2;
             this.appListView.UseCompatibleStateImageBehavior = false;
             this.appListView.View = System.Windows.Forms.View.Details;
-            this.appListView.SelectedIndexChanged += new System.EventHandler(this.AppListView_SelectedIndexChanged);
+            this.appListView.Click += new System.EventHandler(this.AppListView_Click);
+            this.appListView.Leave += new System.EventHandler(this.AppListView_Leave);
             // 
             // columnHeader1
             // 
@@ -83,8 +84,8 @@
             this.columnHeader2,
             this.columnHeader3});
             this.appRoleListView.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.appRoleListView.HideSelection = false;
             this.appRoleListView.Location = new System.Drawing.Point(497, 30);
+            this.appRoleListView.MultiSelect = false;
             this.appRoleListView.Name = "appRoleListView";
             this.appRoleListView.Size = new System.Drawing.Size(257, 325);
             this.appRoleListView.TabIndex = 2;
@@ -139,7 +140,7 @@
             this.Controls.Add(this.appRoleListView);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.userTreeView);
             this.Name = "AdminForm";
             this.Text = "Panel Administratora";
             this.ResumeLayout(false);
@@ -149,7 +150,7 @@
 
         #endregion
 
-        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.TreeView userTreeView;
         private System.Windows.Forms.ListView appListView;
         private System.Windows.Forms.ListView appRoleListView;
         private System.Windows.Forms.Label label1;

@@ -12,6 +12,8 @@ namespace UniwersalnyDesktop
 {
     public partial class AdminForm : Form
     {
+        #region Region - parametry
+
         private DBReader dbReader;
         private string adminLogin;                              //login użytkownika, ale z założenia jest to Administrator skoro jest w tym oknie, inna nazwa bo chcę odróżnić od "user" który jest zwykłym użytkownikiem
 
@@ -23,20 +25,28 @@ namespace UniwersalnyDesktop
         private List<string> appNameList = null;                           //lista nazw wszystkich dostępnych aplikacji
 
         private Dictionary<string, List<string[]>> appRolesDict = null;          //dla każdej aplikacji, tabela wszystkich ról dla niej dostępnych    0= ID_rola, 1= name_rola, 2= descr_rola
-        private Dictionary<string, List<string[]>> userAppsDict = null;        // dla każdego użytkownika domenowego i sql, lista aplikacji, do których ma on uprawnienia wraz z ich rolami
-                                                                            //0 = appDisplayName, 1 = name_rola
 
-        private TreeNode previousSelectedUser = null;                   //służy do zmiany domyślnego koloru zaznaczonego użytkownika
-                                                                        //gdy treeView staje się nieaktywne
+        // dla każdego użytkownika domenowego i sql, słownik aplikacji, do których ma on uprawnienia wraz z ich rolami
+        //klucz : użytkownik, wartość : słownik; klucz = appDisplayName, wartość = name_rola
+        private Dictionary<string, Dictionary<string, string>> userAppsDict = null;        
+
+        //zmienne służące do zmiany domyślnego koloru zaznaczonego elementu w drzewie użytkowników i liście aplikacji, gdy stają się one nieaktywne
+        private string selectedUser = "";
+        private TreeNode previousSelectedUser = null;
+        private ListViewItem selectedApp = null;
+        private ListViewItem previousSelectedApp = null;
+
+        //do zapamiętywania która rola aplikacji była poprzednio zaznaczona, użyta do zapewnienia, że tylko jedna rola jest zaznaczona
+        ListViewItem previousCheckedRole = null;
 
 
-        private ListViewItem previousCheckedRole = null;
         private bool appRoleListViewLoaded = false;                 //bez tej zmiennej event AppRoleListView_ItemChecked jest uruchamiany podczas ładowania listy 
                                                                     //AppRoleListView tyle razy ile jest wpisów na liście roli aplikacji
                                                                     //co powoduje widoczne opóźnienie w wyświetleniu tej listy
         Dictionary<string, string> duplicatedUsers;                 //jeżeli loginy sql lub domenowe się powtarzają to ten program nie może działać poprawnie
-                                                                //wychwytuję powtarzające się loginy i je wyświetlam
+                                                                    //wychwytuję powtarzające się loginy i je wyświetlam
 
+        #endregion
 
         public AdminForm(string adminLogin, DBReader dbReader)
         {
@@ -140,7 +150,7 @@ namespace UniwersalnyDesktop
 
         private void getUserApps()
         {
-            userAppsDict = new Dictionary<string, List<string[]>>();
+            userAppsDict = new Dictionary<string, Dictionary<string, string>>();
 
             //dodaję do słownika aplikacje użytkowników domenowych
             foreach (string winUser in windowsUsersDict.Keys)
@@ -150,16 +160,13 @@ namespace UniwersalnyDesktop
                     string query = ProgramSettings.windowsUserAppsQueryTemplate + "'" + winUser + "'";
                     QueryData windowsUserData = dbReader.readFromDB(query);
                     List<string> appList = convertColumnDataToList(windowsUserData.getQueryDataAsStrings());
-                    List<string[]> appRolaPairsList = new List<string[]>();
+                    Dictionary<string, string> appRolaPairs = new Dictionary<string, string>();
                     foreach (string app in appList)
                     {
-                        string[] appRolaPair = new string[2];
                         string appRola = getAppRola("windows_user", winUser, app);
-                        appRolaPair[0] = app;
-                        appRolaPair[1] = appRola;
-                        appRolaPairsList.Add(appRolaPair);
+                        appRolaPairs.Add(app, appRola);
                     }
-                    userAppsDict.Add(winUser, appRolaPairsList);
+                    userAppsDict.Add(winUser, appRolaPairs);
                 }
             }
 
@@ -171,16 +178,13 @@ namespace UniwersalnyDesktop
                     string query = ProgramSettings.sqlUserAppsQueryTemplate + "'" + sqlUser + "'";
                     QueryData sqlUserData = dbReader.readFromDB(query);
                     List<string> appList = convertColumnDataToList(sqlUserData.getQueryDataAsStrings());
-                    List<string[]> appRolaPairsList = new List<string[]>();
+                    Dictionary<string, string> appRolaPairs = new Dictionary<string, string>();
                     foreach (string app in appList)
                     {
-                        string[] appRolaPair = new string[2];
                         string appRola = getAppRola("login_user", sqlUser, app);
-                        appRolaPair[0] = app;
-                        appRolaPair[1] = appRola;
-                        appRolaPairsList.Add(appRolaPair);
+                        appRolaPairs.Add(app, appRola);
                     }
-                    userAppsDict.Add(sqlUser, appRolaPairsList);
+                    userAppsDict.Add(sqlUser, appRolaPairs);
                 }
             }
         }
@@ -199,17 +203,7 @@ namespace UniwersalnyDesktop
 
         #endregion
 
-        private List<string> convertColumnDataToList(List<string[]> tableData, int columnNr = 0)
-        {
-            List<string> columnData = new List<string>();
-            for (int i = 0; i < tableData.Count; i++)
-            {
-                string columnItem = tableData[i][columnNr];
-                columnData.Add(columnItem);
-            }
-            return columnData;
-        }
-
+       
         
         #region Region - drzewo użytkowników
         public void populateUserTreeview()
@@ -222,7 +216,8 @@ namespace UniwersalnyDesktop
                 Dictionary<string, string> oneBranchItems = treeviewBranchItems[i];
                 TreeNode[] childNodes = populateTreviewBranch(oneBranchItems);
                 TreeNode parentNode = new TreeNode(treeviewBranchNames[i], childNodes);
-                treeView1.Nodes.Add(parentNode);
+                parentNode.Tag = "";                                                    //przypisuę pusty string, żeby mi nie wywalało błędu podczas wyciągania tekstu z taga w metodzie userTreeView_AfterSelect
+                userTreeView.Nodes.Add(parentNode);
             }
 
             //jeżeli są jakieś zduplikowane loginy to do drzewa dodaję dodatkową gałąź
@@ -231,7 +226,8 @@ namespace UniwersalnyDesktop
                 TreeNode[] childNodes = populateTreviewBranch(duplicatedUsers);
                 TreeNode parentNode = new TreeNode("zduplikowane loginy", childNodes);
                 parentNode.ForeColor = Color.Red;
-                treeView1.Nodes.Add(parentNode);
+                parentNode.Tag = "";
+                userTreeView.Nodes.Add(parentNode);
             }
         }
 
@@ -256,59 +252,57 @@ namespace UniwersalnyDesktop
         //domyślnie ten kolor jest bladoszary, dla mnie zbyt niewidoczny
         private void TreeView1_Leave(object sender, EventArgs e)
         {
-            treeView1.SelectedNode.BackColor = System.Drawing.Color.Aqua;
-            previousSelectedUser = treeView1.SelectedNode;
+            userTreeView.SelectedNode.BackColor = System.Drawing.Color.Aqua;
+            previousSelectedUser = userTreeView.SelectedNode;
         }
 
+        
         //zmienia kolor poprzednio zaznaczonego wiersza w drzewie/liście na domyślny
-
-        private void TreeView1_Click(object sender, EventArgs e)
+        private void userTreeView_Click(object sender, EventArgs e)
         {
             if (previousSelectedUser != null)
             {
-                previousSelectedUser.BackColor = treeView1.BackColor;
-            }
+                previousSelectedUser.BackColor = userTreeView.BackColor;
+            }            
         }
 
-        #endregion
+        private void userTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        {           
 
-        #region Region - interakcje pomiędzy treeview, listview i listbox
-
-        private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
-        {
+            //odfajkowuję wszystkie aplikacje
             foreach (ListViewItem listItem in appListView.Items)
             {
                 listItem.Checked = false;
             }
-            try
+
+            selectedUser = userTreeView.SelectedNode.Tag.ToString();
+
+            //jeżeli user ma jakieś uprawnienia to te aplikacje zafajkowuję oraz rolę zaznaczonej
+            if (userAppsDict.ContainsKey(selectedUser) && userAppsDict[selectedUser].Count > 0)
             {
-                foreach (ListViewItem listItem in appRoleListView.Items)
+                foreach (string appName in userAppsDict[selectedUser].Keys)
                 {
-                    listItem.Checked = false;
+                    ListViewItem app = appListView.FindItemWithText(appName);       //nazwa aplikacji jest kluczem
+                    app.Checked = true;
                 }
-
-                string user = treeView1.SelectedNode.Tag.ToString();
-
-                if (userAppsDict.ContainsKey(user))
-                {
-                    foreach (string[] appRolaPair in userAppsDict[user])
-                    {
-                        ListViewItem item = appListView.FindItemWithText(appRolaPair[0]);       //nazwa aplikacji jest pierwsza w parze
-                        item.Checked = true;
-                    }
-                }
+                checkAppRolaCheckbox();
             }
-            catch (NullReferenceException ex)
+            //jeżeli użytkownik nie ma uprawnień do żadnych aplikacji to odfajkowuję wszystkie role
+            //"" oznacza nazwy gałęzi drzewa
+            else if (!selectedUser.Equals(""))
             {
-                //tag nie jest przypisany do gałęzi drzew, wtedy wywala ten błąd, ale to OK, nic nie muszę z tym robić
+                {
+                    uncheckAllAppRolaCheckboxes();
+                }
             }
         }
 
         #endregion
 
+        
 
         #region Region - lista programów
-        public void populateAppListview()
+        private void populateAppListview()
         {
             foreach (string row in appNameList)
             {
@@ -316,78 +310,177 @@ namespace UniwersalnyDesktop
                 appListView.Items.Add(listRow);
             }
         }
-        
+
+
+        //zaznaczenie aplikacji na liście appListView powoduje wypełnienie roli tej aplikacji w appRoleListView oraz zafajkowanie checkboxa roli, którą ma ten użytkowni
+        //nie używam zdarzenia "SelectedIndexChanged" bo nie zapewnia mi żądanej funkcjonalności
+        private void AppListView_Click(object sender, EventArgs e)
+        {
+            selectedApp = getSelectedApp();
+            if (selectedApp != previousSelectedApp)
+            {
+                updateAppRolaViewBox();
+            }
+            else
+            {
+                checkAppRolaCheckbox();         //jeżeli zaznaczona aplikacja się nie zmieniła to aktualizuję tylko role dla niej
+            }
+        }
+       
+
+        private void resetPreviousSelectedAppColour()
+        {
+            if (previousSelectedApp != null)
+            {
+                previousSelectedApp.BackColor = appListView.BackColor;
+            }
+            previousSelectedApp = selectedApp;
+        }
+
+        //zmienia kolor zaznaczonego po kliknięciu w inne okno; żeby działało parametr HideSelection musi być true
+        private void AppListView_Leave(object sender, EventArgs e)
+        {
+            selectedApp.BackColor = Color.Aqua;
+        }
+
+        private ListViewItem getSelectedApp()
+        {
+
+            if (appListView.SelectedIndices.Count > 0)
+            {
+                int intselectedindex = appListView.SelectedIndices[0];
+                return appListView.Items[intselectedindex];
+            }
+            return null;
+        }
 
         #endregion
 
 
-        
-        private void AppListView_SelectedIndexChanged(object sender, EventArgs e)
+        #region Region - lista ról aplikacji
+
+        private void populateRolaListView()
         {
-            //zaznaczenie elementu w appListView powoduje wypełnienie appRoleListView
-            appRoleListView.Items.Clear();
-            appRoleListViewLoaded = false;
-            ListViewItem selectedApp = null;
-            string app = "";
+            List<string> roles = convertColumnDataToList(appRolesDict[selectedApp.Text], ProgramSettings.roleIndex);
+            List<string> roleDescr = convertColumnDataToList(appRolesDict[selectedApp.Text], ProgramSettings.roleDescrIndex);
+            ListViewItem[] roleRange = new ListViewItem[roles.Count];
+
+            for (int i = 0; i < roles.Count; i++)
+            {
+                string rola = roles[i];
+                string descr = roleDescr[i];
+                ListViewItem item = new ListViewItem(rola);
+                item.SubItems.Add(descr);
+                roleRange[i] = item;
+            }
+            appRoleListView.Items.AddRange(roleRange);
+        }
+
+        private void updateAppRolaViewBox()
+        {
             try
             {
+                //resetuję ustawienia widoku listy ról aplikacji
+                appRoleListView.Items.Clear();
+                appRoleListViewLoaded = false;
+                resetPreviousSelectedAppColour();
 
-                ListView.SelectedListViewItemCollection apps = appListView.SelectedItems;
-                selectedApp = apps[0];             //zawsze zaznaczony może być tylko jeden program, a jeżeli jest więcej, to i tak biorę pierwszy
-
-                app = selectedApp.Text;                 
-                if (appRolesDict.ContainsKey(app))
+                //wypełniam listę rolami, jeżeli są
+                if (appRolesDict[selectedApp.Text].Count > 0)
                 {
-                    List<string> roles = convertColumnDataToList(appRolesDict[app], ProgramSettings.roleIndex);
-                    List<string> roleDescr = convertColumnDataToList(appRolesDict[app], ProgramSettings.roleDescrIndex);
-                    ListViewItem[] itemRange = new ListViewItem[roles.Count];
-
-                    for (int i=0; i<roles.Count; i++)
-                    {
-                        string rola = roles[i];
-                        string descr = roleDescr[i];
-                        ListViewItem item = new ListViewItem(rola);
-                        item.SubItems.Add(descr);
-                        itemRange[i] = item;
-                    }
-                    appRoleListView.Items.AddRange(itemRange);
+                    populateRolaListView();
+                    appRoleListViewLoaded = true;
                 }
-                appRoleListViewLoaded = true;
-            
 
                 //jeżeli zaznaczony użytkownik ma uprawnienia do zaznaczonej aplikacji, wówczas zaznacza się rola tego użytkownika w tej aplikacji
-                string user = treeView1.SelectedNode.Tag.ToString();        //odczytuję, który użytkownik jest zaznaczony
-                List<string[]> appRolaPairs;
-                userAppsDict.TryGetValue(user, out appRolaPairs);
-                string appRola = "";
-                foreach (ListViewItem listItem in appRoleListView.Items)
-                {
-                    listItem.Checked = false;
-                }
+                checkAppRolaCheckbox();
 
-                if (selectedApp.Checked == true)
+            }
+            //błędy do obsłużenia warunkami w debugu
+            catch (NullReferenceException ex)
+            {
+#if DEBUG
+                MyMessageBox.display(ex.Message + " updateAppRolaViewBox", MessageBoxType.Error);
+#endif
+            }
+            catch (ArgumentOutOfRangeException exc)
+            {
+#if DEBUG
+                MyMessageBox.display(exc.Message + " updateAppRolaViewBox", MessageBoxType.Error);
+#endif
+            }
+        }
+
+
+        private void checkAppRolaCheckbox()
+        {
+            if (appRoleListViewLoaded)
+            {
+                //wyciągam słownik ról dla zaznaczonego użytkownika
+                Dictionary<string, string> appRolaPairs;
+                try
                 {
-                    foreach (string[] appRolaPair in appRolaPairs)
+                    userAppsDict.TryGetValue(selectedUser, out appRolaPairs);
+
+                    //zaznaczonym użytkownikiem nie jest nazwa gałęzi (wtedy appRolaPairs == null)
+                    //dla zaznaczonej aplikacji ten użytkownik ma uprawnienia i aplikacja ta ma rolę
+                    if ((appRolaPairs != null) && (appRolaPairs.Count > 0))
                     {
-                        if (appRolaPair[0].Equals(app))
+                        //ze słownika wyciągam rolę zaznaczonej aplikacji
+                        string appRola = "";
+
+                        appRolaPairs.TryGetValue(selectedApp.Text, out appRola);
+                        //wyrzuca wyjątek jeżeli program ma role, ale użytkownik nie ma do niego uprawnień, tj jego appRola.Equals("")
+                        if (appRola != null)
                         {
-                            appRola = appRolaPair[1];
+                            ListViewItem rolaItem = appRoleListView.FindItemWithText(appRola);
+
+                            if (selectedApp.Checked == true)     //użytkownik ma uprawnienia do zaznaczonej aplikacji
+                            {
+                                rolaItem.Checked = true;    //warunek, że zaznaczona może być tylko jedna rola obsługuje zdarzenie AfterChecked
+                            }
+                            else
+                            {
+                                rolaItem.Checked = false;
+                            }
                         }
                     }
-                    ListViewItem item = appRoleListView.FindItemWithText(appRola);
-                    item.Checked = true;                
+                }
+                catch (ArgumentNullException ex)
+                {
+                    MyMessageBox.display(ex.Message + "  checkAppRolaCheckbox", MessageBoxType.Error);
+                }
+                catch (NullReferenceException exc)
+                {
+                    MyMessageBox.display(exc.Message + "  checkAppRolaCheckbox", MessageBoxType.Error);
+                }             
+            }
+        }
+
+        private void uncheckAllAppRolaCheckboxes()
+        {
+            //odfajkowuję tylko wtedy, jeżeli coś jest załadowane
+            if (appRoleListViewLoaded)
+            {
+                ListViewItem checkedRole = getCheckedAppRole();
+                if (checkedRole != null)
+                {                                                   
+                    checkedRole.Checked = false;
                 }
             }
-            catch (NullReferenceException exc)
-            {
-                //nie muszę nic robić z wyjątkiem, oznacza tylko, że nie ma żadnych ról dla wybranego programu, lista pozostaje pusta
-            }
-            catch (ArgumentOutOfRangeException exc1)
-            {
-
-            }
-
         }
+
+        private ListViewItem getCheckedAppRole()
+        {
+            ListView.CheckedListViewItemCollection checkedRoles = appRoleListView.CheckedItems;
+            if (checkedRoles.Count > 0)
+            {
+                ListViewItem checkedRole = checkedRoles[0];                //zawsze będzie tylko jedna, więc zawsze na pozycji 0   
+                return checkedRole;
+            }
+            return null;
+        }
+
 
         //checkbox może być zaznaczony tylko przy jednej roli
         private void AppRoleListView_ItemChecked(object sender, ItemCheckedEventArgs e)
@@ -398,21 +491,45 @@ namespace UniwersalnyDesktop
                 {
                     if (previousCheckedRole != null)
                     {
-                        previousCheckedRole.Checked = false;
+                       previousCheckedRole.Checked = false;
                     }
-                    ListView.CheckedListViewItemCollection checkedRoles = appRoleListView.CheckedItems;
-                    ListViewItem checkedRole = checkedRoles[0];                                         //zawsze będzie tylko jeden, więc zawsze na pozycji 0
-                    previousCheckedRole = checkedRole;
+                    ListViewItem checkedRole = getCheckedAppRole();
+                    if (checkedRole !=null)
+                    {
+                        previousCheckedRole = checkedRole;
+                    }
+                    else
+                    {
+                        previousCheckedRole = null;
+                    }
                 }
+                //te błędy powinienem obsłużyć warunkami, więc łapię je tylko w debugu
                 catch (ArgumentOutOfRangeException exc)
                 {
-
+#if DEBUG
+                    MyMessageBox.display(exc.Message + "  AppRoleListView_ItemChecked", MessageBoxType.Error);
+#endif
                 }
                 catch (NullReferenceException ex)
                 {
-
+#if DEBUG
+                    MyMessageBox.display(ex.Message + "  AppRoleListView_ItemChecked", MessageBoxType.Error);
+#endif
                 }
             }
-        }             
+        }
+
+        #endregion
+
+        private List<string> convertColumnDataToList(List<string[]> tableData, int columnNr = 0)
+        {
+            List<string> columnData = new List<string>();
+            for (int i = 0; i < tableData.Count; i++)
+            {
+                string columnItem = tableData[i][columnNr];
+                columnData.Add(columnItem);
+            }
+            return columnData;
+        }        
     }
 }

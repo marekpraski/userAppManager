@@ -15,7 +15,6 @@ namespace UniwersalnyDesktop
 
     public partial class MyMessageBox : Form
     {
-
         enum ButtonType { Close, Yes, No }
         private int numberOfButtons = 1;    //ustawienia wstępnie zainicjalizowane, nadpisywane w zależności od rodzaju MessageBoxa
 
@@ -42,7 +41,7 @@ namespace UniwersalnyDesktop
             this.mbType = mbType;
             setFormLayout();
         }
-        
+
         public static MessageBoxResults display(string message, MessageBoxType mbType = MessageBoxType.Information)
         {
             MyMessageBox mmb = new MyMessageBox(message, mbType);
@@ -67,7 +66,7 @@ namespace UniwersalnyDesktop
             {
                 case MessageBoxType.Information:
                     numberOfButtons = 1;
-                    buttonText[0]="OK";
+                    buttonText[0] = "OK";
                     mbButtons[0] = ButtonType.Close;
                     this.Text = "Informacja";
                     break;
@@ -126,7 +125,7 @@ namespace UniwersalnyDesktop
             this.Height = textBox1.Height + groupBoxHeigth + formVerticalPadding;
 
             //rozmiary formatki są niezmienialne po uruchomieniu
-             this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
         }
 
         private int[] getTextBoxSize()
@@ -167,7 +166,7 @@ namespace UniwersalnyDesktop
                 }
                 else
                 {
-                    textBoxSize[0] =maxTextBoxWidth + textBox1.Font.Height;
+                    textBoxSize[0] = maxTextBoxWidth + textBox1.Font.Height;
                 }
                 textBoxSize[1] = heigth + textBox1.Font.Height;
             }
@@ -181,7 +180,7 @@ namespace UniwersalnyDesktop
         {
             int additionalLines = 0;
             List<string> longLines = new List<string>();
-            foreach(string line in splitMessage)
+            foreach (string line in splitMessage)
             {
                 int l = TextRenderer.MeasureText(line, textBox1.Font).Width;
                 if (TextRenderer.MeasureText(line, textBox1.Font).Width > (maxTextBoxWidth - textPadding))
@@ -189,7 +188,7 @@ namespace UniwersalnyDesktop
                     longLines.Add(line);
                 }
             }
-            if (longLines.Count>0)
+            if (longLines.Count > 0)
             {
                 foreach (string line in longLines)
                 {
@@ -206,14 +205,10 @@ namespace UniwersalnyDesktop
             textBox1.Height = size[1];
         }
 
-        private void RichTextBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
+        
         private void generateButtons()
         {
-            
+
             //odległość buttona od brzegu groupboxa
             int buttonSpacing = (groupBox1.Width - numberOfButtons * (stdButtonWidth + buttonHorizontalPadding)) / 2;
 
@@ -251,7 +246,30 @@ namespace UniwersalnyDesktop
                         mbResult = MessageBoxResults.No;
                         this.Close();
                         break;
-                        
+                }
+            }
+        }
+
+        //zamyka okno po naciśnięciu Enter ale tylko wtedy, gdy jest jeden przycisk
+        private void MyMessageBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (numberOfButtons == 1)
+            {
+                if (e.KeyChar == Convert.ToChar(Keys.Enter))
+                {
+                    this.Close();
+                }
+            }
+        }
+
+        //zamyka okno po naciśnięciu Enter ale tylko wtedy, gdy jest jeden przycisk
+        private void TextBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (numberOfButtons == 1)
+            {
+                if (e.KeyChar == Convert.ToChar(Keys.Enter))
+                {
+                    this.Close();
                 }
             }
         }

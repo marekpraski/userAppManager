@@ -90,15 +90,14 @@ namespace UniwersalnyDesktop
 
         private bool verifyUser()
         {
-            readUserata();
-            if (userData.getHeaders().Count>0)      //niczego nie przeczytał bo brak loginu, uprawnień do bazy danych, złe hasło itp błąd kwerendy
+            if (readUserata())
             {
-                return true;
+                if (userData.getHeaders().Count > 0)      //niczego nie przeczytał bo brak loginu, uprawnień do bazy danych, złe hasło itp błąd kwerendy
+                {
+                    return true;
+                }               
             }
-            else
-            {
-                return false;
-            }                
+            return false;
         }
 
         private void passwordTextbox_KeyDown(object sender, KeyEventArgs e)
@@ -109,22 +108,32 @@ namespace UniwersalnyDesktop
             }
         }
 
-        private void readUserata()
+        private bool readUserata()
         {
             DBConnector dbConnector = new DBConnector(userLogin, userPassword);
 #if DEBUG
-            currentPath = @"C:\SMD\SoftMineDesktop";
+            currentPath = @"C:\testDesktop\conf";
 #else
-            currentPath = dbConnector.currentPath;
+            currentPath = Application.StartupPath;
 #endif
-            if (dbConnector.validateConfigFile())
+            if (dbConnector.validateConfigFile(currentPath))
             {
                 SqlConnection dbConnection = dbConnector.getDBConnection(ConnectionSources.serverNameInFile, ConnectionTypes.sqlAuthorisation);
                 dbReader = new DBReader(dbConnection);
 
                 string query = ProgramSettings.desktopUserDataQueryTemplate + "'" + userLogin + "'";
                 userData = dbReader.readFromDB(query);
+                return true;
             }
-        }        
+            return false;
+        }
+
+        private void LoginForm_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if(e.KeyChar == Convert.ToChar(Keys.Enter))
+            {
+                logIn();
+            }
+        }
     }
 }

@@ -31,13 +31,11 @@ namespace UniwersalnyDesktop
         private bool configFileValidated = true;
         private bool configFileValidationWasDone = false;       //jest to bezpiecznik, gdybym w kodzie analizę pliku konfiguracyjnego dał zanim plik został zwalidowany, bo z metody analizującej ściągnąłem wszystkie zabezpieczenia
 
-        public string currentPath { get; set; }
 
         public DBConnector (string userName, string userPassword)
         {
             this.userName = userName;
             this.userPassword = userPassword;
-            setCurrentPath();
         }
 
         private void generateConnectionString()
@@ -141,13 +139,8 @@ namespace UniwersalnyDesktop
             }
         }
 
-        //osobna metoda, bo currentPath mogę chcieć ustawić dowolnie, np. dla debuga obecnie katalog z którego uruchamiany jest program
-        private void setCurrentPath()
-        {
-            currentPath = Application.StartupPath;
-        }
-
-        public bool validateConfigFile()
+       
+        public bool validateConfigFile(string currentPath)
         {
 
             FileManipulator fm = new FileManipulator();

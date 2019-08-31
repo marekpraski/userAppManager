@@ -33,9 +33,19 @@ namespace UniwersalnyDesktopTests
         [TestMethod]
         public void testForm1()
         {
-            Form1 fm1 = new Form1();
-           
-            fm1.ShowDialog();
+
+            string[] stringTable = { "aaa", "bbb", "cccc", "dddd" };
+            List<string> stringList = new List<string>();
+            foreach (string item in stringTable)
+            {
+                stringList.Add(item);
+            }
+            //Form1 fm1 = new Form1();
+            //fm1.populateListview1();
+            //fm1.populateListview2();
+
+
+            //fm1.ShowDialog();
         }
     }
 }

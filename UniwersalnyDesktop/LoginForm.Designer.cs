@@ -92,6 +92,7 @@
             this.Controls.Add(this.label1);
             this.Name = "LoginForm";
             this.Text = "Logowanie";
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.LoginForm_KeyPress);
             this.ResumeLayout(false);
             this.PerformLayout();
 
