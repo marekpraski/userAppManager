@@ -17,34 +17,46 @@ namespace UniwersalnyDesktop
         private DBReader dbReader;
         private string adminLogin;                              //login użytkownika, ale z założenia jest to Administrator skoro jest w tym oknie, inna nazwa bo chcę odróżnić od "user" który jest zwykłym użytkownikiem
 
-        private Dictionary<string, string> sqlUsersDict = null;          //lista użytkowników sql, kluczem jest login a wartością nazwa do wyświetlenia w drzewie
-        //private List<string> sqlLogins = null;                          //lista loginów sql dla potrzeb identyfikacji użytkowników w programie + do tworzenia zapytań sql
-        private Dictionary<string, string> windowsUsersDict = null;      //lista użytkowników domenowych, kluczem jest login a wartością nazwa do wyświetlenia w drzewie
-        //private List<string> windowsLogins = null;                          //lista loginów domenowych dla potrzeb identyfikacji użytkowników w programie + do tworzenia zapytań sql
+        //
+        //słowniki danych podstawowych
+        //
+        private Dictionary<string, DesktopUser> allUsersDict = null;            //lista wszystkich użytkowników desktopu, kluczem jest Id
+        private Dictionary<string, string> sqlUsersDict = null;            //lista użytkowników sql, kluczem jest Id, wartością nazwa użytkownika wyświetlana w drzewie
+        private Dictionary<string, string> windowsUsersDict = null;      //lista użytkowników domenowych, kluczem jest Id, , wartością nazwa użytkownika wyświetlana w drzewie
+        private Dictionary<string, App> appDictionary = null;               //lista wszystkich aplikacji zdefiniowanych w desktopie, kluczem jest Id
+        private Dictionary<string, Rola> rolaDict = null;                //lista wszystkich ról aplikacji, kluczem jest Id_rola
 
-        private List<string> appNameList = null;                           //lista nazw wszystkich dostępnych aplikacji
 
-        private Dictionary<string, List<string[]>> appRolesDict = null;          //dla każdej aplikacji, tabela wszystkich ról dla niej dostępnych    0= ID_rola, 1= name_rola, 2= descr_rola
+        private Dictionary<string, string> duplicatedWindowsUsers = null;        //jeżeli loginy  domenowe się powtarzają to ten program nie może działać poprawnie
+                                                                                //wychwytuję powtarzające się loginy i je wyświetlam
 
-        // dla każdego użytkownika domenowego i sql, słownik aplikacji, do których ma on uprawnienia wraz z ich rolami
-        //klucz : użytkownik, wartość : słownik; klucz = appDisplayName, wartość = name_rola
-        private Dictionary<string, Dictionary<string, string>> userAppsDict = null;        
-
+        //
         //zmienne służące do zmiany domyślnego koloru zaznaczonego elementu w drzewie użytkowników i liście aplikacji, gdy stają się one nieaktywne
-        private string selectedUser = "";
+        //
+        private TreeNode currentSelectedUser = null;
         private TreeNode previousSelectedUser = null;
-        private ListViewItem selectedApp = null;
+
+        private ListViewItem currentSelectedApp = null;
         private ListViewItem previousSelectedApp = null;
 
         //do zapamiętywania która rola aplikacji była poprzednio zaznaczona, użyta do zapewnienia, że tylko jedna rola jest zaznaczona
-        ListViewItem previousCheckedRole = null;
+        private ListViewItem previousCheckedRola = null;
+        private ListViewItem currentCheckedRola = null;
 
 
-        private bool appRoleListViewLoaded = false;                 //bez tej zmiennej event AppRoleListView_ItemChecked jest uruchamiany podczas ładowania listy 
+        private bool rolaListViewLoaded = false;                 //bez tej zmiennej event AppRoleListView_ItemChecked jest uruchamiany podczas ładowania listy 
                                                                     //AppRoleListView tyle razy ile jest wpisów na liście roli aplikacji
                                                                     //co powoduje widoczne opóźnienie w wyświetleniu tej listy
-        Dictionary<string, string> duplicatedUsers;                 //jeżeli loginy sql lub domenowe się powtarzają to ten program nie może działać poprawnie
-                                                                    //wychwytuję powtarzające się loginy i je wyświetlam
+
+        //
+        //zapamiętywanie zmian
+        //
+        private Dictionary<string, DesktopUser> userChangesDict = null;       //używana do trzymania oryginałów, gdyby po dokonaniu zmian 
+                                                                                                //użytkownik zrezygnował z ich zapisania do bazy
+
+        private Dictionary<string, string> saveToDbDict = null;                     //zapisuję kwerendy  zapisujące zmiany do bazy
+                                                                                    //klucz = kombinacja loginu użytkownika + nazwa aplikacji
+                                                                                    //wartość - kwerenda
 
         #endregion
 
@@ -59,139 +71,182 @@ namespace UniwersalnyDesktop
 
         private void setupAdminForm()
         {
-            populateUserTreeview();         //użytkownicy sql i domenowi
-            populateAppListview();         //aplikacje
+            populateUserTreeview();                                 //użytkownicy sql i domenowi
+            populateAppListview();                                   //aplikacje
+
+            //przygotowanie do zapisywania zmian
+            userChangesDict = new Dictionary<string, DesktopUser>();
+            saveToDbDict = new Dictionary<string, string>();           
         }
 
         #region Region - wczytywanie danych na starcie formularza
         private void readAllData()
         {
-            getUsers();
+            getUserData();
             getAppData();
-            getAppRoles();
+            getRolaData();
             getUserApps();
         }
+        
 
-        private void getUsers()
+        private void getUserData()
         {
+            allUsersDict = new Dictionary<string, DesktopUser>();
             string query = ProgramSettings.userQueryTemplate + "'" + adminLogin + "'";
             List<string[]> userData = dbReader.readFromDB(query).getQueryDataAsStrings();
-            List<string> imiona = convertColumnDataToList(userData, ProgramSettings.userImieIndex);
-            List<string> nazwiska = convertColumnDataToList(userData, ProgramSettings.userNazwiskoIndex);
 
-            string user = "";
-            string userDisplayName = "";
-
-            //tworzę nazwy użytkowników sql do wyświetlania
-            List<string> sqlLogins = convertColumnDataToList(userData, ProgramSettings.userSqlLoginIndex);
-            sqlUsersDict = new Dictionary<string, string>();
-            
-            for (int i = 0; i < sqlLogins.Count; i++)
+            foreach(string[] data in userData)
             {
-                if (sqlLogins[i] != "")
-                {
-                    userDisplayName = sqlLogins[i] + " (" + imiona[i] + " " + nazwiska[i] + ")";
-                    sqlUsersDict.Add(sqlLogins[i], userDisplayName);                          
-                }
+                DesktopUser desktopUser = new DesktopUser();
+                desktopUser.name = data[ProgramSettings.userImieIndex];
+                desktopUser.surname = data[ProgramSettings.userNazwiskoIndex];
+                desktopUser.sqlLogin = data[ProgramSettings.userSqlLoginIndex];
+                desktopUser.windowsLogin = data[ProgramSettings.userWindowsLoginIndex];
+                desktopUser.id = data[ProgramSettings.userIdIndex];
+                allUsersDict.Add(data[ProgramSettings.userIdIndex], desktopUser);
             }
+            groupUsers();
 
-            //tworzę nazwy użytkowników domenowych do wyświetlania
-            List<string> windowsLogins = convertColumnDataToList(userData, ProgramSettings.userWindowsLoginIndex);
-            windowsUsersDict = new Dictionary<string, string>();
-            duplicatedUsers = new Dictionary<string, string>();
-            for (int i = 0; i < windowsLogins.Count; i++)
-            {
-                if (windowsLogins[i] != "")
-                {
-                    
-                    try
-                    {
-                        user = windowsLogins[i].ToLower();        //celowa redundancja, żeby móc przekazać do komuniaktu błedu, zamieniam na lowercase, bo były powtórzenia
-                                                                //zakładam, że login sql nie będzie się powtarzał, więc tam nie sprawdzam
-                        userDisplayName = windowsLogins[i] + " (" + imiona[i] + " " + nazwiska[i] + ")";
-                        windowsUsersDict.Add(user, userDisplayName);            
-                    }
-                    catch (ArgumentException ex)
-                    {
-                        MyMessageBox.display(ex.Message + "/n/r zdublowana nazwa użytkownika: " + user);
-                        duplicatedUsers.Add(user, userDisplayName);
-                    }
-                }
-            }
             //usuwam ze słowników wszystkich zduplikowanych użytkowników, bo w kolejnych kwerendach wyszukujących programów dla użytkowników wyniki są niejednoznaczne
-            if (duplicatedUsers.Count > 0)
+            removeDuplicatedWindowsUsers();
+        }
+
+       
+        private void groupUsers()
+        {
+            string userDisplayName = "";
+            DesktopUser user = null;
+
+            sqlUsersDict = new Dictionary<string, string>();
+            windowsUsersDict = new Dictionary<string, string>();
+            duplicatedWindowsUsers = new Dictionary<string, string>();
+
+            foreach (string userId in allUsersDict.Keys)
             {
-                foreach (string duplicatedUser in duplicatedUsers.Keys)
+                allUsersDict.TryGetValue(userId, out user);
+                if (user.sqlLogin != "")
                 {
-                    windowsUsersDict.Remove(duplicatedUser);
+                    userDisplayName = user.sqlLogin + " (" + user.name + " " + user.surname + ")";      //nazwa użytkownika wyświetlana w drzewie
+                    sqlUsersDict.Add(user.id, userDisplayName);
+                }
+
+                if (user.windowsLogin != "")
+                {
+                    userDisplayName = user.windowsLogin + " (" + user.name + " " + user.surname + ")";      //nazwa użytkownika wyświetlana w drzewie
+                    windowsUsersDict.Add(user.id, userDisplayName);
                 }
             }
         }
 
-        
+        private void removeDuplicatedWindowsUsers()
+        {
+            Dictionary<string,List<string>> users = new Dictionary<string,List<string>>();  //kluczem jest login windowsowy małymi literami, wartością jest lista id
+            DesktopUser user = null;
+            List<string> idList = null;
+
+            //wypełniam słownik, żeby pogrupować użytkowników po ich loginach windowsowych SPROWADZONYCH DO LOWERCASE 
+            foreach (string userId in windowsUsersDict.Keys)
+            {
+                allUsersDict.TryGetValue(userId, out user);
+ 
+                string windowsLogin = user.windowsLogin.ToLower();
+                string id = user.id;
+
+                if (users.ContainsKey(windowsLogin))
+                {
+                    users.TryGetValue(windowsLogin, out idList);
+                    idList.Add(id);
+                }
+                else
+                {
+                    idList = new List<string>();
+                    idList.Add(id);
+                    users.Add(windowsLogin, idList);
+                }
+            }
+
+            foreach(string windowsLogin in users.Keys)
+            {
+                users.TryGetValue(windowsLogin, out idList);
+                if (idList.Count > 1)                           //tzn login powtarza się
+                {
+                    foreach(string userId in idList)
+                    {
+                        windowsUsersDict.Remove(userId);
+                        duplicatedWindowsUsers.Add(userId, windowsLogin + " (id użytkownika = " + userId +")");
+                    }
+                }
+            }
+        }
+
         private void getAppData()
         {
+            appDictionary = new Dictionary<string, App>();
             string query = ProgramSettings.appListQueryTemplate;
-            QueryData appData = dbReader.readFromDB(query);                 //lista danych dla wszystkich dostępnych aplikacji: 0= ap.ID_app, 1= ap.appDisplayName
-            appNameList = convertColumnDataToList(appData.getQueryDataAsStrings());
-        }
+            List<string[]> appData = dbReader.readFromDB(query).getQueryDataAsStrings(); 
 
-        private void getAppRoles()
-        {
-            appRolesDict = new Dictionary<string, List<string[]>>();
-            foreach (string appName in appNameList)
+            foreach (string[] data in appData)
             {
-                string query = ProgramSettings.appRolesQueryTemplate + "'" + appName + "'";
-                QueryData appRolesData = dbReader.readFromDB(query);
-                List<string[]> appRolesList = appRolesData.getQueryDataAsStrings();
-                appRolesDict.Add(appName, appRolesList);
+                App app = new App();
+                app.Id = data[ProgramSettings.appIdIndex];
+                app.appDisplayName = data[ProgramSettings.appDisplayNameIndex];
+                appDictionary.Add(data[ProgramSettings.appIdIndex], app);
             }
         }
 
+        private void getRolaData()
+        {
+            rolaDict = new Dictionary<string, Rola>();
+            App app = null;
+
+            string query = ProgramSettings.rolaQueryTemplate;
+            List<string[]> appRolaData = dbReader.readFromDB(query).getQueryDataAsStrings();
+            foreach (string[] rolaData in appRolaData)
+            {
+                Rola rola = new Rola();
+                rola.idRola = rolaData[ProgramSettings.rolaIdIndex];
+                rola.appId = rolaData[ProgramSettings.rolaAppIdIndex];
+                rola.name = rolaData[ProgramSettings.rolaNameIndex];
+                rola.description = rolaData[ProgramSettings.rolaDescrIndex];
+                rola.appName = rolaData[ProgramSettings.rolaAppNameIndex];
+                rolaDict.Add(rolaData[ProgramSettings.rolaIdIndex], rola);
+
+                //dodaję role aplikacji w każdej aplikacji
+                appDictionary.TryGetValue(rola.appId, out app);
+                app.addRola(rola.idRola);
+            }
+        }
+
+        //dane każdego użytkownika uzupełniam o zestawienie aplikacji do których ma uprawnienia wraz z rolami
         private void getUserApps()
         {
-            userAppsDict = new Dictionary<string, Dictionary<string, string>>();
-
-            //dodaję do słownika aplikacje użytkowników domenowych
-            foreach (string winUser in windowsUsersDict.Keys)
+            DesktopUser user = null;
+            
+            foreach (string userId in allUsersDict.Keys)
             {
-                if (winUser != "")
-                {
-                    string query = ProgramSettings.windowsUserAppsQueryTemplate + "'" + winUser + "'";
-                    QueryData windowsUserData = dbReader.readFromDB(query);
-                    List<string> appList = convertColumnDataToList(windowsUserData.getQueryDataAsStrings());
-                    Dictionary<string, string> appRolaPairs = new Dictionary<string, string>();
-                    foreach (string app in appList)
-                    {
-                        string appRola = getAppRola("windows_user", winUser, app);
-                        appRolaPairs.Add(app, appRola);
-                    }
-                    userAppsDict.Add(winUser, appRolaPairs);
-                }
-            }
+                string query = ProgramSettings.userAppsQueryTemplate + "'" + userId + "'";
+                List<string[]> appList = dbReader.readFromDB(query).getQueryDataAsStrings();
+                List<string> appIdList = convertColumnDataToList(appList);                  //kwerenda zwraca pojedynczą listę, tj tylko id
 
-            //dodaję do słownika aplikacje użytkowników sql
-            foreach (string sqlUser in sqlUsersDict.Keys)
-            {
-                if (sqlUser != "")
+                allUsersDict.TryGetValue(userId, out user);
+                if (appIdList.Count > 0)
                 {
-                    string query = ProgramSettings.sqlUserAppsQueryTemplate + "'" + sqlUser + "'";
-                    QueryData sqlUserData = dbReader.readFromDB(query);
-                    List<string> appList = convertColumnDataToList(sqlUserData.getQueryDataAsStrings());
-                    Dictionary<string, string> appRolaPairs = new Dictionary<string, string>();
-                    foreach (string app in appList)
+                    foreach (string appId in appIdList)
                     {
-                        string appRola = getAppRola("login_user", sqlUser, app);
-                        appRolaPairs.Add(app, appRola);
+                        string appRolaId = getAppRola(userId, appId);
+                        //if (appRolaId != "")
+                        //{
+                            user.addUpdateAppRola(appId, appRolaId);
+                        //}
                     }
-                    userAppsDict.Add(sqlUser, appRolaPairs);
                 }
             }
         }
 
-        private string getAppRola(string userType, string user, string app)
+
+        private string getAppRola(string userId, string appId)
         {
-            string query = ProgramSettings.userAppRolaQueryTemplate.Replace("@appDisplayName", app).Replace("@user", user).Replace("@loginType", userType);
+            string query = ProgramSettings.userAppRolaQueryTemplate.Replace("@appId", appId).Replace("@userId", userId);
             QueryData windowsUserData = dbReader.readFromDB(query);
             List<string> rolaList = convertColumnDataToList(windowsUserData.getQueryDataAsStrings());
             if (rolaList.Count > 0)
@@ -201,10 +256,11 @@ namespace UniwersalnyDesktop
             return "";
         }
 
+       
+
         #endregion
 
-       
-        
+
         #region Region - drzewo użytkowników
         public void populateUserTreeview()
         {
@@ -216,17 +272,17 @@ namespace UniwersalnyDesktop
                 Dictionary<string, string> oneBranchItems = treeviewBranchItems[i];
                 TreeNode[] childNodes = populateTreviewBranch(oneBranchItems);
                 TreeNode parentNode = new TreeNode(treeviewBranchNames[i], childNodes);
-                parentNode.Tag = "";                                                    //przypisuę pusty string, żeby mi nie wywalało błędu podczas wyciągania tekstu z taga w metodzie userTreeView_AfterSelect
+                parentNode.Name = "";                                                    //przypisuę pusty string, żeby mi nie wywalało błędu podczas wyciągania tekstu z taga w metodzie userTreeView_AfterSelect
                 userTreeView.Nodes.Add(parentNode);
             }
 
             //jeżeli są jakieś zduplikowane loginy to do drzewa dodaję dodatkową gałąź
-            if (duplicatedUsers.Count > 0)
+            if (duplicatedWindowsUsers.Count > 0)
             {
-                TreeNode[] childNodes = populateTreviewBranch(duplicatedUsers);
+                TreeNode[] childNodes = populateTreviewBranch(duplicatedWindowsUsers);
                 TreeNode parentNode = new TreeNode("zduplikowane loginy", childNodes);
                 parentNode.ForeColor = Color.Red;
-                parentNode.Tag = "";
+                parentNode.Name = "";
                 userTreeView.Nodes.Add(parentNode);
             }
         }
@@ -236,12 +292,14 @@ namespace UniwersalnyDesktop
         {
             TreeNode[] childNodes = new TreeNode[items.Count];
             int i = 0;
-            string userDisplayName;
-            foreach (string login in items.Keys)
+            string userDisplayName = "";
+            DesktopUser user = null;
+            foreach (string userId in items.Keys)
             {
-                items.TryGetValue(login, out userDisplayName);
+                items.TryGetValue(userId, out userDisplayName);
+                allUsersDict.TryGetValue(userId, out user);
                 TreeNode treeNode = new TreeNode(userDisplayName);
-                treeNode.Tag = login;
+                treeNode.Name = user.id;     
                 childNodes[i] = treeNode;
                 i++;
             }
@@ -266,47 +324,57 @@ namespace UniwersalnyDesktop
             }            
         }
 
+
         private void userTreeView_AfterSelect(object sender, TreeViewEventArgs e)
-        {           
+        {
+            currentSelectedUser = userTreeView.SelectedNode;
+
+            // resetuje ustawienia odfajkowując wszystkie checkboxy
+            uncheckAllApps();
+            uncheckAppRolaCheckbox();
+
+            if (!currentSelectedUser.Name.Equals(""))          //"" oznacza, że zaznaczona zostaje nazwa gałęzi
+            {
+                //wyszukuję aplikacji zaznaczonego użytkownika
+                DesktopUser user = null;
+                allUsersDict.TryGetValue(currentSelectedUser.Name, out user);              //parametr "name" zawiera Id użytkownika
+                List<string> userApps = user.getApps();
+
+                //jeżeli user ma jakieś uprawnienia to te aplikacje zafajkowuję oraz rolę zaznaczonej
+                if (userApps != null)
+                {
+                    foreach (string appId in userApps)
+                    {
+                        ListViewItem app = appListView.Items[appId];
+                        app.Checked = true;
+                    }
+                    checkRolaCheckbox();
+                }
+            }
+        }
 
             //odfajkowuję wszystkie aplikacje
+        private void uncheckAllApps()
+        {
+            
             foreach (ListViewItem listItem in appListView.Items)
             {
                 listItem.Checked = false;
-            }
-
-            selectedUser = userTreeView.SelectedNode.Tag.ToString();
-
-            //jeżeli user ma jakieś uprawnienia to te aplikacje zafajkowuję oraz rolę zaznaczonej
-            if (userAppsDict.ContainsKey(selectedUser) && userAppsDict[selectedUser].Count > 0)
-            {
-                foreach (string appName in userAppsDict[selectedUser].Keys)
-                {
-                    ListViewItem app = appListView.FindItemWithText(appName);       //nazwa aplikacji jest kluczem
-                    app.Checked = true;
-                }
-                checkAppRolaCheckbox();
-            }
-            //jeżeli użytkownik nie ma uprawnień do żadnych aplikacji to odfajkowuję wszystkie role
-            //"" oznacza nazwy gałęzi drzewa
-            else if (!selectedUser.Equals(""))
-            {
-                {
-                    uncheckAllAppRolaCheckboxes();
-                }
             }
         }
 
         #endregion
 
-        
 
         #region Region - lista programów
         private void populateAppListview()
         {
-            foreach (string row in appNameList)
+            App app = null;
+            foreach (string appId in appDictionary.Keys)
             {
-                ListViewItem listRow = new ListViewItem(row);
+                appDictionary.TryGetValue(appId, out app);
+                ListViewItem listRow = new ListViewItem(app.appDisplayName);
+                listRow.Name = appId;
                 appListView.Items.Add(listRow);
             }
         }
@@ -316,14 +384,14 @@ namespace UniwersalnyDesktop
         //nie używam zdarzenia "SelectedIndexChanged" bo nie zapewnia mi żądanej funkcjonalności
         private void AppListView_Click(object sender, EventArgs e)
         {
-            selectedApp = getSelectedApp();
-            if (selectedApp != previousSelectedApp)
+            setCurrentSelectedApp();
+            if (currentSelectedApp != previousSelectedApp)
             {
-                updateAppRolaViewBox();
+                updateRolaViewBox();
             }
             else
             {
-                checkAppRolaCheckbox();         //jeżeli zaznaczona aplikacja się nie zmieniła to aktualizuję tylko role dla niej
+                checkRolaCheckbox();         //jeżeli zaznaczona aplikacja się nie zmieniła to aktualizuję tylko role dla niej
             }
         }
        
@@ -334,24 +402,22 @@ namespace UniwersalnyDesktop
             {
                 previousSelectedApp.BackColor = appListView.BackColor;
             }
-            previousSelectedApp = selectedApp;
+            previousSelectedApp = currentSelectedApp;
         }
 
         //zmienia kolor zaznaczonego po kliknięciu w inne okno; żeby działało parametr HideSelection musi być true
         private void AppListView_Leave(object sender, EventArgs e)
         {
-            selectedApp.BackColor = Color.Aqua;
+            currentSelectedApp.BackColor = Color.Aqua;
         }
 
-        private ListViewItem getSelectedApp()
+        private void setCurrentSelectedApp()
         {
-
             if (appListView.SelectedIndices.Count > 0)
             {
                 int intselectedindex = appListView.SelectedIndices[0];
-                return appListView.Items[intselectedindex];
+                currentSelectedApp = appListView.Items[intselectedindex];
             }
-            return null;
         }
 
         #endregion
@@ -359,165 +425,191 @@ namespace UniwersalnyDesktop
 
         #region Region - lista ról aplikacji
 
-        private void populateRolaListView()
-        {
-            List<string> roles = convertColumnDataToList(appRolesDict[selectedApp.Text], ProgramSettings.roleIndex);
-            List<string> roleDescr = convertColumnDataToList(appRolesDict[selectedApp.Text], ProgramSettings.roleDescrIndex);
-            ListViewItem[] roleRange = new ListViewItem[roles.Count];
-
-            for (int i = 0; i < roles.Count; i++)
-            {
-                string rola = roles[i];
-                string descr = roleDescr[i];
-                ListViewItem item = new ListViewItem(rola);
-                item.SubItems.Add(descr);
-                roleRange[i] = item;
-            }
-            appRoleListView.Items.AddRange(roleRange);
-        }
-
-        private void updateAppRolaViewBox()
+        //widok listy ról nie jest wypełniany na starcie, lecz
+        //operacja występuje, gdy kliknięta zostanie aplikacja na liście aplikacji
+        private void updateRolaViewBox()
         {
             try
             {
                 //resetuję ustawienia widoku listy ról aplikacji
-                appRoleListView.Items.Clear();
-                appRoleListViewLoaded = false;
+                rolaListView.Items.Clear();
+                rolaListViewLoaded = false;
+                previousCheckedRola = null;
+                currentCheckedRola = null;
                 resetPreviousSelectedAppColour();
 
                 //wypełniam listę rolami, jeżeli są
-                if (appRolesDict[selectedApp.Text].Count > 0)
-                {
-                    populateRolaListView();
-                    appRoleListViewLoaded = true;
-                }
+                populateRolaListView();
 
                 //jeżeli zaznaczony użytkownik ma uprawnienia do zaznaczonej aplikacji, wówczas zaznacza się rola tego użytkownika w tej aplikacji
-                checkAppRolaCheckbox();
+                checkRolaCheckbox();
 
             }
             //błędy do obsłużenia warunkami w debugu
             catch (NullReferenceException ex)
             {
 #if DEBUG
-                MyMessageBox.display(ex.Message + " updateAppRolaViewBox", MessageBoxType.Error);
+                MyMessageBox.display(ex.Message + " NullReference updateRolaViewBox", MessageBoxType.Error);
 #endif
             }
             catch (ArgumentOutOfRangeException exc)
             {
 #if DEBUG
-                MyMessageBox.display(exc.Message + " updateAppRolaViewBox", MessageBoxType.Error);
+                MyMessageBox.display(exc.Message + " OutOfRange updateRolaViewBox", MessageBoxType.Error);
 #endif
             }
         }
 
-
-        private void checkAppRolaCheckbox()
+        private void populateRolaListView()
         {
-            if (appRoleListViewLoaded)
+            App app = null;
+            appDictionary.TryGetValue(currentSelectedApp.Name, out app);
+
+            List<string> rolaIdList = app.rolaIdList;
+            if (rolaIdList.Count > 0)
             {
-                //wyciągam słownik ról dla zaznaczonego użytkownika
-                Dictionary<string, string> appRolaPairs;
-                try
+                ListViewItem[] roleRange = new ListViewItem[rolaIdList.Count];
+                Rola rola = null;
+                int i = 0;
+
+                foreach (string rolaId in rolaIdList)
                 {
-                    userAppsDict.TryGetValue(selectedUser, out appRolaPairs);
-
-                    //zaznaczonym użytkownikiem nie jest nazwa gałęzi (wtedy appRolaPairs == null)
-                    //dla zaznaczonej aplikacji ten użytkownik ma uprawnienia i aplikacja ta ma rolę
-                    if ((appRolaPairs != null) && (appRolaPairs.Count > 0))
-                    {
-                        //ze słownika wyciągam rolę zaznaczonej aplikacji
-                        string appRola = "";
-
-                        appRolaPairs.TryGetValue(selectedApp.Text, out appRola);
-                        //wyrzuca wyjątek jeżeli program ma role, ale użytkownik nie ma do niego uprawnień, tj jego appRola.Equals("")
-                        if (appRola != null)
-                        {
-                            ListViewItem rolaItem = appRoleListView.FindItemWithText(appRola);
-
-                            if (selectedApp.Checked == true)     //użytkownik ma uprawnienia do zaznaczonej aplikacji
-                            {
-                                rolaItem.Checked = true;    //warunek, że zaznaczona może być tylko jedna rola obsługuje zdarzenie AfterChecked
-                            }
-                            else
-                            {
-                                rolaItem.Checked = false;
-                            }
-                        }
-                    }
+                    rolaDict.TryGetValue(rolaId, out rola);
+                    string name = rola.name;
+                    string descr = rola.description;
+                    ListViewItem item = new ListViewItem(name);
+                    item.Name = rolaId;
+                    item.SubItems.Add(descr);
+                    roleRange[i] = item;
+                    i++;
                 }
-                catch (ArgumentNullException ex)
-                {
-                    MyMessageBox.display(ex.Message + "  checkAppRolaCheckbox", MessageBoxType.Error);
-                }
-                catch (NullReferenceException exc)
-                {
-                    MyMessageBox.display(exc.Message + "  checkAppRolaCheckbox", MessageBoxType.Error);
-                }             
+                rolaListView.Items.AddRange(roleRange);
+                rolaListViewLoaded = true;
             }
         }
 
-        private void uncheckAllAppRolaCheckboxes()
+        //zafajkowuje rolę zaznaczonej aplikacji jeżeli zaznaczony użytkownik ma do niej uprawnienia
+        private void checkRolaCheckbox()
         {
-            //odfajkowuję tylko wtedy, jeżeli coś jest załadowane
-            if (appRoleListViewLoaded)
+            if (rolaListViewLoaded)          //bez tego warunku gdy wybiorę użytkownika to wyrzuca wyjątek, bo chce zaznaczyć rolę a ich jeszcze nie ma w oknie
             {
-                ListViewItem checkedRole = getCheckedAppRole();
-                if (checkedRole != null)
-                {                                                   
-                    checkedRole.Checked = false;
-                }
-            }
-        }
+                DesktopUser user = null;
+                allUsersDict.TryGetValue(currentSelectedUser.Name, out user);
+                string rolaId = user.getRola(currentSelectedApp.Name);
 
-        private ListViewItem getCheckedAppRole()
-        {
-            ListView.CheckedListViewItemCollection checkedRoles = appRoleListView.CheckedItems;
-            if (checkedRoles.Count > 0)
-            {
-                ListViewItem checkedRole = checkedRoles[0];                //zawsze będzie tylko jedna, więc zawsze na pozycji 0   
-                return checkedRole;
-            }
-            return null;
-        }
+                ListViewItem rolaItem = null;
 
-
-        //checkbox może być zaznaczony tylko przy jednej roli
-        private void AppRoleListView_ItemChecked(object sender, ItemCheckedEventArgs e)
-        {
-            if (appRoleListViewLoaded)      //uruchamiam kod metody tylko wtedy, gdy do listy władowane są wszystkie wpisy
-            {
-                try
+                if (!rolaId.Equals(""))
                 {
-                    if (previousCheckedRole != null)
+                    rolaItem = rolaListView.Items[rolaId];
+
+                    if (currentSelectedApp.Checked == true)     //użytkownik ma uprawnienia do zaznaczonej aplikacji
                     {
-                       previousCheckedRole.Checked = false;
-                    }
-                    ListViewItem checkedRole = getCheckedAppRole();
-                    if (checkedRole !=null)
-                    {
-                        previousCheckedRole = checkedRole;
+                        rolaItem.Checked = true;        //warunek, że zaznaczona może być tylko jedna rola obsługuje zdarzenie AfterChecked
+                        setCurrentlyCheckedRola();      //aktualizuję zmienną currentlyCheckedRola
                     }
                     else
                     {
-                        previousCheckedRole = null;
+                        rolaItem.Checked = false;
                     }
-                }
-                //te błędy powinienem obsłużyć warunkami, więc łapię je tylko w debugu
-                catch (ArgumentOutOfRangeException exc)
-                {
-#if DEBUG
-                    MyMessageBox.display(exc.Message + "  AppRoleListView_ItemChecked", MessageBoxType.Error);
-#endif
-                }
-                catch (NullReferenceException ex)
-                {
-#if DEBUG
-                    MyMessageBox.display(ex.Message + "  AppRoleListView_ItemChecked", MessageBoxType.Error);
-#endif
                 }
             }
         }
+
+        private void uncheckAppRolaCheckbox()
+        {
+            if (currentCheckedRola != null)
+            {                                                   
+                currentCheckedRola.Checked = false;
+                currentCheckedRola = null;
+                previousCheckedRola = null;
+            }
+        }
+
+        //aktualizuję zmienną currentlyCheckedRola
+        private void setCurrentlyCheckedRola()
+        {
+            ListView.CheckedListViewItemCollection checkedRoles = rolaListView.CheckedItems;
+            if (checkedRoles.Count > 0)
+            {
+                currentCheckedRola = checkedRoles[0];                //zawsze będzie tylko jedna, więc zawsze na pozycji 0   
+            }
+        }
+
+
+        
+        private void rolaListView_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+            if (rolaListViewLoaded)      //uruchamiam kod metody tylko wtedy, gdy do listy władowane są wszystkie wpisy
+            {
+                string userId = currentSelectedUser.Name;
+                if (!userId.Equals(""))                 //muszę tu też sprawdzić, bo odznaczanie checkboxa roli w przypadku zaznaczenia gałęzi wyzwala to zdarzenie i wywala się błąd na ID użytkownika==""
+                {
+                    try
+                    {
+                        previousCheckedRola = currentCheckedRola;
+                        if (previousCheckedRola != null)
+                        {
+                            //upewniam się, że checkbox jest zaznaczony tylko przy jednej roli
+                            previousCheckedRola.Checked = false;
+                        }
+                        if (currentCheckedRola != null && previousCheckedRola != null)     //oba są null tylko na początku ładowania listy, po pierwszym załadowaniu tylko previousCheckedRole jest null
+                                                                                           //chyba że użytkownik nie ma uprawnień do aplikacji, ale to jest sprawdzane wcześniej
+                        {
+                            setCurrentlyCheckedRola();
+                        }
+                    }
+                    catch (ArgumentNullException ex)
+                    {
+                        MyMessageBox.display(ex.Message + "  ArgumentNull AppRoleListView_ItemChecked", MessageBoxType.Error);
+                    }
+                    catch (NullReferenceException exc)
+                    {
+                        MyMessageBox.display(exc.Message + "  NullReference AppRoleListView_ItemChecked", MessageBoxType.Error);
+                    }
+                }
+            }
+        }
+
+
+        #endregion
+
+
+        #region Region : zapamiętywanie zmian i zapisywanie do bazy
+
+
+        //zapisuję zmiany w uprawnieniach użytkownika po opuszczeniu okna roli
+        private void RolaListView_Leave(object sender, EventArgs e)
+        {
+            string userId = currentSelectedUser.Name;
+            updateUserPrivilages(userId);
+        }
+
+
+        //aktualizuje uprawnienia użytkownika
+        private void updateUserPrivilages(string userId)
+        {
+            backupUser(userId);
+
+            DesktopUser user = null;
+            allUsersDict.TryGetValue(userId, out user);
+
+            if (currentSelectedApp != null)
+            {
+               user.addUpdateAppRola(currentSelectedApp.Name, currentCheckedRola.Name);
+            }
+        }
+
+        private void backupUser(string userId)
+        {
+            if(!userChangesDict.ContainsKey(userId))        //dodaję tylko raz, na początku, tj oryginał
+            {
+                DesktopUser user = new DesktopUser();
+                allUsersDict.TryGetValue(userId, out user);
+                userChangesDict.Add(userId, user);
+            }
+        }
+
 
         #endregion
 
@@ -530,6 +622,13 @@ namespace UniwersalnyDesktop
                 columnData.Add(columnItem);
             }
             return columnData;
-        }        
+        }
+
+        
+        private void HelpButton_Click(object sender, EventArgs e)
+        {
+            string helpMessage = "Jeżeli aplikacja ma rolę, to odznaczenie roli nie spowoduje zapisania zmian ";
+            MyMessageBox.display(helpMessage);
+        }
     }
 }
