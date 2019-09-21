@@ -60,7 +60,7 @@ namespace UniwersalnyDesktop
         private void readDesktopData()
         {
             string userLogin = userData.getQueryData()[0].ToList()[0].ToString();
-            string query = ProgramSettings.desktopAppDataQueryTemplate + "'" + userLogin + "'";
+            string query = SqlQueries.desktopAppDataQueryTemplate + "'" + userLogin + "'";
             desktopData = dbReader.readFromDB(query);
         }
 

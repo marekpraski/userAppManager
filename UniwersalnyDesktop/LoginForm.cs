@@ -72,7 +72,6 @@ namespace UniwersalnyDesktop
             AdminForm adminForm = new AdminForm(userLogin, dbReader);
             //this.Hide();
             adminForm.ShowDialog();
-            //MyMessageBox.display("loguję jako admin", MessageBoxType.Information);
         }
 
         private ProgramSettings.UserType getUserType()
@@ -121,7 +120,7 @@ namespace UniwersalnyDesktop
                 SqlConnection dbConnection = dbConnector.getDBConnection(ConnectionSources.serverNameInFile, ConnectionTypes.sqlAuthorisation);
                 dbReader = new DBReader(dbConnection);
 
-                string query = ProgramSettings.desktopUserDataQueryTemplate + "'" + userLogin + "'";
+                string query = SqlQueries.desktopUserDataQueryTemplate + "'" + userLogin + "'";
                 userData = dbReader.readFromDB(query);
                 return true;
             }

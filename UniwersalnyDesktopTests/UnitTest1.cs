@@ -23,12 +23,12 @@ namespace UniwersalnyDesktopTests
             {
                 stringList.Add(item);
             }
-            //AdminForm adminForm = new AdminForm();
-            //adminForm.populateTreeview(stringList);
-            //adminForm.populateListview(stringList);
-            //adminForm.populateListbox(stringList);
+            //Form1 adminForm = new Form1();
+            //adminForm.populateTreeview(stringTable);
+            ////adminForm.populateListview(stringList);
+            ////adminForm.populateListbox(stringList);
             
-           // adminForm.ShowDialog();
+            //adminForm.ShowDialog();
         }
         [TestMethod]
         public void testForm1()

@@ -10,19 +10,19 @@ using System.Windows.Forms;
 
 namespace UniwersalnyDesktop
 {
-    public enum MessageBoxType { Information, Error, Warning, YesNo }
-    public enum MessageBoxResults { Close, Yes, No }
+    public enum MessageBoxType { Information, Error, Warning, YesNo, YesNoCancel }
+    public enum MyMessageBoxResults { Close, Yes, No, Cancel }
 
     public partial class MyMessageBox : Form
     {
-        enum ButtonType { Close, Yes, No }
+        enum ButtonType { Close, Yes, No, Cancel }
         private int numberOfButtons = 1;    //ustawienia wstępnie zainicjalizowane, nadpisywane w zależności od rodzaju MessageBoxa
 
         //wypełniane podczas określania zawartości MessageBoxa w zależności od jego typu
-        private string[] buttonText = new string[2];
-        private ButtonType[] mbButtons = new ButtonType[2]; //zmienić, jeżeli będzie potrzeba tworzenie MessageBoxa z większą liczbą buttonów
+        private string[] buttonText = new string[3];
+        private ButtonType[] mbButtons = new ButtonType[3]; //zmienić, jeżeli będzie potrzeba tworzenie MessageBoxa z większą liczbą buttonów
 
-        private MessageBoxResults mbResult = MessageBoxResults.Close;
+        private MyMessageBoxResults mbResult = MyMessageBoxResults.Close;
         private MessageBoxType mbType;
         private string message;
         private int stdButtonWidth = 75;
@@ -42,7 +42,7 @@ namespace UniwersalnyDesktop
             setFormLayout();
         }
 
-        public static MessageBoxResults display(string message, MessageBoxType mbType = MessageBoxType.Information)
+        public static MyMessageBoxResults display(string message, MessageBoxType mbType = MessageBoxType.Information)
         {
             MyMessageBox mmb = new MyMessageBox(message, mbType);
             mmb.textBox1.Text = mmb.message;
@@ -86,6 +86,12 @@ namespace UniwersalnyDesktop
                     numberOfButtons = 2;
                     buttonText[0] = "Tak"; buttonText[1] = "Nie";
                     mbButtons[0] = ButtonType.Yes; mbButtons[1] = ButtonType.No;
+                    this.Text = "Decyzja";
+                    break;
+                case MessageBoxType.YesNoCancel:
+                    numberOfButtons = 3;
+                    buttonText[0] = "Tak"; buttonText[1] = "Nie"; buttonText[2] = "Anuluj";
+                    mbButtons[0] = ButtonType.Yes; mbButtons[1] = ButtonType.No; mbButtons[2] = ButtonType.Cancel;
                     this.Text = "Decyzja";
                     break;
             }
@@ -239,11 +245,15 @@ namespace UniwersalnyDesktop
                         this.Close();
                         break;
                     case ButtonType.Yes:
-                        mbResult = MessageBoxResults.Yes;
+                        mbResult = MyMessageBoxResults.Yes;
                         this.Close();
                         break;
                     case ButtonType.No:
-                        mbResult = MessageBoxResults.No;
+                        mbResult = MyMessageBoxResults.No;
+                        this.Close();
+                        break;
+                    case ButtonType.Cancel:
+                        mbResult = MyMessageBoxResults.Cancel;
                         this.Close();
                         break;
                 }

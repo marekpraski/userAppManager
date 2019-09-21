@@ -40,6 +40,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.saveButton = new System.Windows.Forms.ToolStripButton();
+            this.statusInformationButton = new System.Windows.Forms.ToolStripButton();
             this.helpButton = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -53,9 +54,10 @@
             this.userTreeView.Name = "userTreeView";
             this.userTreeView.Size = new System.Drawing.Size(295, 383);
             this.userTreeView.TabIndex = 0;
+            this.userTreeView.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.UserTreeView_BeforeSelect);
             this.userTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.userTreeView_AfterSelect);
-            this.userTreeView.Click += new System.EventHandler(this.userTreeView_Click);
-            this.userTreeView.Leave += new System.EventHandler(this.TreeView1_Leave);
+            this.userTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.UserTreeView_NodeMouseClick);
+            this.userTreeView.Leave += new System.EventHandler(this.userTreeView_Leave);
             // 
             // appListView
             // 
@@ -72,8 +74,10 @@
             this.appListView.TabIndex = 2;
             this.appListView.UseCompatibleStateImageBehavior = false;
             this.appListView.View = System.Windows.Forms.View.Details;
-            this.appListView.Click += new System.EventHandler(this.AppListView_Click);
+            this.appListView.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.AppListView_ItemChecked);
+            this.appListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.AppListView_ItemSelectionChanged);
             this.appListView.Leave += new System.EventHandler(this.AppListView_Leave);
+            this.appListView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.AppListView_MouseDown);
             // 
             // columnHeader1
             // 
@@ -98,7 +102,7 @@
             this.rolaListView.UseCompatibleStateImageBehavior = false;
             this.rolaListView.View = System.Windows.Forms.View.Details;
             this.rolaListView.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.rolaListView_ItemChecked);
-            this.rolaListView.Leave += new System.EventHandler(this.RolaListView_Leave);
+            this.rolaListView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.RolaListView_MouseClick);
             // 
             // columnHeader2
             // 
@@ -141,6 +145,7 @@
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.saveButton,
+            this.statusInformationButton,
             this.helpButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -151,11 +156,24 @@
             // saveButton
             // 
             this.saveButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.saveButton.Enabled = false;
             this.saveButton.Image = ((System.Drawing.Image)(resources.GetObject("saveButton.Image")));
             this.saveButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(23, 22);
             this.saveButton.Text = "zapisz zmiany";
+            this.saveButton.Click += new System.EventHandler(this.SaveButton_Click);
+            // 
+            // statusInformationButton
+            // 
+            this.statusInformationButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.statusInformationButton.Enabled = false;
+            this.statusInformationButton.Image = ((System.Drawing.Image)(resources.GetObject("statusInformationButton.Image")));
+            this.statusInformationButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.statusInformationButton.Name = "statusInformationButton";
+            this.statusInformationButton.Size = new System.Drawing.Size(23, 22);
+            this.statusInformationButton.Text = "pokaż zmiany";
+            this.statusInformationButton.Click += new System.EventHandler(this.StatusInformationButton_Click);
             // 
             // helpButton
             // 
@@ -181,6 +199,7 @@
             this.Controls.Add(this.userTreeView);
             this.Name = "AdminForm";
             this.Text = "Panel Administratora";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AdminForm_FormClosing);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -202,5 +221,6 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton saveButton;
         private System.Windows.Forms.ToolStripButton helpButton;
+        private System.Windows.Forms.ToolStripButton statusInformationButton;
     }
 }
