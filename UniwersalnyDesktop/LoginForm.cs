@@ -22,26 +22,41 @@ namespace UniwersalnyDesktop
         private QueryData userData;     //login_user=0, windows_user=1,imie_user=2, nazwisko_user=3
 
         private DBReader dbReader;
+        private SqlConnection dbConnection;
         public LoginForm()
         {
             InitializeComponent();
         }
 
-        private void UserNameTextBox_TextChanged(object sender, EventArgs e)
-        {
-            userLogin = userNameTextBox.Text;
-        }
 
-        private void PasswordTextBox_TextChanged(object sender, EventArgs e)
-        {
-            userPassword = passwordTextBox.Text;
-        }
+        #region Region - interakcja z użytkownikiem
+
 
         private void LoginButton_Click(object sender, EventArgs e)
         {
             logIn();
-            
         }
+
+
+        private void passwordTextbox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                logIn();
+            }
+        }
+
+
+        private void LoginForm_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == Convert.ToChar(Keys.Enter))
+            {
+                logIn();
+            }
+        }
+
+        #endregion
+
 
         private void logIn()
         {
@@ -56,34 +71,7 @@ namespace UniwersalnyDesktop
                     case ProgramSettings.UserType.RegularUser:
                         openDesktopForm();
                         break;
-                }                
-            }
-        }
-
-        private void openDesktopForm()
-        {           
-            DesktopForm desktop = new DesktopForm(userData, userPassword, dbReader, currentPath);
-            this.Hide();
-            desktop.ShowDialog();
-        }
-
-        private void openAdminForm()
-        {
-            AdminForm adminForm = new AdminForm(userLogin, dbReader);
-            //this.Hide();
-            adminForm.ShowDialog();
-        }
-
-        private ProgramSettings.UserType getUserType()
-        {
-            string userName = userData.getQueryData()[0].ToList()[2] + " " + userData.getQueryData()[0].ToList()[3];
-            if(userName.Equals(ProgramSettings.administratorName))
-            {
-                return ProgramSettings.UserType.Administrator;
-            }
-            else
-            {
-                return ProgramSettings.UserType.RegularUser;
+                }
             }
         }
 
@@ -94,18 +82,11 @@ namespace UniwersalnyDesktop
                 if (userData.getHeaders().Count > 0)      //niczego nie przeczytał bo brak loginu, uprawnień do bazy danych, złe hasło itp błąd kwerendy
                 {
                     return true;
-                }               
+                }
             }
             return false;
         }
 
-        private void passwordTextbox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                logIn();
-            }
-        }
 
         private bool readUserata()
         {
@@ -117,21 +98,55 @@ namespace UniwersalnyDesktop
 #endif
             if (dbConnector.validateConfigFile(currentPath))
             {
-                SqlConnection dbConnection = dbConnector.getDBConnection(ConnectionSources.serverNameInFile, ConnectionTypes.sqlAuthorisation);
+                dbConnection = dbConnector.getDBConnection(ConnectionSources.serverNameInFile, ConnectionTypes.sqlAuthorisation);
                 dbReader = new DBReader(dbConnection);
 
-                string query = SqlQueries.desktopUserDataQueryTemplate + "'" + userLogin + "'";
+                string query = SqlQueries.getDesktopUserData + "'" + userLogin + "'";
                 userData = dbReader.readFromDB(query);
                 return true;
             }
             return false;
         }
 
-        private void LoginForm_KeyPress(object sender, KeyPressEventArgs e)
+
+
+        private void UserNameTextBox_TextChanged(object sender, EventArgs e)
         {
-            if(e.KeyChar == Convert.ToChar(Keys.Enter))
+            userLogin = userNameTextBox.Text;
+        }
+
+        private void PasswordTextBox_TextChanged(object sender, EventArgs e)
+        {
+            userPassword = passwordTextBox.Text;
+        }
+
+
+
+        private void openDesktopForm()
+        {           
+            DesktopForm desktop = new DesktopForm(userData, userPassword, dbReader, currentPath);
+            //this.Hide();
+            desktop.ShowDialog();
+        }
+
+        private void openAdminForm()
+        {
+            AdminForm adminForm = new AdminForm(userLogin, dbConnection, dbReader);
+            //this.Hide();
+            adminForm.ShowDialog();
+        }
+
+
+        private ProgramSettings.UserType getUserType()
+        {
+            string userName = userData.getQueryData()[0].ToList()[2] + " " + userData.getQueryData()[0].ToList()[3];
+            if(userName.Equals(ProgramSettings.administratorName))
             {
-                logIn();
+                return ProgramSettings.UserType.Administrator;
+            }
+            else
+            {
+                return ProgramSettings.UserType.RegularUser;
             }
         }
     }

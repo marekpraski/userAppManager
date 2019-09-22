@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SqlClient;
 
 namespace UniwersalnyDesktop
 {
@@ -15,20 +16,22 @@ namespace UniwersalnyDesktop
         #region Region - parametry
 
         private DBReader dbReader;
+        private SqlConnection dbConnection;
         private string adminLogin;                              //login użytkownika, ale z założenia jest to Administrator skoro jest w tym oknie, inna nazwa bo chcę odróżnić od "user" który jest zwykłym użytkownikiem
 
         //
         //słowniki danych podstawowych
         //
-        private Dictionary<string, DesktopUser> allUsersDict = null;            //lista wszystkich użytkowników desktopu, kluczem jest Id
-        private Dictionary<string, string> sqlUsersDict = null;            //lista użytkowników sql, kluczem jest Id, wartością nazwa użytkownika wyświetlana w drzewie
-        private Dictionary<string, string> windowsUsersDict = null;      //lista użytkowników domenowych, kluczem jest Id, , wartością nazwa użytkownika wyświetlana w drzewie
+        private Dictionary<string, DesktopUser> allUsersDict;            //lista wszystkich użytkowników desktopu, kluczem jest Id
+        private Dictionary<string, string> sqlUsersDict;            //lista użytkowników sql, kluczem jest Id, wartością nazwa użytkownika wyświetlana w drzewie
+        private Dictionary<string, string> windowsUsersDict;      //lista użytkowników domenowych, kluczem jest Id, , wartością nazwa użytkownika wyświetlana w drzewie
+        private Dictionary<string, string> duplicatedWindowsUsers;        //jeżeli loginy  domenowe się powtarzają to ten program nie może działać poprawnie
+                                                                                 //wychwytuję powtarzające się loginy i je wyświetlam
+
+
         private Dictionary<string, App> appDictionary;             //lista wszystkich aplikacji zdefiniowanych w desktopie, kluczem jest Id
         private Dictionary<string, Rola> rolaDict;                //lista wszystkich ról aplikacji, kluczem jest Id_rola
 
-
-        private Dictionary<string, string> duplicatedWindowsUsers = null;        //jeżeli loginy  domenowe się powtarzają to ten program nie może działać poprawnie
-                                                                                //wychwytuję powtarzające się loginy i je wyświetlam
 
         //
         //zmienne służące do zmiany domyślnego koloru zaznaczonego elementu w drzewie użytkowników i liście aplikacji, gdy stają się one nieaktywne
@@ -71,25 +74,42 @@ namespace UniwersalnyDesktop
         //
         //
 
-        #region Region - wczytywanie danych na starcie formularza
-        public AdminForm(string adminLogin, DBReader dbReader)
+
+        public AdminForm(string adminLogin, SqlConnection dbConnection, DBReader dbReader)
         {
             this.dbReader = dbReader;
             this.adminLogin = adminLogin;
+            this.dbConnection = dbConnection;
             InitializeComponent();
+            createDictionaries();
             readAllData();
             setupAdminForm();
         }
 
-       
+
+        #region Region - wczytywanie danych na starcie formularza
+
+        private void createDictionaries()
+        {
+            allUsersDict = new Dictionary<string, DesktopUser>();
+
+            sqlUsersDict = new Dictionary<string, string>();
+            windowsUsersDict = new Dictionary<string, string>();
+            duplicatedWindowsUsers = new Dictionary<string, string>();
+
+            appDictionary = new Dictionary<string, App>();
+            rolaDict = new Dictionary<string, Rola>();
+
+            //przygotowanie do zapisywania zmian
+            userBackupDict = new Dictionary<string, DesktopUser>();
+            userAppChangeDict = new Dictionary<DesktopUser, Dictionary<App, AppDataItem>>();
+        }
+
+
         private void setupAdminForm()
         {
             populateUserTreeview();                                 //użytkownicy sql i domenowi
             populateAppListview();                                   //aplikacje
-
-            //przygotowanie do zapisywania zmian
-            userBackupDict = new Dictionary<string, DesktopUser>();
-            userAppChangeDict = new Dictionary<DesktopUser, Dictionary<App, AppDataItem>>();           
         }
 
  
@@ -104,8 +124,7 @@ namespace UniwersalnyDesktop
 
         private void getUserData()
         {
-            allUsersDict = new Dictionary<string, DesktopUser>();
-            string query = SqlQueries.userQueryTemplate + "'" + adminLogin + "'";
+            string query = SqlQueries.getUsers + "'" + adminLogin + "'";
             List<string[]> userData = dbReader.readFromDB(query).getQueryDataAsStrings();
 
             foreach(string[] data in userData)
@@ -129,10 +148,6 @@ namespace UniwersalnyDesktop
         {
             string userDisplayName = "";
             DesktopUser user = null;
-
-            sqlUsersDict = new Dictionary<string, string>();
-            windowsUsersDict = new Dictionary<string, string>();
-            duplicatedWindowsUsers = new Dictionary<string, string>();
 
             foreach (string userId in allUsersDict.Keys)
             {
@@ -194,8 +209,7 @@ namespace UniwersalnyDesktop
 
         private void getAppData()
         {
-            appDictionary = new Dictionary<string, App>();
-            string query = SqlQueries.appListQueryTemplate;
+            string query = SqlQueries.getAppList;
             List<string[]> appData = dbReader.readFromDB(query).getQueryDataAsStrings(); 
 
             foreach (string[] data in appData)
@@ -209,10 +223,9 @@ namespace UniwersalnyDesktop
 
         private void getRolaData()
         {
-            rolaDict = new Dictionary<string, Rola>();
             App app = null;
 
-            string query = SqlQueries.rolaQueryTemplate;
+            string query = SqlQueries.getAllRolas;
             List<string[]> appRolaData = dbReader.readFromDB(query).getQueryDataAsStrings();
             foreach (string[] rolaData in appRolaData)
             {
@@ -237,7 +250,7 @@ namespace UniwersalnyDesktop
             
             foreach (string userId in allUsersDict.Keys)
             {
-                string query = SqlQueries.userAppsQueryTemplate + "'" + userId + "'";
+                string query = SqlQueries.getUserApps + "'" + userId + "'";
                 List<string[]> appList = dbReader.readFromDB(query).getQueryDataAsStrings();
                 List<string> appIdList = convertColumnDataToList(appList);                  //ta kwerenda zwraca pojedynczą listę, tj tylko id
 
@@ -261,7 +274,7 @@ namespace UniwersalnyDesktop
 
         private string getAppRola(string userId, string appId)
         {
-            string query = SqlQueries.userAppRolaQueryTemplate.Replace("@appId", appId).Replace("@userId", userId);
+            string query = SqlQueries.getUserAppRola.Replace("@appId", appId).Replace("@userId", userId);
             QueryData windowsUserData = dbReader.readFromDB(query);
             List<string> rolaList = convertColumnDataToList(windowsUserData.getQueryDataAsStrings());
             if (rolaList.Count > 0)
@@ -339,7 +352,7 @@ namespace UniwersalnyDesktop
         //
         //
 
-        #region Region - pasek narzędziowy
+        #region Region - interakcja z użytkownikiem - pasek narzędziowy
 
         private void HelpButton_Click(object sender, EventArgs e)
         {
@@ -351,6 +364,17 @@ namespace UniwersalnyDesktop
         private void SaveButton_Click(object sender, EventArgs e)
         {
             saveChanges();
+            resetForm();
+        }
+
+
+
+        private void SaveAndCloseButton_Click(object sender, EventArgs e)
+        {
+            saveChanges();
+            saveButton.Enabled = false;         //gdy true, pyta czy zapisać zmiany
+            this.Dispose();
+            this.Close();
         }
 
 
@@ -395,6 +419,7 @@ namespace UniwersalnyDesktop
         #endregion
 
 
+
         #region Region - interakcja z użytkownikiem - zdarzenia na drzewie użytkowników
 
 
@@ -423,36 +448,6 @@ namespace UniwersalnyDesktop
                 appListMouseClicked = false;
                 rolaListMouseClicked = false;
             }
-
-
-            //poniższy fragment kodu odkomentować, jeżeli zapisywanie zmian ma się odbywać każdorazowo po wyborze innego użytkownika
-
-
-
-            //if (saveButton.Enabled)
-            //{
-            //    string userId = currentSelectedUser.Name;
-            //    MyMessageBoxResults result = MyMessageBox.display("Czy zapisać zmiany?", MessageBoxType.YesNoCancel);
-            //    if (result == MyMessageBoxResults.Yes)
-            //    {
-            //        saveChanges();
-            //        userBackupDict.Clear();
-            //        userAppChangeDict.Clear();
-            //        //ładowanie ustawień dla nowego użytkownika
-            //    }
-            //    else if (result == MyMessageBoxResults.Cancel)
-            //    {
-            //        e.Cancel = true;
-            //    }
-            //    else     //result == MyMessageBoxResults.No
-            //    {
-            //        restoreUserFromBackup(userId);
-            //        userBackupDict.Clear();
-            //        userAppChangeDict.Clear();
-            //        saveButton.Enabled = false;
-            //        statusInformationButton.Enabled = false;
-            //    }
-            //}
         }
 
 
@@ -593,6 +588,7 @@ namespace UniwersalnyDesktop
             rolaListMouseClicked = true;
         }
 
+
         #endregion
 
 
@@ -602,7 +598,7 @@ namespace UniwersalnyDesktop
         //
         //
 
-        #region Region - metody wywoływane na drzewie użytwkoników na skutek akcji użytkownika
+        #region Region - metody wywoływane na drzewie użytkowników na skutek akcji użytkownika
 
         private void toggleSelectedNodeColour()
         {
@@ -807,7 +803,7 @@ namespace UniwersalnyDesktop
         //
 
 
-        #region Region : zapamiętywanie zmian i zapisywanie do bazy
+        #region Region : zapamiętywanie zmian
 
         private DesktopUser getCurrentUser()
         {
@@ -848,6 +844,7 @@ namespace UniwersalnyDesktop
                     {
                         addChangedAppDataToDict(currentUser, app);
                         saveButton.Enabled = true;
+                        saveAndCloseButton.Enabled = true;
                         statusInformationButton.Enabled = true;
                     }
                     else                        //i jeżeli jej nie było, to po prostu usuwam ze zmian
@@ -894,6 +891,7 @@ namespace UniwersalnyDesktop
                 currentUser.addUpdateApp(app);
                 addChangedAppDataToDict(currentUser, app);
                 saveButton.Enabled = true;
+                saveAndCloseButton.Enabled = true;
                 statusInformationButton.Enabled = true;
             }
             else
@@ -904,6 +902,7 @@ namespace UniwersalnyDesktop
                     currentUser.addUpdateApp(app, rola);
                     addChangedAppDataToDict(currentUser, app);
                     saveButton.Enabled = true;
+                    saveAndCloseButton.Enabled = true;
                     statusInformationButton.Enabled = true;
                 }
             }
@@ -921,6 +920,7 @@ namespace UniwersalnyDesktop
             if(userAppChangeDict.Count == 0)
             {
                 saveButton.Enabled = false;
+                saveAndCloseButton.Enabled = false;
                 statusInformationButton.Enabled = false;
             }
         }
@@ -962,7 +962,6 @@ namespace UniwersalnyDesktop
         }
 
 
-
         private DesktopUser backupUser(DesktopUser user)
         {
             DesktopUser backupUser;
@@ -980,29 +979,83 @@ namespace UniwersalnyDesktop
         }
 
 
-        private void restoreUserFromBackup(string userId)
-        {
-            if (userBackupDict.ContainsKey(userId))
-            {
-                allUsersDict.Remove(userId);
-                DesktopUser backedupUser = new DesktopUser();
-                userBackupDict.TryGetValue(userId, out backedupUser);
-
-                //DesktopUser user = (DesktopUser)backedupUser.Clone();
-                allUsersDict.Add(userId, backedupUser);
-            }
-        }
-
-        private void saveChanges()
-        {
-            saveButton.Enabled = false;
-            statusInformationButton.Enabled = false;
-        }
-
 
         #endregion
 
 
+        #region Region : zapisywanie zmian do bazy
+
+
+        private void saveChanges()
+        {
+            ChangedDataBundle changedDataBundle = new ChangedDataBundle(userAppChangeDict, userBackupDict);
+
+            DBWriter writer = new DBWriter(dbConnection);
+            string query = generateQuery(changedDataBundle);
+            MyMessageBox.display(query);
+            //writer.writeToDB(query);
+        }
+
+
+        private string generateQuery(ChangedDataBundle changedDataBundle)
+        {
+            string query = "";
+            foreach (DesktopUser user in changedDataBundle.getUsers())
+            {
+                foreach (App app in changedDataBundle.getChangedUserApps(user))
+                {
+                    query += generateSingleQuery(user, changedDataBundle.getAppDataStatus(user, app), changedDataBundle.getNewAppData(user, app), changedDataBundle.getOldAppData(user, app));
+                }
+            }
+            return query;
+        }
+
+
+        private string generateSingleQuery(DesktopUser user, string queryType, AppDataItem newAppData, AppDataItem oldAppData)
+        {
+            string newAppId = newAppData.appId;
+            string newRolaId = newAppData.rolaId;
+            string oldRolaId = "";
+            string oldAppId = "";
+
+            if (oldAppData != null)         //jest null wtedy, gdy robiony jest insert
+            {
+                oldRolaId = oldAppData.rolaId;
+                oldAppId = oldAppData.appId;
+            }
+
+            string query = "";
+            switch (queryType)
+            {
+                case "delete":
+                    if (oldRolaId.Equals(""))
+                    {
+                        query = SqlQueries.deleteUserApp.Replace("@appId", oldAppId).Replace("@userId", user.id) + "\r\n";
+                    }
+                    else
+                    {
+                        query = SqlQueries.deleteUserAppAndRola.Replace("@appId", oldAppId).Replace("@rolaId", oldRolaId).Replace("@userId", user.id) + "\r\n";
+                    }
+                    break;
+                case "update":
+                        query = query = SqlQueries.updateUserRola.Replace("@newRolaId", newRolaId).Replace("@oldRolaId", oldRolaId).Replace("@userId", user.id) + "\r\n";
+                    break;
+                case "insert":
+                    if (newRolaId.Equals(""))
+                    {
+                        query = SqlQueries.insertUserApp.Replace("@appId", newAppId).Replace("@userId", user.id) + "\r\n";
+                    }
+                    else
+                    {
+                        query = SqlQueries.insertUserAppAndRola.Replace("@appId", newAppId).Replace("@rolaId", newRolaId).Replace("@userId", user.id) + "\r\n";
+                    }
+                    break;
+            }
+            return query;
+        }
+
+
+        #endregion
 
 
         private List<string> convertColumnDataToList(List<string[]> tableData, int columnNr = 0)
@@ -1014,6 +1067,40 @@ namespace UniwersalnyDesktop
                 columnData.Add(columnItem);
             }
             return columnData;
+        }
+
+
+        private void resetForm()
+        {
+            allUsersDict.Clear();
+            sqlUsersDict.Clear();
+            windowsUsersDict.Clear();
+            duplicatedWindowsUsers.Clear();
+            appDictionary.Clear();
+            rolaDict.Clear();
+            userAppChangeDict.Clear();
+            userBackupDict.Clear();
+
+            userTreeView.Nodes.Clear();
+            appListView.Items.Clear();
+            rolaListView.Items.Clear();
+
+            currentSelectedUser = null;
+            previousSelectedUser = null;
+            currentSelectedApp = null;
+            previousSelectedApp = null;
+            previousCheckedRola = null;
+            currentCheckedRola = null;
+            userTreeViewMouseClicked = false;
+            appListMouseClicked = false;
+            rolaListMouseClicked = false;
+
+            saveButton.Enabled = false;
+            saveAndCloseButton.Enabled = false;
+            statusInformationButton.Enabled = false;
+
+            readAllData();
+            setupAdminForm();
         }
     }
 }

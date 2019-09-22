@@ -154,7 +154,7 @@ namespace UniwersalnyDesktop
 
             foreach (App app in this.userAppDict.Keys)
             {
-                AppDataItem appData = (AppDataItem) this.getAppData(app).Clone(app.Id);
+                AppDataItem appData = (AppDataItem) this.getAppData(app).Clone();
 
                 other.userAppDict.Add(app, appData);
             }

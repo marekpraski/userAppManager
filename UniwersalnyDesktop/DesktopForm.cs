@@ -57,10 +57,31 @@ namespace UniwersalnyDesktop
             }         
         }
 
+        #region Region - interakcja z użytkownikiem
+
+        private void ButtonClick(object sender, EventArgs e)
+        {
+            Button button = sender as Button;
+            if (button != null)
+            {
+                string appToRun = button.Tag.ToString();
+                runApp(appToRun);
+            }
+        }
+
+
+        private void DesktopForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            //Application.Exit();
+        }
+
+
+        #endregion
+
         private void readDesktopData()
         {
             string userLogin = userData.getQueryData()[0].ToList()[0].ToString();
-            string query = SqlQueries.desktopAppDataQueryTemplate + "'" + userLogin + "'";
+            string query = SqlQueries.getDesktopAppData + "'" + userLogin + "'";
             desktopData = dbReader.readFromDB(query);
         }
 
@@ -201,15 +222,6 @@ namespace UniwersalnyDesktop
             groupboxID++;
         }
        
-        private void ButtonClick(object sender, EventArgs e)
-        {
-            Button button = sender as Button;
-            if (button != null)
-            {
-                string appToRun = button.Tag.ToString();
-                runApp(appToRun);
-            }
-        }
 
         private void runApp(string appToRun)
         {
@@ -220,9 +232,5 @@ namespace UniwersalnyDesktop
 
         }
 
-        private void DesktopForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            Application.Exit();
-        }
     }
 }

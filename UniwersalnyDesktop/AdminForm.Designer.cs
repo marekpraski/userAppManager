@@ -42,6 +42,7 @@
             this.saveButton = new System.Windows.Forms.ToolStripButton();
             this.statusInformationButton = new System.Windows.Forms.ToolStripButton();
             this.helpButton = new System.Windows.Forms.ToolStripButton();
+            this.saveAndCloseButton = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -97,6 +98,7 @@
             this.rolaListView.Location = new System.Drawing.Point(497, 40);
             this.rolaListView.MultiSelect = false;
             this.rolaListView.Name = "rolaListView";
+            this.rolaListView.ShowItemToolTips = true;
             this.rolaListView.Size = new System.Drawing.Size(257, 383);
             this.rolaListView.TabIndex = 2;
             this.rolaListView.UseCompatibleStateImageBehavior = false;
@@ -145,6 +147,7 @@
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.saveButton,
+            this.saveAndCloseButton,
             this.statusInformationButton,
             this.helpButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
@@ -185,6 +188,17 @@
             this.helpButton.Text = "pomoc";
             this.helpButton.Click += new System.EventHandler(this.HelpButton_Click);
             // 
+            // saveAndCloseButton
+            // 
+            this.saveAndCloseButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.saveAndCloseButton.Enabled = false;
+            this.saveAndCloseButton.Image = ((System.Drawing.Image)(resources.GetObject("saveAndCloseButton.Image")));
+            this.saveAndCloseButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.saveAndCloseButton.Name = "saveAndCloseButton";
+            this.saveAndCloseButton.Size = new System.Drawing.Size(23, 22);
+            this.saveAndCloseButton.Text = "zapisz zmiany i zamknij okno";
+            this.saveAndCloseButton.Click += new System.EventHandler(this.SaveAndCloseButton_Click);
+            // 
             // AdminForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -222,5 +236,6 @@
         private System.Windows.Forms.ToolStripButton saveButton;
         private System.Windows.Forms.ToolStripButton helpButton;
         private System.Windows.Forms.ToolStripButton statusInformationButton;
+        private System.Windows.Forms.ToolStripButton saveAndCloseButton;
     }
 }

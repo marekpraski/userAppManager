@@ -33,7 +33,7 @@ namespace UniwersalnyDesktop
             this.isEnabled = true;
         }
 
-        public object Clone(string appId)
+        public object Clone()
         {
             AppDataItem other = new AppDataItem(appId);
 
