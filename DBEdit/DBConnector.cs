@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 
+
 namespace UniwersalnyDesktop
 {
     //służy do tworzenia połaczenia do bazy danych na podstawie elementów składowych, tj. nazwa serwera, nazwa bazy, użytkownik i hasło
@@ -19,31 +20,20 @@ namespace UniwersalnyDesktop
     {
         private SqlConnection dbConnection;
         private string sqlQuery;
-
         private string configFilePath;
         private string configFileText;
         private string dbConnectionString;
         private string serverName;
         private string tableName;
         private string dbName;
-        private string userName;
-        private string userPassword;
+        private string userName = ProgramSettings.userName;
+        private string userPassword = ProgramSettings.userPassword;
         private bool configFileValidated = true;
         private bool configFileValidationWasDone = false;       //jest to bezpiecznik, gdybym w kodzie analizę pliku konfiguracyjnego dał zanim plik został zwalidowany, bo z metody analizującej ściągnąłem wszystkie zabezpieczenia
 
-
-        public DBConnector (string userName, string userPassword)
+        public DBConnector ()
         {
-            this.userName = userName;
-            this.userPassword = userPassword;
         }
-
-
-        public DBConnector()
-        {
-
-        }
-
 
         private void generateConnectionString()
         {
@@ -72,19 +62,19 @@ namespace UniwersalnyDesktop
         {
             this.sqlQuery = sqlQuery;
             TextManipulator tm = new TextManipulator();
-            extractTableName(tm);
+            extractTableName(ref tm);
             return tableName;
         }
 
         //wyciąga nazwę db z kwerendy wpisanej przez użytkownika
-        private void extractTableName(TextManipulator tm)
+        private void extractTableName(ref TextManipulator tm)
         {
             //znajduję położenie wyrazu kluczowego "from" w kwerendzie
             List<int> keyWordFromPosition = tm.getSubstringStartPositions(sqlQuery, "from");
             try
             {
                 //wywala bład gdy kwerenda jest na tyle bezsensowna, że nie potrafi wyłuskać sensownego wyrazu, który mógłby być nazwą bazy danych
-                string textAfterFrom = sqlQuery.Substring(keyWordFromPosition[0] + 5);  //dodaję 5 tj długość wyrazu "from" i jedną spację
+                string textAfterFrom = sqlQuery.Substring(keyWordFromPosition[0] + 5);  //dodaję długość wyrazu from i jedną spację
                 int firstSpacePosition = textAfterFrom.IndexOf(" ");
                 if (firstSpacePosition == -1)   //brak spacji
                 {
@@ -146,12 +136,19 @@ namespace UniwersalnyDesktop
             }
         }
 
-       
-        public bool validateConfigFile(string currentPath)
+        public bool validateConfigFile()
         {
+            string currentPath = Application.StartupPath;       //katalog z którego uruchamiany jest program
+            if (ProgramSettings.configFilePath.Equals(""))      //nie zdefiniowano alternatywnej ścieżki dla pliku konfiguracyjnego
+            {
+                configFilePath = currentPath;                      //plik konfiguracyjny jest w tym samym katalogu co program
+            }
+            else
+            {
+                configFilePath = ProgramSettings.configFilePath;
+            }
 
             FileManipulator fm = new FileManipulator();
-            configFilePath = currentPath + ProgramSettings.configFilePath;
             string configFile = configFilePath + @"\" + ProgramSettings.configFileName;
             configFileText = fm.readFile(configFile);
             if (!configFileText.Equals(""))                     //plik konfiguracyjny istnieje i nie jest pusty 
@@ -191,9 +188,8 @@ namespace UniwersalnyDesktop
                 dbConnectionString = readStringFromFile(delimiter);
             }
             else
-            {               
+            {
                 dbConnectionString = "";
-                MyMessageBox.display("nie uruchomiono metody validateConfigFile, connectionString jest pusty", MessageBoxType.Error);
             }
         }
     }

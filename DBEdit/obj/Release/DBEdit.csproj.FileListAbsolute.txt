@@ -1,0 +1,11 @@
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\bin\Release\DBEdit.dll.config
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\bin\Release\DBEdit.dll
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\bin\Release\DBEdit.pdb
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\obj\Release\DBEdit.csprojAssemblyReference.cache
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\obj\Release\DBEdit.DBEditorMainForm.resources
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\obj\Release\DBEdit.MyMessageBox.resources
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\obj\Release\DBEdit.Properties.Resources.resources
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\obj\Release\DBEdit.csproj.GenerateResource.cache
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\obj\Release\DBEdit.csproj.CoreCompileInputs.cache
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\obj\Release\DBEdit.dll
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\obj\Release\DBEdit.pdb

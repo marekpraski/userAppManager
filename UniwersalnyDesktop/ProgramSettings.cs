@@ -21,5 +21,16 @@ namespace UniwersalnyDesktop
 
         //ścieżka względna z której znajdowany jest plik konfiguracyjny, np @"/../Conf/". Gdy jest "" plik konfiguracyjny musi być w katalogu z którego uruchomiony jest program
         public static string configFilePath = "";
+
+
+        public static string userName = "";
+        public static string userPassword = "";
+
+
+        //
+        // DBEditorMainForm
+        //
+
+        public static int numberOfRowsToLoad = 50;     //ile wierszy ładuje się do datagrida w jednej operacji
     }
 }

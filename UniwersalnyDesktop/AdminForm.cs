@@ -13,6 +13,7 @@ namespace UniwersalnyDesktop
 {
     public partial class AdminForm : Form
     {
+
         #region Region - parametry
 
         private DBReader dbReader;
@@ -209,7 +210,7 @@ namespace UniwersalnyDesktop
 
         private void getAppData()
         {
-            string query = SqlQueries.getAppList;
+            string query = SqlQueries.getAppList.Replace("@filter", SqlQueries.appFilter_DisplayNameNotNull);
             List<string[]> appData = dbReader.readFromDB(query).getQueryDataAsStrings(); 
 
             foreach (string[] data in appData)
@@ -225,7 +226,7 @@ namespace UniwersalnyDesktop
         {
             App app = null;
 
-            string query = SqlQueries.getAllRolas;
+            string query = SqlQueries.getRolaList.Replace("@filter", "");
             List<string[]> appRolaData = dbReader.readFromDB(query).getQueryDataAsStrings();
             foreach (string[] rolaData in appRolaData)
             {
@@ -364,7 +365,7 @@ namespace UniwersalnyDesktop
         private void SaveButton_Click(object sender, EventArgs e)
         {
             saveChanges();
-            resetForm();
+            resetAdminForm();
         }
 
 
@@ -385,11 +386,56 @@ namespace UniwersalnyDesktop
 
 
 
+        private void RefreshButton_Click(object sender, EventArgs e)
+        {
+            if (userAppChangeDict.Count>0)
+            {
+                MyMessageBox.display("Należy najpierw zapisać zmiany", MessageBoxType.Error);
+            }
+            else
+            {
+                resetAdminForm();
+            }
+        }
+
 
         #endregion
 
 
-        #region Region - interakcja z użytkownikiem - zdarzenia na formularzu AdminForm
+
+
+        #region - Region - interakcja z użytkownikiem - labele (linki)
+
+        private void EditAppsLabel_Click(object sender, EventArgs e)
+        {
+            DBEditorForm dbEditor = new DBEditorForm( dbConnection, SqlQueries.getAppList.Replace("@filter", ""));
+            dbEditor.ShowDialog();
+        }
+
+
+        private void EditRolaLabel_Click(object sender, EventArgs e)
+        {
+            if (currentSelectedApp != null)
+            {
+                App app;
+                appDictionary.TryGetValue(currentSelectedApp.Name, out app);
+                string query = SqlQueries.getRolaList.Replace("@filter", SqlQueries.rolaFilter_AppId) + app.Id;
+
+                DBRolaEditorForm dbRolaEditor = new DBRolaEditorForm(dbConnection, query);
+                dbRolaEditor.ShowDialog();
+            }
+            else
+            {
+                MyMessageBox.display("należy zaznaczyć aplikację");
+            }
+
+        }
+
+        #endregion
+
+
+        #region Region - zdarzenia na formularzu AdminForm
+
 
         private void AdminForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -728,7 +774,7 @@ namespace UniwersalnyDesktop
         //zafajkowuje rolę zaznaczonej aplikacji jeżeli zaznaczony użytkownik ma do niej uprawnienia
         private void checkRolaCheckbox()
         {
-            if (currentSelectedApp != null)          //bez tego warunku gdy wybiorę użytkownika to wyrzuca wyjątek, bo chce zaznaczyć rolę dla niewybranej aplikacji
+            if (currentSelectedApp != null && currentSelectedUser !=null)          //bez tego warunku gdy wybiorę użytkownika to wyrzuca wyjątek, bo chce zaznaczyć rolę dla niewybranej aplikacji
             {
                 DesktopUser user;
                 allUsersDict.TryGetValue(currentSelectedUser.Name, out user);
@@ -993,7 +1039,7 @@ namespace UniwersalnyDesktop
             DBWriter writer = new DBWriter(dbConnection);
             string query = generateQuery(changedDataBundle);
             MyMessageBox.display(query);
-            //writer.writeToDB(query);
+            writer.writeToDB(query);
         }
 
 
@@ -1058,6 +1104,7 @@ namespace UniwersalnyDesktop
         #endregion
 
 
+
         private List<string> convertColumnDataToList(List<string[]> tableData, int columnNr = 0)
         {
             List<string> columnData = new List<string>();
@@ -1070,7 +1117,7 @@ namespace UniwersalnyDesktop
         }
 
 
-        private void resetForm()
+        private void resetAdminForm()
         {
             allUsersDict.Clear();
             sqlUsersDict.Clear();

@@ -40,9 +40,12 @@
             this.label3 = new System.Windows.Forms.Label();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.saveButton = new System.Windows.Forms.ToolStripButton();
-            this.statusInformationButton = new System.Windows.Forms.ToolStripButton();
-            this.helpButton = new System.Windows.Forms.ToolStripButton();
             this.saveAndCloseButton = new System.Windows.Forms.ToolStripButton();
+            this.statusInformationButton = new System.Windows.Forms.ToolStripButton();
+            this.refreshButton = new System.Windows.Forms.ToolStripButton();
+            this.helpButton = new System.Windows.Forms.ToolStripButton();
+            this.editAppsLabel = new System.Windows.Forms.Label();
+            this.editRolaLabel = new System.Windows.Forms.Label();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -93,6 +96,7 @@
             this.rolaListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader2,
             this.columnHeader3});
+            this.rolaListView.Enabled = false;
             this.rolaListView.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.rolaListView.HideSelection = false;
             this.rolaListView.Location = new System.Drawing.Point(497, 40);
@@ -149,6 +153,7 @@
             this.saveButton,
             this.saveAndCloseButton,
             this.statusInformationButton,
+            this.refreshButton,
             this.helpButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -167,27 +172,6 @@
             this.saveButton.Text = "zapisz zmiany";
             this.saveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
-            // statusInformationButton
-            // 
-            this.statusInformationButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.statusInformationButton.Enabled = false;
-            this.statusInformationButton.Image = ((System.Drawing.Image)(resources.GetObject("statusInformationButton.Image")));
-            this.statusInformationButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.statusInformationButton.Name = "statusInformationButton";
-            this.statusInformationButton.Size = new System.Drawing.Size(23, 22);
-            this.statusInformationButton.Text = "pokaż zmiany";
-            this.statusInformationButton.Click += new System.EventHandler(this.StatusInformationButton_Click);
-            // 
-            // helpButton
-            // 
-            this.helpButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.helpButton.Image = ((System.Drawing.Image)(resources.GetObject("helpButton.Image")));
-            this.helpButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.helpButton.Name = "helpButton";
-            this.helpButton.Size = new System.Drawing.Size(23, 22);
-            this.helpButton.Text = "pomoc";
-            this.helpButton.Click += new System.EventHandler(this.HelpButton_Click);
-            // 
             // saveAndCloseButton
             // 
             this.saveAndCloseButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -199,11 +183,70 @@
             this.saveAndCloseButton.Text = "zapisz zmiany i zamknij okno";
             this.saveAndCloseButton.Click += new System.EventHandler(this.SaveAndCloseButton_Click);
             // 
+            // statusInformationButton
+            // 
+            this.statusInformationButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.statusInformationButton.Enabled = false;
+            this.statusInformationButton.Image = ((System.Drawing.Image)(resources.GetObject("statusInformationButton.Image")));
+            this.statusInformationButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.statusInformationButton.Name = "statusInformationButton";
+            this.statusInformationButton.Size = new System.Drawing.Size(23, 22);
+            this.statusInformationButton.Text = "pokaż zmiany";
+            this.statusInformationButton.Click += new System.EventHandler(this.StatusInformationButton_Click);
+            // 
+            // refreshButton
+            // 
+            this.refreshButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.refreshButton.Image = ((System.Drawing.Image)(resources.GetObject("refreshButton.Image")));
+            this.refreshButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.refreshButton.Name = "refreshButton";
+            this.refreshButton.Size = new System.Drawing.Size(23, 22);
+            this.refreshButton.Text = "odśwież";
+            this.refreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
+            // 
+            // helpButton
+            // 
+            this.helpButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.helpButton.Image = ((System.Drawing.Image)(resources.GetObject("helpButton.Image")));
+            this.helpButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.helpButton.Name = "helpButton";
+            this.helpButton.Size = new System.Drawing.Size(23, 22);
+            this.helpButton.Text = "pomoc";
+            this.helpButton.Click += new System.EventHandler(this.HelpButton_Click);
+            // 
+            // editAppsLabel
+            // 
+            this.editAppsLabel.AutoSize = true;
+            this.editAppsLabel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.editAppsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.editAppsLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.editAppsLabel.Location = new System.Drawing.Point(446, 24);
+            this.editAppsLabel.Name = "editAppsLabel";
+            this.editAppsLabel.Size = new System.Drawing.Size(35, 13);
+            this.editAppsLabel.TabIndex = 9;
+            this.editAppsLabel.Text = "edytuj";
+            this.editAppsLabel.Click += new System.EventHandler(this.EditAppsLabel_Click);
+            // 
+            // editRolaLabel
+            // 
+            this.editRolaLabel.AutoSize = true;
+            this.editRolaLabel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.editRolaLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.editRolaLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.editRolaLabel.Location = new System.Drawing.Point(706, 24);
+            this.editRolaLabel.Name = "editRolaLabel";
+            this.editRolaLabel.Size = new System.Drawing.Size(35, 13);
+            this.editRolaLabel.TabIndex = 10;
+            this.editRolaLabel.Text = "edytuj";
+            this.editRolaLabel.Click += new System.EventHandler(this.EditRolaLabel_Click);
+            // 
             // AdminForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(766, 441);
+            this.Controls.Add(this.editRolaLabel);
+            this.Controls.Add(this.editAppsLabel);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.appListView);
@@ -237,5 +280,8 @@
         private System.Windows.Forms.ToolStripButton helpButton;
         private System.Windows.Forms.ToolStripButton statusInformationButton;
         private System.Windows.Forms.ToolStripButton saveAndCloseButton;
+        private System.Windows.Forms.Label editAppsLabel;
+        private System.Windows.Forms.Label editRolaLabel;
+        private System.Windows.Forms.ToolStripButton refreshButton;
     }
 }

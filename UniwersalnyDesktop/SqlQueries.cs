@@ -17,10 +17,12 @@ namespace UniwersalnyDesktop
         public static string getDesktopAppData = "select ap.ID_app, ap.appName, ap.appPath, ap.appDisplayName, au.Grant_app, ap.name_db from [dbo].[app_list] as ap " +
                                                     "inner join app_users as au on ap.ID_app = au.ID_app " +
                                                     "inner join users_list as ul on ul.ID_user = au.ID_user " +
-                                                    "where ap.name_db is not null and ul.login_user = ";
+                                                    "where ap.name_db is not null and srod_app = 'Windows' and ul.login_user = ";
 
         public static string getDesktopUserData = "select  login_user, windows_user, imie_user, nazwisko_user from users_list " +
                                                             "where login_user = ";
+  
+        
         //
         // wypełnianie okna AdminForm
         //
@@ -33,19 +35,26 @@ namespace UniwersalnyDesktop
         public static int userNazwiskoIndex = 3;
         public static int userIdIndex = 4;
 
-        //lista programów do wyświetlenia w appListView i ich położenie w kwerendzie
-        public static string getAppList = "select ap.appDisplayName, ap.ID_app from [dbo].[app_list] as ap " +
+        //lista programów do wyświetlenia w appListView lub w edytorze, w zależności od warunku
+        public static string getAppList = "select ap.ID_app, ap.appDisplayName, ap.appName, ap.name_app, ap.path_app, ap.appPath, ap.name_db, ap.srod_app, ap.variant from [dbo].[app_list] as ap " +
                                                     "inner join app_users as au on ap.ID_app = au.ID_app " +
                                                     "inner join users_list as ul on ul.ID_user = au.ID_user " +
-                                                    "where ap.appName is not null " +
-													"group by ap.ID_app, ap.appName, ap.appPath, ap.appDisplayName";
-        public static int appDisplayNameIndex = 0;
-        public static int appIdIndex = 1;
+                                                    "@filter" +
+                                                    "group by ap.ID_app, ap.appName, ap.name_app, ap.path_app, ap.appPath, ap.appDisplayName, ap.name_db, ap.srod_app, ap.variant";
 
+        public static string appFilter_DisplayNameNotNull = "where ap.appDisplayName is not null ";
 
-        //role aplikacji i ich opisy i ich położenie w kwerendzie
-        public static string getAllRolas = "select ra.ID_rola, ra.name_rola, ra.descr_rola, al.ID_app, al.appDisplayName from [dbo].[rola_app]  as ra " +
-                                                      "inner join app_list as al on ra.ID_app=al.ID_app";
+        public static int appDisplayNameIndex = 1;
+        public static int appIdIndex = 0;
+
+ 
+
+        //role aplikacji i ich opisy i ich położenie w kwerendzie, zastosowanie w zależności od filtra
+        public static string getRolaList = "select ra.ID_rola, ra.name_rola, ra.descr_rola, al.ID_app, al.appDisplayName from [dbo].[rola_app]  as ra " +
+                                                "inner join app_list as al on ra.ID_app=al.ID_app " +
+                                                "@filter";
+
+        public static string rolaFilter_AppId = " where al.ID_app = ";
 
         public static int rolaNameIndex = 1;           //położenie name_rola w kwerendzie
         public static int rolaDescrIndex = 2;       //położenie opisu roli aplikacji w kwerendzie
@@ -54,9 +63,6 @@ namespace UniwersalnyDesktop
         public static int rolaAppNameIndex = 4;     //położenie nazwy aplikacji
 
 
-        public static string getAppRolas = "select ra.ID_rola from[dbo].[rola_app]  as ra " +
-                                                            "inner join app_list as al on ra.ID_app= al.ID_app " +
-                                                            " where al.appDisplayName = ";
 
         //
         // uprawnienia użytkowników domenowych i sql są rozdzielone, ale przy obecnej strukturze bazy desktopu
@@ -75,6 +81,7 @@ namespace UniwersalnyDesktop
                                                             "inner join users_list as ul on ul.ID_user = au.ID_user " +
                                                         "where ap.appDisplayName is not null and au.Grant_app = 1 and ul.login_user = ";
 
+       
         //rola danego użytkownika w danej aplikacji
         public static string getUserAppRola = "select ID_rola  from rola_app as ra " +
                                                         "inner join app_list as ap on ap.ID_app = ra.ID_app " +

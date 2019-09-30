@@ -1,0 +1,10 @@
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\bin\Debug\DBEdit.dll.config
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\bin\Debug\DBEdit.dll
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\bin\Debug\DBEdit.pdb
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\obj\Debug\DBEdit.DBEditorMainForm.resources
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\obj\Debug\DBEdit.MyMessageBox.resources
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\obj\Debug\DBEdit.Properties.Resources.resources
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\obj\Debug\DBEdit.csproj.GenerateResource.cache
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\obj\Debug\DBEdit.csproj.CoreCompileInputs.cache
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\obj\Debug\DBEdit.dll
+C:\Users\marek_p\source\repos\UniwersalnyDesktop\DBEdit\obj\Debug\DBEdit.pdb

@@ -83,7 +83,8 @@ namespace UniwersalnyDesktop
 
         private void Button2_Click(object sender, EventArgs e)
         {
-
+            Form2 fm2 = new Form2();
+            fm2.ShowDialog();
 
 
         }
