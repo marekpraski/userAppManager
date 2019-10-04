@@ -44,7 +44,7 @@
             // 
             this.appNameLabel.AutoSize = true;
             this.appNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.appNameLabel.Location = new System.Drawing.Point(115, 0);
+            this.appNameLabel.Location = new System.Drawing.Point(48, 0);
             this.appNameLabel.Name = "appNameLabel";
             this.appNameLabel.Size = new System.Drawing.Size(106, 15);
             this.appNameLabel.TabIndex = 1;
@@ -75,7 +75,7 @@
             // 
             this.statusLabel.AutoSize = true;
             this.statusLabel.ForeColor = System.Drawing.Color.Red;
-            this.statusLabel.Location = new System.Drawing.Point(133, 79);
+            this.statusLabel.Location = new System.Drawing.Point(224, 2);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(61, 13);
             this.statusLabel.TabIndex = 7;
@@ -135,7 +135,7 @@
             this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.appNameLabel);
             this.Name = "AppDataDisplay";
-            this.Size = new System.Drawing.Size(330, 100);
+            this.Size = new System.Drawing.Size(330, 87);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);

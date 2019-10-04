@@ -21,7 +21,7 @@ namespace UniwersalnyDesktop
 
 
         int appDataDisplayWidth = 330;
-        int appDataDisplayHeigth = 100;
+        int appDataDisplayHeigth = 87;
 
 
         private int appCount;                   //służy do obliczania wysokości TabPage

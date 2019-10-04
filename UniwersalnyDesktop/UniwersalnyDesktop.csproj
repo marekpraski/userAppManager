@@ -59,6 +59,13 @@
       <DependentUpon>AppDataDisplay.cs</DependentUpon>
     </Compile>
     <Compile Include="AppDataItem.cs" />
+    <Compile Include="AppEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AppEditorForm.Designer.cs">
+      <DependentUpon>AppEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AppModule.cs" />
     <Compile Include="CellConverter.cs" />
     <Compile Include="ChangedDataBundle.cs" />
     <Compile Include="DataGridCell.cs" />
@@ -69,11 +76,17 @@
     <Compile Include="DBEditorForm.Designer.cs">
       <DependentUpon>DBEditorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DBRolaEditorForm.cs">
+    <Compile Include="EditableDatagridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="EditableDatagridControl.Designer.cs">
+      <DependentUpon>EditableDatagridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RolaEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DBRolaEditorForm.Designer.cs">
-      <DependentUpon>DBRolaEditorForm.cs</DependentUpon>
+    <Compile Include="RolaEditorForm.Designer.cs">
+      <DependentUpon>RolaEditorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="DisplayChangesForm.cs">
       <SubType>Form</SubType>
@@ -131,11 +144,17 @@
     <EmbeddedResource Include="AppDataDisplay.resx">
       <DependentUpon>AppDataDisplay.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AppEditorForm.resx">
+      <DependentUpon>AppEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DBEditorForm.resx">
       <DependentUpon>DBEditorForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DBRolaEditorForm.resx">
-      <DependentUpon>DBRolaEditorForm.cs</DependentUpon>
+    <EmbeddedResource Include="EditableDatagridControl.resx">
+      <DependentUpon>EditableDatagridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RolaEditorForm.resx">
+      <DependentUpon>RolaEditorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DesktopForm.resx">
       <DependentUpon>DesktopForm.cs</DependentUpon>

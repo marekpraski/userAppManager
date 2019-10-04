@@ -1,7 +1,7 @@
 ﻿namespace UniwersalnyDesktop
 {
        
-        partial class DBEditorForm
+        partial class DBEditorControl
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.baseDataGridview = new System.Windows.Forms.DataGridView();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -38,27 +38,26 @@
             this.saveButton = new System.Windows.Forms.Button();
             this.loadNextButton = new System.Windows.Forms.Button();
             this.remainingRowsLabel = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.baseDataGridview)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
-            // baseDataGridview
+            // dataGridView1
             // 
-            this.baseDataGridview.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.baseDataGridview.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.baseDataGridview.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
             this.Column2,
             this.Column3,
             this.Column4});
-            this.baseDataGridview.Location = new System.Drawing.Point(13, 13);
-            this.baseDataGridview.Name = "baseDataGridview";
-            this.baseDataGridview.Size = new System.Drawing.Size(444, 425);
-            this.baseDataGridview.TabIndex = 0;
-            this.baseDataGridview.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.baseDataGridView_CellBeginEdit);
-            this.baseDataGridview.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.baseDataGridView_CellClick);
-            this.baseDataGridview.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.baseDataGridView_CellEndEdit);
-            this.baseDataGridview.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.baseDataGridView_RowHeaderMouseClick);
+            this.dataGridView1.Location = new System.Drawing.Point(13, 13);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(444, 425);
+            this.dataGridView1.TabIndex = 0;
+            this.dataGridView1.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dataGridView1_CellBeginEdit);
+            this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
+            this.dataGridView1.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridView1_RowHeaderMouseClick);
             // 
             // Column1
             // 
@@ -128,11 +127,11 @@
             this.Controls.Add(this.loadNextButton);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.undoButton);
-            this.Controls.Add(this.baseDataGridview);
+            this.Controls.Add(this.dataGridView1);
             this.Name = "DBEditorForm";
             this.Text = "DBEditorForm";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DBEditorForm_FormClosing);
-            ((System.ComponentModel.ISupportInitialize)(this.baseDataGridview)).EndInit();
+            //this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DBEditorForm_FormClosing);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -140,14 +139,14 @@
 
         #endregion
 
-        protected System.Windows.Forms.DataGridView baseDataGridview;
-        protected System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        protected System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        protected System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        protected System.Windows.Forms.DataGridViewTextBoxColumn Column4;
-        protected System.Windows.Forms.Button undoButton;
-        protected System.Windows.Forms.Button saveButton;
-        protected System.Windows.Forms.Button loadNextButton;
-        protected System.Windows.Forms.Label remainingRowsLabel;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
+        private System.Windows.Forms.Button undoButton;
+        private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.Button loadNextButton;
+        private System.Windows.Forms.Label remainingRowsLabel;
     }
 }

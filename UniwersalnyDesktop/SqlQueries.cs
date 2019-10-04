@@ -22,6 +22,7 @@ namespace UniwersalnyDesktop
         public static string getDesktopUserData = "select  login_user, windows_user, imie_user, nazwisko_user from users_list " +
                                                             "where login_user = ";
   
+
         
         //
         // wypełnianie okna AdminForm
@@ -44,8 +45,8 @@ namespace UniwersalnyDesktop
 
         public static string appFilter_DisplayNameNotNull = "where ap.appDisplayName is not null ";
 
-        public static int appDisplayNameIndex = 1;
-        public static int appIdIndex = 0;
+        public static int getAppList_appDisplayNameIndex = 1;
+        public static int getAppList_appIdIndex = 0;
 
  
 
@@ -54,13 +55,29 @@ namespace UniwersalnyDesktop
                                                 "inner join app_list as al on ra.ID_app=al.ID_app " +
                                                 "@filter";
 
-        public static string rolaFilter_AppId = " where al.ID_app = ";
+        public static string getRolaList_rolaFilter_AppId = " where al.ID_app = ";
 
-        public static int rolaNameIndex = 1;           //położenie name_rola w kwerendzie
-        public static int rolaDescrIndex = 2;       //położenie opisu roli aplikacji w kwerendzie
-        public static int rolaIdIndex = 0;          //położenie Id roli aplikacji w kwerendzie
-        public static int rolaAppIdIndex = 3;       //położenie ID aplikacji
-        public static int rolaAppNameIndex = 4;     //położenie nazwy aplikacji
+        public static int getRolaList_rolaNameIndex = 1;           //położenie name_rola w kwerendzie
+        public static int getRolaList_rolaDescrIndex = 2;       //położenie opisu roli aplikacji w kwerendzie
+        public static int getRolaList_rolaIdIndex = 0;          //położenie Id roli aplikacji w kwerendzie
+        public static int getRolaList_rolaAppIdIndex = 3;       //położenie ID aplikacji
+        public static int getRolaList_rolaAppNameIndex = 4;     //położenie nazwy aplikacji
+
+
+        //moduły aplikacji do których role mają uprawnienia i poziom tych uprawnień (zapis/odczyt)
+        public static string getRolaModules = "select ID_mod, Grant_app from [dbo].[rola_upr] " +
+                                                "where ID_rola=";
+
+        public static int getRolaModules_moduleId = 0;
+        public static int getRolaModules_GrantApp = 1;
+
+
+        //moduły aplikacji i ich opisy i ich położenie w kwerendzie
+        public static string getAppModuleList = "select ID_mod, ID_app, name_mod from mod_app";
+
+        public static int getAppModuleList_moduleIdIndex = 0;
+        public static int getAppModuleList_moduleAppIdIndex = 1;
+        public static int getAppModuleList_moduleNameIndex = 2;
 
 
 

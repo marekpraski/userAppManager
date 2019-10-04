@@ -11,10 +11,11 @@ using System.Data.SqlClient;
 
 namespace UniwersalnyDesktop
 {
-    public  partial class DBEditorForm : Form
+    public partial class DBEditorControl : UserControl
     {
 
         private DataGridHandler dg1Handler = new DataGridHandler();
+        protected DBEditorFormatter formatter = new DBEditorFormatter();
         private DataGridCell changedCell;
         private DBConnector connector;
         private bool configFileValidated;
@@ -24,20 +25,20 @@ namespace UniwersalnyDesktop
         private int datagridRowIndex = 0;
         private int rowsLoaded = 0;
 
-        protected DBEditorFormatter formatter = new DBEditorFormatter();
+
         protected QueryData queryData;
         protected SqlConnection dbConnection = null;
 
         
 
         //konstruktor bez parametrów musi być nawet jeżeli się go nie używa bo inaczej klasa dziedzicząca wywala błąd
-        private DBEditorForm()
+        private DBEditorControl()
         {
             InitializeComponent();;
         }
 
 
-        public DBEditorForm( SqlConnection dbConnection, string sqlQuery)
+        public DBEditorControl( SqlConnection dbConnection, string sqlQuery)
         {
             InitializeComponent();
             this.dbConnection = dbConnection;
@@ -72,7 +73,7 @@ namespace UniwersalnyDesktop
             object oldCellValue = recoveredCell.getCellValue(cellValueTypes.oldValue);
             int rowIndex = recoveredCell.getCellIndex(cellIndexTypes.rowIndex);
             int columnIndex = recoveredCell.getCellIndex(cellIndexTypes.columnIndex);
-            baseDataGridview.Rows[rowIndex].Cells[columnIndex].Value = oldCellValue;
+            dataGridView1.Rows[rowIndex].Cells[columnIndex].Value = oldCellValue;
 
             changeCellTextColour(recoveredCell, Color.Black);
 
@@ -122,17 +123,17 @@ namespace UniwersalnyDesktop
 
 
 
-        protected void baseDataGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        protected void dataGridView1_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
             changedCell = new DataGridCell();
-            object oldCellValue = baseDataGridview.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+            object oldCellValue = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
             changedCell.setCellValue(cellValueTypes.oldValue, oldCellValue);
         }
 
 
-        protected void baseDataGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        protected void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            object newCellValue = baseDataGridview.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+            object newCellValue = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
 
             //changedCell została utworzona gdy użytkownik rozpoczął edycję, metoda dataGridView1_CellBeginEdit
             changedCell.setCellValue(cellValueTypes.newValue, newCellValue);
@@ -150,38 +151,23 @@ namespace UniwersalnyDesktop
             }
             else
             {
-                baseDataGridview.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = changedCell.getCellValue(cellValueTypes.oldValue);
+                dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = changedCell.getCellValue(cellValueTypes.oldValue);
             }
         }
 
 
-        private void baseDataGridView_RowHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            MyMessageBox.display("row header mouse clicked");
-        }
 
-        protected void baseDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            BaseDatagridClickedEvent();
-        }
 
-        protected virtual void BaseDatagridClickedEvent()
-        {
-            MyMessageBox.display("db editor główna formatka");
-        }
+        #endregion
 
 
 
-    #endregion
-
-
-
-    protected void setUpDatagrid()
+        protected void setUpDatagrid()
         {
 
             //pierwsza kolumna nie jest do edycji, w niej musi być primaryKey;
-            baseDataGridview.Columns[0].ReadOnly = true;
-            baseDataGridview.Columns[0].DefaultCellStyle.BackColor = Color.LightGray;
+            dataGridView1.Columns[0].ReadOnly = true;
+            dataGridView1.Columns[0].DefaultCellStyle.BackColor = Color.LightGray;
 
             DBReader reader = new DBReader(dbConnection);
             queryData = reader.readFromDB(sqlQuery);
@@ -195,12 +181,12 @@ namespace UniwersalnyDesktop
 
                 //dopasowuję formatkę do wyników nowej kwerendy
 
-                changeMainFormLayout(columnHeaders.Count, ref baseDataGridview);
+                changeMainFormLayout(columnHeaders.Count, ref dataGridView1);
 
                 //nazywam nagłówki
                 for (int i = 0; i < queryData.getHeaders().Count; i++)
                 {
-                    baseDataGridview.Columns[i].HeaderText = columnHeaders[i];
+                    dataGridView1.Columns[i].HeaderText = columnHeaders[i];
                 }
             }
             if (dbData != null)
@@ -234,20 +220,20 @@ namespace UniwersalnyDesktop
                 if (i < dbData.Count)
                 {
                     object[] row = dbData[i];
-                    baseDataGridview.Rows.Add(row);
+                    dataGridView1.Rows.Add(row);
                     object primaryKey = row[0];
                     dg1Handler.addDataGridIndex(i, primaryKey);
                 }
             }
 
 
-            if (baseDataGridview.AllowUserToAddRows)
+            if (dataGridView1.AllowUserToAddRows)
             {
-                datagridRowIndex = baseDataGridview.Rows.Count - 1;   //gdy użytkownik ma możliwość dodawania wierszy w datagridzie, datagrid posiada dodatkowo jeden pusty wiersz na końcu
+                datagridRowIndex = dataGridView1.Rows.Count - 1;   //gdy użytkownik ma możliwość dodawania wierszy w datagridzie, datagrid posiada dodatkowo jeden pusty wiersz na końcu
             }
             else
             {
-                datagridRowIndex = baseDataGridview.Rows.Count;
+                datagridRowIndex = dataGridView1.Rows.Count;
             }
             rowsLoaded = datagridRowIndex;
             int rowsRemaining = dbData.Count - rowsLoaded;
@@ -304,8 +290,12 @@ namespace UniwersalnyDesktop
         {
             int rowIndex = cell.getCellIndex(cellIndexTypes.rowIndex);
             int columnIndex = cell.getCellIndex(cellIndexTypes.columnIndex);
-            baseDataGridview.Rows[rowIndex].Cells[columnIndex].Style.ForeColor = colour;
+            dataGridView1.Rows[rowIndex].Cells[columnIndex].Style.ForeColor = colour;
         }
 
+        private void DataGridView1_RowHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            MyMessageBox.display("row header mouse clicked");
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace UniwersalnyDesktop
 {
-    partial class DBRolaEditorForm
+    partial class RolaEditorForm
     {
         /// <summary>
         /// Required designer variable.
@@ -20,6 +20,8 @@
             base.Dispose(disposing);
         }
 
+
+
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -29,8 +31,8 @@
         private void InitializeComponent()
         {
             this.appModuleListView = new System.Windows.Forms.ListView();
-            this.appModule = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.moduleAccess = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.headerAppModule = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.headerModuleAccess = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // appModuleListView
@@ -39,34 +41,39 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.appModuleListView.CheckBoxes = true;
             this.appModuleListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.appModule,
-            this.moduleAccess});
+            this.headerAppModule,
+            this.headerModuleAccess});
             this.appModuleListView.HideSelection = false;
             this.appModuleListView.Location = new System.Drawing.Point(554, 13);
             this.appModuleListView.Name = "appModuleListView";
-            this.appModuleListView.Size = new System.Drawing.Size(242, 422);
+            this.appModuleListView.Size = new System.Drawing.Size(333, 422);
             this.appModuleListView.TabIndex = 6;
             this.appModuleListView.UseCompatibleStateImageBehavior = false;
             this.appModuleListView.View = System.Windows.Forms.View.Details;
             // 
-            // appModule
+            // headerAppModule
             // 
-            this.appModule.Text = "moduł aplikacji";
-            this.appModule.Width = 166;
+            this.headerAppModule.Text = "moduły aplikacji";
+            this.headerAppModule.Width = 232;
             // 
-            // moduleAccess
+            // headerModuleAccess
             // 
-            this.moduleAccess.Text = "dostęp";
-            this.moduleAccess.Width = 72;
+            this.headerModuleAccess.Text = "uprawnienia";
+            this.headerModuleAccess.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.headerModuleAccess.Width = 96;
             // 
-            // DBRolaEditorForm
+            // RolaEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(808, 450);
+            this.ClientSize = new System.Drawing.Size(894, 450);
             this.Controls.Add(this.appModuleListView);
-            this.Name = "DBRolaEditorForm";
+            this.Name = "RolaEditorForm";
             this.Text = "DBRolaEditorForm";
+            this.Controls.SetChildIndex(this.undoButton, 0);
+            this.Controls.SetChildIndex(this.saveButton, 0);
+            this.Controls.SetChildIndex(this.loadNextButton, 0);
+            this.Controls.SetChildIndex(this.remainingRowsLabel, 0);
             this.Controls.SetChildIndex(this.appModuleListView, 0);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -76,7 +83,7 @@
         #endregion
 
         private System.Windows.Forms.ListView appModuleListView;
-        private System.Windows.Forms.ColumnHeader appModule;
-        private System.Windows.Forms.ColumnHeader moduleAccess;
+        private System.Windows.Forms.ColumnHeader headerAppModule;
+        private System.Windows.Forms.ColumnHeader headerModuleAccess;
     }
 }

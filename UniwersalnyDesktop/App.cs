@@ -13,26 +13,53 @@ namespace UniwersalnyDesktop
         public string Id { get; set; }
         public List<string> rolaIdList { get; }     //zawiera ID ról
         public List<Rola> rolaList { get; }
+        public Dictionary<string, Rola> rolaDict { get; }   //kluczem jest Id roli
+
+        public List<string> moduleIdList { get; }
+
+        public List<AppModule> moduleList { get; }
+
 
         public App()
         {
             rolaIdList = new List<string>();
             rolaList = new List<Rola>();
+            moduleIdList = new List<string>();
+            moduleList = new List<AppModule>();
+            rolaDict = new Dictionary<string, Rola>();
         }
 
         public void addRola(Rola rola)
         {
-            rolaIdList.Add(rola.idRola);
+            rolaIdList.Add(rola.id);
             rolaList.Add(rola);
+            rolaDict.Add(rola.id, rola);
         }
 
         public bool hasRola()
         {
-            if (rolaIdList.Count > 0)
+            return (rolaIdList.Count > 0);
+        }
+
+        public bool hasModules()
+        {
+            return (moduleIdList.Count > 0);
+        }
+
+        public void addModule(AppModule module)
+        {
+            moduleList.Add(module);
+            moduleIdList.Add(module.id);
+        }
+
+        public Rola getRola(string rolaId)
+        {
+            Rola rola = null; ;
+            if (rolaDict.ContainsKey(rolaId))
             {
-                return true;
+                rolaDict.TryGetValue(rolaId, out rola);
             }
-            return false;
+            return rola;
         }
     }
 }

@@ -32,6 +32,7 @@ namespace UniwersalnyDesktop
 
         private Dictionary<string, App> appDictionary;             //lista wszystkich aplikacji zdefiniowanych w desktopie, kluczem jest Id
         private Dictionary<string, Rola> rolaDict;                //lista wszystkich ról aplikacji, kluczem jest Id_rola
+        private Dictionary<string, AppModule> moduleDict;       //lista wszystkich modułów aplikacji, kluczem jest ID_mod
 
 
         //
@@ -100,6 +101,7 @@ namespace UniwersalnyDesktop
 
             appDictionary = new Dictionary<string, App>();
             rolaDict = new Dictionary<string, Rola>();
+            moduleDict = new Dictionary<string, AppModule>();
 
             //przygotowanie do zapisywania zmian
             userBackupDict = new Dictionary<string, DesktopUser>();
@@ -118,10 +120,11 @@ namespace UniwersalnyDesktop
         {
             getUserData();
             getAppData();
+            getAppModules();
             getRolaData();
             getUserApps();
         }
-        
+
 
         private void getUserData()
         {
@@ -216,31 +219,73 @@ namespace UniwersalnyDesktop
             foreach (string[] data in appData)
             {
                 App app = new App();
-                app.Id = data[SqlQueries.appIdIndex];
-                app.appDisplayName = data[SqlQueries.appDisplayNameIndex];
-                appDictionary.Add(data[SqlQueries.appIdIndex], app);
+                app.Id = data[SqlQueries.getAppList_appIdIndex];
+                app.appDisplayName = data[SqlQueries.getAppList_appDisplayNameIndex];
+                appDictionary.Add(data[SqlQueries.getAppList_appIdIndex], app);
             }
         }
 
+
+        private void getAppModules()
+        {
+            App app;
+
+            string query = SqlQueries.getAppModuleList;
+            QueryData modulesData = dbReader.readFromDB(query);
+            List<string[]> moduleDataList = modulesData.getQueryDataAsStrings();
+            foreach (string[] moduleData in moduleDataList)
+            {
+                AppModule module = new AppModule();
+                module.id = moduleData[SqlQueries.getAppModuleList_moduleIdIndex];
+                module.name = moduleData[SqlQueries.getAppModuleList_moduleNameIndex];
+                module.appId = moduleData[SqlQueries.getAppModuleList_moduleAppIdIndex];
+
+                appDictionary.TryGetValue(module.appId, out app);
+                app.addModule(module);
+                moduleDict.Add(module.id, module);
+            }
+        }
+
+
+
         private void getRolaData()
         {
-            App app = null;
+            App app;
 
             string query = SqlQueries.getRolaList.Replace("@filter", "");
             List<string[]> appRolaData = dbReader.readFromDB(query).getQueryDataAsStrings();
             foreach (string[] rolaData in appRolaData)
             {
                 Rola rola = new Rola();
-                rola.idRola = rolaData[SqlQueries.rolaIdIndex];
-                rola.appId = rolaData[SqlQueries.rolaAppIdIndex];
-                rola.name = rolaData[SqlQueries.rolaNameIndex];
-                rola.description = rolaData[SqlQueries.rolaDescrIndex];
-                rola.appName = rolaData[SqlQueries.rolaAppNameIndex];
-                rolaDict.Add(rolaData[SqlQueries.rolaIdIndex], rola);
+                rola.id = rolaData[SqlQueries.getRolaList_rolaIdIndex];
+                rola.appId = rolaData[SqlQueries.getRolaList_rolaAppIdIndex];
+                rola.name = rolaData[SqlQueries.getRolaList_rolaNameIndex];
+                rola.description = rolaData[SqlQueries.getRolaList_rolaDescrIndex];
+                rola.appName = rolaData[SqlQueries.getRolaList_rolaAppNameIndex];
+
+                getRolaAppModules(rola);
+
+                rolaDict.Add(rolaData[SqlQueries.getRolaList_rolaIdIndex], rola);
 
                 //dodaję role aplikacji w każdej aplikacji
                 appDictionary.TryGetValue(rola.appId, out app);
                 app.addRola(rola);
+            }
+        }
+
+        private void getRolaAppModules(Rola rola)
+        {
+            AppModule module;
+            string query = SqlQueries.getRolaModules + rola.id;
+            List<string[]> rolaModuleData = dbReader.readFromDB(query).getQueryDataAsStrings();
+            if (rolaModuleData.Count > 0)
+            {
+                foreach (string[] moduleData in rolaModuleData)
+                {
+                    moduleDict.TryGetValue(moduleData[SqlQueries.getRolaModules_moduleId], out module);
+                    string grantApp = moduleData[SqlQueries.getRolaModules_GrantApp];
+                    rola.addModule(module, grantApp);
+                }
             }
         }
 
@@ -408,8 +453,8 @@ namespace UniwersalnyDesktop
 
         private void EditAppsLabel_Click(object sender, EventArgs e)
         {
-            DBEditorForm dbEditor = new DBEditorForm( dbConnection, SqlQueries.getAppList.Replace("@filter", ""));
-            dbEditor.ShowDialog();
+            AppEditorForm appEditor = new AppEditorForm( dbConnection, SqlQueries.getAppList.Replace("@filter", ""), appDictionary);
+            appEditor.ShowDialog();
         }
 
 
@@ -419,9 +464,9 @@ namespace UniwersalnyDesktop
             {
                 App app;
                 appDictionary.TryGetValue(currentSelectedApp.Name, out app);
-                string query = SqlQueries.getRolaList.Replace("@filter", SqlQueries.rolaFilter_AppId) + app.Id;
+                string query = SqlQueries.getRolaList.Replace("@filter", SqlQueries.getRolaList_rolaFilter_AppId) + app.Id;
 
-                DBRolaEditorForm dbRolaEditor = new DBRolaEditorForm(dbConnection, query);
+                RolaEditorForm dbRolaEditor = new RolaEditorForm(dbConnection, query, app);
                 dbRolaEditor.ShowDialog();
             }
             else

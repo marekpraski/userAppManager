@@ -42,7 +42,7 @@ namespace UniwersalnyDesktop
 
             if (rola != null)
             {
-                appData.rolaId = rola.idRola;
+                appData.rolaId = rola.id;
                 appData.rolaName = rola.name;
                 appData.rolaDesc = rola.description;
             }
@@ -65,7 +65,7 @@ namespace UniwersalnyDesktop
 
             if (rola != null)
             {
-                appData.rolaId = rola.idRola;
+                appData.rolaId = rola.id;
                 appData.rolaName = rola.name;
                 appData.rolaDesc = rola.description;
                 appData.isEnabled = true;

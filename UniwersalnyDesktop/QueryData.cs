@@ -68,8 +68,12 @@ namespace UniwersalnyDesktop
             return dataTypes;
         }
 
-        public List<int> getColumnWidths(Font font, int defaultSampleSize = 10)
+        public List<int> getColumnWidths(Font font = null, int defaultSampleSize = 10)
         {
+            if (font == null)
+            {
+                font = new Font(FontFamily.GenericSansSerif, 8.25F, FontStyle.Regular);
+            }
             List<int> columnWidths = new List<int>();     //szerokości kolumn odczytane z zapisanych danych i nagłówków
             int sampleSize = Math.Min(defaultSampleSize, readData.Count);   //próbka pobrana z ilości domyślnej, chyba że tabela wyników jest mniej liczna
             for (int k = 0; k < headers.Count; k++)
@@ -88,6 +92,7 @@ namespace UniwersalnyDesktop
 
             return columnWidths;
         }
+
 
         private int getMaxWidth(List<int> widths)
         {
