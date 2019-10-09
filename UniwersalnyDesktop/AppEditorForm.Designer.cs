@@ -30,41 +30,29 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.appModuleGridview = new System.Windows.Forms.DataGridView();
-            this.moduleNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            ((System.ComponentModel.ISupportInitialize)(this.appModuleGridview)).BeginInit();
+            this.moduleDatagrid = new UniwersalnyDesktop.EditableDatagridControl();
             this.SuspendLayout();
             // 
-            // appModuleGridview
+            // moduleDatagrid
             // 
-            this.appModuleGridview.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.appModuleGridview.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.moduleNameColumn});
-            this.appModuleGridview.Location = new System.Drawing.Point(560, 13);
-            this.appModuleGridview.Name = "appModuleGridview";
-            this.appModuleGridview.Size = new System.Drawing.Size(244, 422);
-            this.appModuleGridview.TabIndex = 6;
-            // 
-            // moduleNameColumn
-            // 
-            this.moduleNameColumn.HeaderText = "nazwa modułu";
-            this.moduleNameColumn.Name = "moduleNameColumn";
-            this.moduleNameColumn.Width = 200;
+            this.moduleDatagrid.Location = new System.Drawing.Point(551, 13);
+            this.moduleDatagrid.Name = "moduleDatagrid";
+            this.moduleDatagrid.Size = new System.Drawing.Size(359, 433);
+            this.moduleDatagrid.TabIndex = 6;
             // 
             // AppEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(817, 450);
-            this.Controls.Add(this.appModuleGridview);
+            this.ClientSize = new System.Drawing.Size(912, 450);
+            this.Controls.Add(this.moduleDatagrid);
             this.Name = "AppEditorForm";
             this.Text = "Edytor aplikacji";
             this.Controls.SetChildIndex(this.undoButton, 0);
             this.Controls.SetChildIndex(this.saveButton, 0);
             this.Controls.SetChildIndex(this.loadNextButton, 0);
             this.Controls.SetChildIndex(this.remainingRowsLabel, 0);
-            this.Controls.SetChildIndex(this.appModuleGridview, 0);
-            ((System.ComponentModel.ISupportInitialize)(this.appModuleGridview)).EndInit();
+            this.Controls.SetChildIndex(this.moduleDatagrid, 0);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -72,7 +60,6 @@
 
         #endregion
 
-        private System.Windows.Forms.DataGridView appModuleGridview;
-        private System.Windows.Forms.DataGridViewTextBoxColumn moduleNameColumn;
+        private EditableDatagridControl moduleDatagrid;
     }
 }

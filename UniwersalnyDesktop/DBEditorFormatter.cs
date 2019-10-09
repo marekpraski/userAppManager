@@ -27,7 +27,7 @@ namespace UniwersalnyDesktop
         private int minColumnWidth = 50;                 //szerokości kolumn są dopasowane do zawartości, ale jest min i max
         private int maxColumnWidth = 300;
         private int maxDatagridWidth = 1000;
-        private int dataGridColumnPadding = 15;          //wartość dobrana doświadczalnie, dodaję do szerokości datagridu obliczonej standardowo, inaczej pojawia się pasek przewijania na dole
+        private int dataGridColumnPadding = 1;          //wartość dobrana doświadczalnie, dodaję do szerokości datagridu obliczonej standardowo, inaczej pojawia się pasek przewijania na dole
 
         //zmienne użyte do obliczenia położenia buttonów i szerokości całej formatki
         private List<DataGridViewColumn> columnsAdded;
@@ -46,9 +46,9 @@ namespace UniwersalnyDesktop
             //datagrid ma przynajmniej tyle kolumn ile określa zmienna defaultNrOfDatagridColumns, więc po resecie datagridu kolumny mogę tylko dodać, jeżeli nagłówków jest więcej niż ta liczba
             addNewColumns(dataGrid, numberOfHeaders);
             resizeColumns(dataGrid, colWidths);
-                
+
             //określam i ograniczam szerokość datagridu            
-            dataGridWidth = dataGrid.Columns.GetColumnsWidth(DataGridViewElementStates.None) + dataGrid.RowHeadersWidth + dataGrid.Margin.Left + dataGrid.Margin.Right + dataGridColumnPadding; 
+            dataGridWidth = dataGrid.Columns.GetColumnsWidth(DataGridViewElementStates.None) + dataGrid.Columns.Count * dataGridColumnPadding + dataGrid.RowHeadersWidth;  // + dataGrid.Margin.Left + dataGrid.Margin.Right + dataGridColumnPadding; 
             
             if (dataGridWidth > maxDatagridWidth)     //ograniczam max szerokość tworzonego datagrida 
             {

@@ -61,5 +61,18 @@ namespace UniwersalnyDesktop
             }
             return rola;
         }
+
+        public List<string> getModuleNameList()
+        {
+            List<string> moduleNames = new List<string>();
+            if(hasModules())
+            {
+                foreach(AppModule module in moduleList)
+                {
+                    moduleNames.Add(module.name);
+                }
+            }
+            return moduleNames;
+        }
     }
 }

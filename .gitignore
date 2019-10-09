@@ -1,0 +1,11 @@
+
+/TestResults/
+/packages/
+
+/UniwersalnyDesktop/bin/
+/UniwersalnyDesktop/obj/
+
+/UniwersalnyDesktopTests/bin/
+/UniwersalnyDesktopTests/obj/
+
+./vs/

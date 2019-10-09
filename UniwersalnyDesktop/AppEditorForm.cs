@@ -17,7 +17,10 @@ namespace UniwersalnyDesktop
 
         private Dictionary<string, App> appDictionary;             //lista wszystkich aplikacji zdefiniowanych w desktopie, kluczem jest Id
 
-        private int appModuleGridviewPadding = 30;
+        private int moduleDatagridPadding = 30;
+
+        App selectedApp = null;                          //aplikacja aktualnie zaznaczona w datagridzie
+        private bool bazeDatagridCreated = false;
 
 
         public AppEditorForm(SqlConnection dbConnection, string sqlQuery, Dictionary<string, App> appDictionary)
@@ -25,54 +28,80 @@ namespace UniwersalnyDesktop
         {
             this.appDictionary = appDictionary;
             InitializeComponent();
+            setUpThisForm();
+        }
+
+        private void setUpThisForm()
+        {
+            //na starcie wyświetlam moduły aplikacji pierwszej od góry
+            baseDataGridview.CurrentCell = baseDataGridview.Rows[0].Cells[0];
+            getSelectedApp();
+
+            //datagrid w formatce nie ma żadnych kolumn na starcie, dodaję je; kolejność dodawania jest istotna
+            //podczas aktualizacji odwołuję się do indeksu kolumny
+
+            if (selectedApp != null)
+            {
+                moduleDatagrid.addTextDatagridColumn("moduły " + selectedApp.appDisplayName, 250);
+                moduleDatagrid.addDatagridRows(selectedApp.getModuleNameList().Count);
+                moduleDatagrid.populateTextDatagridColumn(0, selectedApp.getModuleNameList());
+            }
+            else
+            {
+                moduleDatagrid.addTextDatagridColumn("moduły aplikacji", 250);
+            }
+
             resizeThisForm();
+        }
+
+        private void getSelectedApp()
+        {
+            DataGridViewCell cell = baseDataGridview.CurrentCell;
+            int columnIndex = cell.ColumnIndex;
+            if (columnIndex == SqlQueries.getAppList_appIdIndex && cell.Value != null)
+            {
+                string appId = cell.Value.ToString();
+                if (appDictionary.ContainsKey(appId))
+                {
+                    appDictionary.TryGetValue(appId, out selectedApp);
+                }
+                else
+                {
+                    selectedApp = null;
+                }
+            }
+            
         }
 
         private void resizeThisForm()
         {
             int baseFormWidth = formatter.calculateBDEditorFormWidth();
-            appModuleGridview.Location = new System.Drawing.Point(baseFormWidth, 13);
+            moduleDatagrid.Location = new System.Drawing.Point(baseFormWidth, 13);
+            moduleDatagrid.resizeThisForm();
 
-            this.Width = baseFormWidth + appModuleGridview.Width + appModuleGridviewPadding;
+            this.Width = baseFormWidth + moduleDatagrid.Width + moduleDatagridPadding;
         }
 
         protected override void BaseDatagridClickedEvent()
         {
-            populateAppModuleGridview();
-        }
+            getSelectedApp();
 
+            //czyszczę stare wypełnienia
+            moduleDatagrid.clearDatagrid();
 
-        private void populateAppModuleGridview()
-        {
-            appModuleGridview.Rows.Clear();
-            App app = getClickedApp();
-            if(app!= null && app.hasModules())
+            //wypełniam datagrid danymi nowej aplikacji
+            if (selectedApp != null)
             {
-                foreach(AppModule module in app.moduleList)
-                {
-                    appModuleGridview.Rows.Add(module.name);
-                }
-                moduleNameColumn.HeaderText = "moduły " + app.appDisplayName;
+                moduleDatagrid.addDatagridRows(selectedApp.getModuleNameList().Count);
+                moduleDatagrid.populateTextDatagridColumn(0, selectedApp.getModuleNameList());
+                moduleDatagrid.setHeaderText(0, "moduły " + selectedApp.appDisplayName);
+            }
+            else
+            {
+                moduleDatagrid.setHeaderText(0, "moduły aplikacji");
             }
         }
 
 
-        private App getClickedApp()
-        {
-            App app = null;
-            DataGridViewCell cellClicked = baseDataGridview.CurrentCell;
-            int columnClicked = cellClicked.ColumnIndex;
-            
-            if (columnClicked == SqlQueries.getAppList_appIdIndex)
-            {
-                string appId = cellClicked.Value.ToString();
-                if (appDictionary.ContainsKey(appId))
-                {
-                    appDictionary.TryGetValue(appId, out app);
-                    return app;
-                }
-            }
-            return null;
-        }
     }
 }

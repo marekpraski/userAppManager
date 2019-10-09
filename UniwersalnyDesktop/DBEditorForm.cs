@@ -66,7 +66,6 @@ namespace UniwersalnyDesktop
 
         protected void UndoButton_Click(object sender, EventArgs e)
         {
-            //DataGridCell recoveredCell = new DataGridCell();
             DataGridCell recoveredCell = dg1Handler.getLastCellChangedAndUndoChanges();
 
             object oldCellValue = recoveredCell.getCellValue(cellValueTypes.oldValue);

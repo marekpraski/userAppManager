@@ -12,6 +12,8 @@ namespace UniwersalnyDesktop
 {
     public partial class Form1 : Form
     {
+
+
         string[] items = { "aaa", "bbb", "cccc", "dddd" };
 
         bool mouseClicked = false;
@@ -53,6 +55,11 @@ namespace UniwersalnyDesktop
             
         }
 
+        private void changeControlLayout()
+        {
+            editableDatagridControl1.saveButtonDisable();
+        }
+
         
 
         private void TreeView1_BeforeSelect(object sender, TreeViewCancelEventArgs e)
@@ -71,20 +78,12 @@ namespace UniwersalnyDesktop
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            treeView1.SelectedNode = backupNode;
-            treeView1.SelectedNode.BackColor = Color.DodgerBlue;
-            treeView1.SelectedNode.ForeColor = Color.White;
-            textBox1.Text = selectedNow.Text;
-            if (selectedPrevious != null)
-            {
-                textBox2.Text = backupNode.Text;
-            }
+            editableDatagridControl1.saveButtonEnable();
         }
 
         private void Button2_Click(object sender, EventArgs e)
         {
-            Form2 fm2 = new Form2();
-            fm2.ShowDialog();
+            editableDatagridControl1.saveButtonDisable();
 
 
         }
@@ -94,6 +93,40 @@ namespace UniwersalnyDesktop
             MyMessageBox.display("mouse down");
             mouseClicked = true;
 
+        }
+
+        private void Button3_Click(object sender, EventArgs e)
+        {
+            //editableDatagridControl1.datagridColumnHide(0);
+        }
+
+        private void Button4_Click(object sender, EventArgs e)
+        {
+            //editableDatagridControl1.datagridColumnShow(0);
+        }
+
+        private void Button5_Click(object sender, EventArgs e)
+        {
+            string[] s1 = { "aa", "bb" };
+            string[] s2 = { "cc", "dd" };
+            string[] s3 = { "1c", "dd" };
+            string[] s4 = { "2c", "dd" };
+            List<string[]> dataList = new List<string[]>();
+            dataList.Add(s1);
+            dataList.Add(s2);
+            dataList.Add(s3);
+            dataList.Add(s4);
+            //editableDatagridControl1.populateDatagrid(dataList);
+        }
+
+        private void Button6_Click(object sender, EventArgs e)
+        {
+            List<bool> boolList = new List<bool>();
+            boolList.Add(false);
+            boolList.Add(true);
+            boolList.Add(true);
+            boolList.Add(false);
+            //editableDatagridControl1.addCheckboxColumn(boolList);
         }
     }
 }

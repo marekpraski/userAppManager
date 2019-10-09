@@ -30,60 +30,35 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.appModuleListView = new System.Windows.Forms.ListView();
-            this.headerAppModule = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.headerModuleAccess = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.moduleDatagrid = new UniwersalnyDesktop.EditableDatagridControl();
             this.SuspendLayout();
             // 
-            // appModuleListView
+            // moduleDatagrid
             // 
-            this.appModuleListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.appModuleListView.CheckBoxes = true;
-            this.appModuleListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.headerAppModule,
-            this.headerModuleAccess});
-            this.appModuleListView.HideSelection = false;
-            this.appModuleListView.Location = new System.Drawing.Point(554, 13);
-            this.appModuleListView.Name = "appModuleListView";
-            this.appModuleListView.Size = new System.Drawing.Size(333, 422);
-            this.appModuleListView.TabIndex = 6;
-            this.appModuleListView.UseCompatibleStateImageBehavior = false;
-            this.appModuleListView.View = System.Windows.Forms.View.Details;
-            // 
-            // headerAppModule
-            // 
-            this.headerAppModule.Text = "moduły aplikacji";
-            this.headerAppModule.Width = 232;
-            // 
-            // headerModuleAccess
-            // 
-            this.headerModuleAccess.Text = "uprawnienia";
-            this.headerModuleAccess.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.headerModuleAccess.Width = 96;
+            this.moduleDatagrid.Location = new System.Drawing.Point(547, 13);
+            this.moduleDatagrid.Name = "moduleDatagrid";
+            this.moduleDatagrid.Size = new System.Drawing.Size(359, 433);
+            this.moduleDatagrid.TabIndex = 7;
             // 
             // RolaEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(894, 450);
-            this.Controls.Add(this.appModuleListView);
+            this.ClientSize = new System.Drawing.Size(902, 450);
+            this.Controls.Add(this.moduleDatagrid);
             this.Name = "RolaEditorForm";
-            this.Text = "DBRolaEditorForm";
+            this.Text = "Edytor ról aplikacji";
             this.Controls.SetChildIndex(this.undoButton, 0);
             this.Controls.SetChildIndex(this.saveButton, 0);
             this.Controls.SetChildIndex(this.loadNextButton, 0);
             this.Controls.SetChildIndex(this.remainingRowsLabel, 0);
-            this.Controls.SetChildIndex(this.appModuleListView, 0);
+            this.Controls.SetChildIndex(this.moduleDatagrid, 0);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.ListView appModuleListView;
-        private System.Windows.Forms.ColumnHeader headerAppModule;
-        private System.Windows.Forms.ColumnHeader headerModuleAccess;
+        private EditableDatagridControl moduleDatagrid;
     }
 }

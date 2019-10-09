@@ -42,7 +42,7 @@ namespace UniwersalnyDesktop
             moduleDict.Add(module.id, module);
         }
 
-        public string getModulePrivilages(AppModule module)
+        public string getModuleAccessRight(AppModule module)
         {
             string grantApp = "";
             if (modulePrivilageDict.ContainsKey(module.id))
