@@ -26,10 +26,27 @@ namespace UniwersalnyDesktop
         public LoginForm()
         {
             InitializeComponent();
+#if DEBUG
+            userLogin = "root";
+            userPassword = "root";
+            logIn();
+#endif
         }
 
 
         #region Region - interakcja z użytkownikiem
+
+
+        private void UserNameTextBox_TextChanged(object sender, EventArgs e)
+        {
+            userLogin = userNameTextBox.Text;
+        }
+
+        private void PasswordTextBox_TextChanged(object sender, EventArgs e)
+        {
+            userPassword = passwordTextBox.Text;
+        }
+
 
 
         private void LoginButton_Click(object sender, EventArgs e)
@@ -56,6 +73,7 @@ namespace UniwersalnyDesktop
         }
 
         #endregion
+
 
 
         private void logIn()
@@ -108,17 +126,6 @@ namespace UniwersalnyDesktop
             return false;
         }
 
-
-
-        private void UserNameTextBox_TextChanged(object sender, EventArgs e)
-        {
-            userLogin = userNameTextBox.Text;
-        }
-
-        private void PasswordTextBox_TextChanged(object sender, EventArgs e)
-        {
-            userPassword = passwordTextBox.Text;
-        }
 
 
 

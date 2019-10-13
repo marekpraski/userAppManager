@@ -29,16 +29,23 @@ namespace UniwersalnyDesktop
             dbConnection.Open();
             foreach (string query in queries)
             {
-                try
+                if (query != null)
                 {
-                    SqlCommand command = new SqlCommand(query, dbConnection);
-                    adapter.InsertCommand = command;
-                    adapter.InsertCommand.ExecuteNonQuery();
-                    command.Dispose();
-                }
-                catch (System.Data.SqlClient.SqlException e)
-                {
-                    MyMessageBox.display(e.Message, MessageBoxType.Error);
+                    try
+                    {
+                        SqlCommand command = new SqlCommand(query, dbConnection);
+                        adapter.InsertCommand = command;
+                        adapter.InsertCommand.ExecuteNonQuery();
+                        command.Dispose();
+                    }
+                    catch (System.Data.SqlClient.SqlException e)
+                    {
+                        MyMessageBox.display(e.Message, MessageBoxType.Error);
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        MyMessageBox.display(ex.Message, MessageBoxType.Error);
+                    }
                 }
             }
             dbConnection.Close();

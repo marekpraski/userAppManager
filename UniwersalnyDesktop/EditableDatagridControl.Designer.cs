@@ -37,6 +37,8 @@
             // dataGridView1
             // 
             this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Location = new System.Drawing.Point(3, 3);
             this.dataGridView1.Name = "dataGridView1";
@@ -55,6 +57,7 @@
             this.saveButton.TabIndex = 1;
             this.saveButton.Text = "zapisz";
             this.saveButton.UseVisualStyleBackColor = true;
+            this.saveButton.Enabled = false;
             this.saveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // undoButton

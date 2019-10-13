@@ -48,7 +48,7 @@ namespace UniwersalnyDesktop
             resizeColumns(dataGrid, colWidths);
 
             //określam i ograniczam szerokość datagridu            
-            dataGridWidth = dataGrid.Columns.GetColumnsWidth(DataGridViewElementStates.None) + dataGrid.Columns.Count * dataGridColumnPadding + dataGrid.RowHeadersWidth;  // + dataGrid.Margin.Left + dataGrid.Margin.Right + dataGridColumnPadding; 
+            dataGridWidth = dataGrid.Columns.GetColumnsWidth(DataGridViewElementStates.Visible) + dataGrid.Columns.Count * dataGridColumnPadding + dataGrid.RowHeadersWidth;  // + dataGrid.Margin.Left + dataGrid.Margin.Right + dataGridColumnPadding; 
             
             if (dataGridWidth > maxDatagridWidth)     //ograniczam max szerokość tworzonego datagrida 
             {
@@ -60,6 +60,24 @@ namespace UniwersalnyDesktop
                 dataGrid.Width = dataGridWidth;
             }
         }
+
+
+        //dostosowuje szerokość datagridu w sytuacji, gdy zawiera on ukryte kolumny
+        public void formatDatagridWithHiddenColumns (ref DataGridView dataGrid)
+        {
+
+            //jeżeli datagrid zawiera jakieś ukryte kolumny
+            int allCols = dataGrid.Columns.GetColumnCount(DataGridViewElementStates.None);
+            int visibleCols = dataGrid.Columns.GetColumnCount(DataGridViewElementStates.Visible);
+            int hiddenCols = allCols - visibleCols;
+            if (hiddenCols > 0)
+            {
+                dataGridWidth = dataGrid.Columns.GetColumnsWidth(DataGridViewElementStates.Visible) + (dataGrid.Columns.Count - hiddenCols) * dataGridColumnPadding + dataGrid.RowHeadersWidth;
+                dataGrid.Width = dataGridWidth;
+            }
+            
+        }
+
 
         private void resizeColumns(DataGridView dataGrid, List<int> colWidths)
         {
@@ -144,9 +162,9 @@ namespace UniwersalnyDesktop
 
        
 
-        public int calculateBDEditorFormWidth()
+        public int calculateBaseFormWidth(DataGridView dataGrid)
         {
-            return dataGridWidth + (originalFormWidth - originalDatagridWidth);
+            return dataGridWidth + (originalFormWidth - originalDatagridWidth);     //tzn bieżąca szerokość datagridu + obwódki które były na początku
         }
     }
 }

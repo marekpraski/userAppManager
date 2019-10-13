@@ -44,7 +44,7 @@ namespace UniwersalnyDesktop
             return dataGridRowDict;
         }
 
-        public Dictionary<int, DataGridCell> getCellsChanged()
+        public Dictionary<int, DataGridCell> getChangedCellsDictionary()
         {
             return changedCellsDict;
         }

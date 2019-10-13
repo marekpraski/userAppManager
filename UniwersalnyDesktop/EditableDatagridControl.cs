@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 namespace UniwersalnyDesktop
 {
+   
     public partial class EditableDatagridControl : UserControl
     {
         private DataGridHandler dgHandler = new DataGridHandler();
@@ -17,15 +18,34 @@ namespace UniwersalnyDesktop
         private bool checkBoxColumnAdded = false;           //używam przy sprawdzaniu, że checkbox jest zaznaczany/odznaczany przez użytkownika
         private bool undoButtonClicked = false;
 
-        private bool bazeDatagridCreated = false;           //nie można zacząć dodawać kolumn lub wpisywać wartości do kolumn bez utworzenia bazowego datagrida
-
         private DataGridCell changedCell;
+
+        //1. define a delegate
+        //2. define an event based on that delegate
+        //3. raise the event
+
+        public delegate void SaveButtonClickedEventHandler(object source, EditableDatagridControlEventArgs args);
+        public event SaveButtonClickedEventHandler saveButtonClicked;
+
 
 
         public EditableDatagridControl()
         {
             InitializeComponent();
             initialSetup();
+        }
+
+
+        //3. raise the event, tzn tworzę metodę virtual, która najpierw sprawdza, czy event nie jest null, i jeżeli nie jest to wysyła odpowiednie dane przypisane do eventu
+        //tzn obiekt, który wysyła ten event oraz argumenty
+        protected virtual void OnSaveButtonClicked()
+        {
+            if (saveButtonClicked != null)
+            {
+                EditableDatagridControlEventArgs args = new EditableDatagridControlEventArgs();
+                args.dgHandler = dgHandler;
+                saveButtonClicked(this, args);
+            }
         }
 
 
@@ -50,6 +70,17 @@ namespace UniwersalnyDesktop
             saveButton.Enabled = true;
         }
 
+        public void undoButtonDisable()
+        {
+            undoButton.Enabled = false;
+        }
+
+
+        public void undoButtonEnable()
+        {
+            undoButton.Enabled = true;
+        }
+
 
         public void addDatagridRows(int numberOfRows)
         {
@@ -60,21 +91,33 @@ namespace UniwersalnyDesktop
         }
 
 
-        public void addCheckboxColumn()
+        public void addCheckboxColumn(int index, string headerText, int width)
         {
             DataGridViewCheckBoxColumn chbCol = new DataGridViewCheckBoxColumn();
-            chbCol.Width = 20;
-            dataGridView1.Columns.Insert(0, chbCol);
+            chbCol.Width = width;
+            chbCol.HeaderText = headerText;
+            dataGridView1.Columns.Insert(index, chbCol);
+        }
+
+        public void hideDatagridColumn(int index)
+        {
+            dataGridView1.Columns[index].Visible = false;
+        }
+
+
+        public void disableDatagridColumn(int index)
+        {
+            dataGridView1.Columns[index].ReadOnly = true;
         }
 
 
 
-        public void addTextDatagridColumn(string headerText, int width)
+        public void addTextDatagridColumn(int index, string headerText, int width)
         {
             DataGridViewTextBoxColumn col = new DataGridViewTextBoxColumn();
             col.HeaderText = headerText;
             col.Width = width;
-            dataGridView1.Columns.Add(col);
+            dataGridView1.Columns.Insert(index,col);
         }
 
 
@@ -90,7 +133,7 @@ namespace UniwersalnyDesktop
         #region Region - dodawanie danych do datagridu, czyszczenie datagridu
 
 
-        public void populateTextDatagridColumn(int columnIndex, List<string> columnValues)
+        public void populateTextDatagridColumn(int columnIndex, List<string> columnValues, List<string> primaryKey = null)
         {
             for (int i = 0; i < columnValues.Count; i++)
             {
@@ -110,20 +153,20 @@ namespace UniwersalnyDesktop
 
 
 
-        public void populateCheckboxColumn(List<bool> checkBoxValues)
+        public void populateCheckboxColumn(int columnIndex, List<bool> checkBoxValues)
         {
             for (int i = 0; i < checkBoxValues.Count; i++)
             {
-                dataGridView1.Rows[i].Cells[0].Value = checkBoxValues[i];
+                dataGridView1.Rows[i].Cells[columnIndex].Value = checkBoxValues[i];
             }
         }
 
 
-        public void clearCheckboxColumn()
+        public void clearCheckboxColumn(int index)
         {
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
-                row.Cells[0].Value = false;
+                row.Cells[index].Value = false;
             }
         }
 
@@ -141,10 +184,11 @@ namespace UniwersalnyDesktop
         #region Region - zdarzenia wywołane przez użytkownika
 
 
-        private void SaveButton_Click(object sender, EventArgs e)
+        public void SaveButton_Click(object sender, EventArgs e)
         {
-            MyMessageBox.display("save button clicked");
+            OnSaveButtonClicked();
         }
+
 
 
         private void UndoButton_Click(object sender, EventArgs e)
@@ -163,13 +207,14 @@ namespace UniwersalnyDesktop
             {
                 undoButton.Enabled = false;
                 saveButton.Enabled = false;
+                undoButtonClicked = false;
             }
         }
 
 
         //stawiam warunek na naciśnięcie przycisku "cofnij", żeby w tym przypadku zdarzenia  cell beginEdit i endEdit się nie wywoływały
         //bez tego warunku wywołują się one w przypadku cofania zmian w checkboxie
-        protected void dataGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        private void dataGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
             if (!undoButtonClicked)
             {
@@ -180,7 +225,7 @@ namespace UniwersalnyDesktop
         }
 
 
-        protected void dataGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        private void dataGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             if (!undoButtonClicked)
             {
@@ -265,7 +310,7 @@ namespace UniwersalnyDesktop
 
 
 
-        private void changeCellTextColour(DataGridCell cell, Color colour)
+        public void changeCellTextColour(DataGridCell cell, Color colour)
         {
             int rowIndex = cell.getCellIndex(cellIndexTypes.rowIndex);
             int columnIndex = cell.getCellIndex(cellIndexTypes.columnIndex);

@@ -35,6 +35,8 @@
             // 
             // moduleDatagrid
             // 
+            this.moduleDatagrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.moduleDatagrid.Location = new System.Drawing.Point(551, 13);
             this.moduleDatagrid.Name = "moduleDatagrid";
             this.moduleDatagrid.Size = new System.Drawing.Size(359, 433);

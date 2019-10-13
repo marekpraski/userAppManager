@@ -80,6 +80,9 @@ namespace UniwersalnyDesktop
         public static int getAppModuleList_moduleNameIndex = 2;
 
 
+        public static string updateAppModule = "update mod_app set name_mod = @newModName where ID_mod = @IDmod";
+
+
 
         //
         // uprawnienia użytkowników domenowych i sql są rozdzielone, ale przy obecnej strukturze bazy desktopu

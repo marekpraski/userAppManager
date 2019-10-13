@@ -29,7 +29,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.baseDataGridview = new System.Windows.Forms.DataGridView();
+            this.baseDatagrid = new System.Windows.Forms.DataGridView();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -38,27 +38,26 @@
             this.saveButton = new System.Windows.Forms.Button();
             this.loadNextButton = new System.Windows.Forms.Button();
             this.remainingRowsLabel = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.baseDataGridview)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.baseDatagrid)).BeginInit();
             this.SuspendLayout();
             // 
             // baseDataGridview
             // 
-            this.baseDataGridview.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.baseDatagrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.baseDataGridview.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.baseDataGridview.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.baseDatagrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.baseDatagrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
             this.Column2,
             this.Column3,
             this.Column4});
-            this.baseDataGridview.Location = new System.Drawing.Point(13, 13);
-            this.baseDataGridview.Name = "baseDataGridview";
-            this.baseDataGridview.Size = new System.Drawing.Size(444, 425);
-            this.baseDataGridview.TabIndex = 0;
-            this.baseDataGridview.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.baseDataGridView_CellBeginEdit);
-            this.baseDataGridview.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.baseDataGridView_CellClick);
-            this.baseDataGridview.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.baseDataGridView_CellEndEdit);
-            this.baseDataGridview.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.baseDataGridView_RowHeaderMouseClick);
+            this.baseDatagrid.Location = new System.Drawing.Point(13, 13);
+            this.baseDatagrid.Name = "baseDataGridview";
+            this.baseDatagrid.Size = new System.Drawing.Size(444, 425);
+            this.baseDatagrid.TabIndex = 0;
+            this.baseDatagrid.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.baseDataGridView_CellBeginEdit);
+            this.baseDatagrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.baseDataGridView_CellClick);
+            this.baseDatagrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.baseDataGridView_CellEndEdit);
             // 
             // Column1
             // 
@@ -88,6 +87,7 @@
             this.undoButton.TabIndex = 2;
             this.undoButton.Text = "cofnij";
             this.undoButton.UseVisualStyleBackColor = true;
+            this.undoButton.Enabled = false;
             this.undoButton.Click += new System.EventHandler(this.UndoButton_Click);
             // 
             // saveButton
@@ -98,6 +98,7 @@
             this.saveButton.TabIndex = 3;
             this.saveButton.Text = "zapisz";
             this.saveButton.UseVisualStyleBackColor = true;
+            this.saveButton.Enabled = false;
             this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
             // loadNextButton
@@ -128,11 +129,11 @@
             this.Controls.Add(this.loadNextButton);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.undoButton);
-            this.Controls.Add(this.baseDataGridview);
+            this.Controls.Add(this.baseDatagrid);
             this.Name = "DBEditorForm";
             this.Text = "DBEditorForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DBEditorForm_FormClosing);
-            ((System.ComponentModel.ISupportInitialize)(this.baseDataGridview)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.baseDatagrid)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -140,7 +141,7 @@
 
         #endregion
 
-        protected System.Windows.Forms.DataGridView baseDataGridview;
+        protected System.Windows.Forms.DataGridView baseDatagrid;
         protected System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         protected System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         protected System.Windows.Forms.DataGridViewTextBoxColumn Column3;

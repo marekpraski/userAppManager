@@ -219,8 +219,8 @@ namespace UniwersalnyDesktop
             foreach (string[] data in appData)
             {
                 App app = new App();
-                app.Id = data[SqlQueries.getAppList_appIdIndex];
-                app.appDisplayName = data[SqlQueries.getAppList_appDisplayNameIndex];
+                app.id = data[SqlQueries.getAppList_appIdIndex];
+                app.displayName = data[SqlQueries.getAppList_appDisplayNameIndex];
                 appDictionary.Add(data[SqlQueries.getAppList_appIdIndex], app);
             }
         }
@@ -382,7 +382,7 @@ namespace UniwersalnyDesktop
             foreach (string appId in appDictionary.Keys)
             {
                 appDictionary.TryGetValue(appId, out app);
-                ListViewItem listRow = new ListViewItem(app.appDisplayName);
+                ListViewItem listRow = new ListViewItem(app.displayName);
                 listRow.Name = appId;
                 appListView.Items.Add(listRow);
             }
@@ -464,7 +464,7 @@ namespace UniwersalnyDesktop
             {
                 App app;
                 appDictionary.TryGetValue(currentSelectedApp.Name, out app);
-                string query = SqlQueries.getRolaList.Replace("@filter", SqlQueries.getRolaList_rolaFilter_AppId) + app.Id;
+                string query = SqlQueries.getRolaList.Replace("@filter", SqlQueries.getRolaList_rolaFilter_AppId) + app.id;
 
                 RolaEditorForm dbRolaEditor = new RolaEditorForm(dbConnection, query, app);
                 dbRolaEditor.ShowDialog();
@@ -725,7 +725,7 @@ namespace UniwersalnyDesktop
             {
                 foreach (App app in userApps)
                 {
-                    ListViewItem appItem = appListView.Items[app.Id];
+                    ListViewItem appItem = appListView.Items[app.id];
                     appItem.Checked = true;
                 }
                 checkRolaCheckbox();

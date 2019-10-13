@@ -68,6 +68,7 @@
     <Compile Include="AppModule.cs" />
     <Compile Include="CellConverter.cs" />
     <Compile Include="ChangedDataBundle.cs" />
+    <Compile Include="Class1.cs" />
     <Compile Include="DataGridCell.cs" />
     <Compile Include="DataGridHandler.cs" />
     <Compile Include="DBEditorForm.cs">
@@ -82,6 +83,7 @@
     <Compile Include="EditableDatagridControl.Designer.cs">
       <DependentUpon>EditableDatagridControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="EditableDatagridControlEventArgs.cs" />
     <Compile Include="RolaEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -94,9 +96,7 @@
     <Compile Include="DisplayChangesForm.Designer.cs">
       <DependentUpon>DisplayChangesForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form2.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Form2.cs" />
     <Compile Include="Form2.Designer.cs">
       <DependentUpon>Form2.cs</DependentUpon>
     </Compile>

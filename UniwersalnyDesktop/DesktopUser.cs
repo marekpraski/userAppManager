@@ -38,7 +38,7 @@ namespace UniwersalnyDesktop
 
         private void addApp(App app, Rola rola = null)
         {
-            AppDataItem appData = new AppDataItem(app.Id);
+            AppDataItem appData = new AppDataItem(app.id);
 
             if (rola != null)
             {
@@ -52,7 +52,7 @@ namespace UniwersalnyDesktop
             }
 
             appData.isEnabled = true;
-            appData.appName = app.appDisplayName;
+            appData.appName = app.displayName;
             userAppDict.Add(app, appData);
         }
 
@@ -61,7 +61,7 @@ namespace UniwersalnyDesktop
         {
             AppDataItem appData;
             userAppDict.TryGetValue(app, out appData);
-            appData.appName = app.appDisplayName;
+            appData.appName = app.displayName;
 
             if (rola != null)
             {

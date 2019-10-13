@@ -17,6 +17,11 @@ namespace UniwersalnyDesktop
 
         private App currentApp;
         private Rola currentRola;
+        private Rola oldRola;
+
+        private int moduleNamesColumnIndex = 0;
+        private int checkboxColumnIndex = 1;
+        private int accessRigthsColumnIndex = 2;
 
 
         public RolaEditorForm(SqlConnection dbConnection, string sqlQuery, App app)
@@ -24,13 +29,22 @@ namespace UniwersalnyDesktop
         {
             this.currentApp = app;
             InitializeComponent();
+            moduleDatagrid.saveButtonClicked += moduleDatagrid_saveButtonClicked;
             setUpThisForm();
         }
 
+
         private void setUpThisForm()
         {
-            //na starcie wyświetlam moduły roli pierwszej od góry
-            baseDataGridview.CurrentCell = baseDataGridview.Rows[0].Cells[0];
+            this.Text = "Edytor ról " + currentApp.displayName;
+
+            //ukrywam kolumny dotyczące aplikacji, bo i tak nie mogą być do edycji a wartości w nich niczego nie wnoszą
+            base.baseDatagrid.Columns[SqlQueries.getRolaList_rolaAppIdIndex].Visible = false;
+            base.baseDatagrid.Columns[SqlQueries.getRolaList_rolaAppNameIndex].Visible = false;
+            base.baseDatagrid.ReadOnly = true;
+
+            //na starcie okna wyświetlam moduły roli pierwszej od góry
+            baseDatagrid.CurrentCell = baseDatagrid.Rows[0].Cells[0];
             getSelectedRola();
 
             //datagrid w formatce nie ma żadnych kolumn na starcie, dodaję je; kolejność dodawania jest istotna
@@ -38,17 +52,18 @@ namespace UniwersalnyDesktop
 
 
             //muszę dodać chociaż jedną kolumnę zanim dodam wiersze
-            moduleDatagrid.addTextDatagridColumn("moduły " + currentApp.appDisplayName, 250);     
+            //kolumna z checkboxami NIE MOŻE BYĆ PIERWSZA bo diabli biorą zdarzenia
+            moduleDatagrid.addTextDatagridColumn(moduleNamesColumnIndex, "moduły " + currentApp.displayName, 250);
+            moduleDatagrid.addCheckboxColumn(checkboxColumnIndex, "dostęp", 50);
+            moduleDatagrid.addTextDatagridColumn(accessRigthsColumnIndex, "uprawnienia", 80);
+
             moduleDatagrid.addDatagridRows(currentApp.getModuleNameList().Count);              
 
-            //po podaniu wierszy dodaję kolejne kolumny
-            moduleDatagrid.addCheckboxColumn();                                    //indeks tej kolumny zawsze jest 0, nawet jeżeli dodam ją później
-            moduleDatagrid.addTextDatagridColumn("uprawnienia", 80);                   
-
             //po dodaniu, kolumny wypełniam danymi
-            moduleDatagrid.populateCheckboxColumn(getModuleAccessList());                    //indeks tej kolumny zawsze jest 0
-            moduleDatagrid.populateTextDatagridColumn(1, currentApp.getModuleNameList());    //indeks = 1 
-            moduleDatagrid.populateTextDatagridColumn(2, getModuleAccessRights());          //indeks = 2
+            moduleDatagrid.populateTextDatagridColumn(moduleNamesColumnIndex, currentApp.getModuleNameList());     
+            moduleDatagrid.disableDatagridColumn(moduleNamesColumnIndex);                                        //kolumna z nazwami modułów jest tylko do odczytu, edycja modułów jest w innym interfejsie
+            moduleDatagrid.populateCheckboxColumn(checkboxColumnIndex, getModuleAccessList());
+            moduleDatagrid.populateTextDatagridColumn(accessRigthsColumnIndex, getModuleAccessRights());          
 
             resizeThisForm();
         }
@@ -76,44 +91,64 @@ namespace UniwersalnyDesktop
 
         private void resizeThisForm()
         {
-            int baseFormWidth = formatter.calculateBDEditorFormWidth();
+            formatter.formatDatagridWithHiddenColumns(ref base.baseDatagrid);
+            base.changeThisFormLayout();
+            int baseFormWidth = formatter.calculateBaseFormWidth(base.baseDatagrid);
             moduleDatagrid.Location = new System.Drawing.Point(baseFormWidth, 13);
             moduleDatagrid.resizeThisForm();
 
             this.Width = baseFormWidth + moduleDatagrid.Width + moduleDatagridPadding;
         }
 
+
+        #region Region - zdarzenia wywołane przez użytkownika
+
+
+        //nadpisuję metodę w klasie bazowej wywoływaną przez naciśnięcie dowolnej celki w datagridzie klasy bazowej
         protected override void BaseDatagridClickedEvent()
         {
             getSelectedRola();
 
-            //czyszczę stare wypełnienia
-            clearAccessRightsColumn();
-            uncheckModules();
+            if (currentRola != oldRola)
+            {
+                //czyszczę stare wypełnienia
+                clearAccessRightsColumn();
+                uncheckModules();
 
-            //wypełniam datagrid danymi nowej roli            
-            showAccessRights();
-            checkModules();
+                //wypełniam datagrid danymi nowej roli            
+                showAccessRights();
+                checkModules();
+            }
         }
+
+
+        //naciśnięcie na przycisk "Zapisz" po prawej stronie okna (tzn. w kontrolce EditableDatagridControl)
+        private void moduleDatagrid_saveButtonClicked(object source, EditableDatagridControlEventArgs args)
+        {
+            MyMessageBox.display("zapisuję");
+        }
+
+        #endregion
+
 
         private void showAccessRights()
         {
             if (currentRola != null)
             {
-                moduleDatagrid.populateTextDatagridColumn(2, getModuleAccessRights());
+                moduleDatagrid.populateTextDatagridColumn(accessRigthsColumnIndex, getModuleAccessRights());
             }
         }
 
         private void uncheckModules()
         {
-            moduleDatagrid.clearCheckboxColumn();
+            moduleDatagrid.clearCheckboxColumn(checkboxColumnIndex);
         }
 
         private void checkModules()
         {
             if (currentRola != null)
             {
-                moduleDatagrid.populateCheckboxColumn(getModuleAccessList());
+                moduleDatagrid.populateCheckboxColumn(checkboxColumnIndex, getModuleAccessList());
             }
         }
 
@@ -133,14 +168,39 @@ namespace UniwersalnyDesktop
         private void getSelectedRola()
         {
             string rolaId = "";
-            DataGridViewCell cell = baseDataGridview.CurrentCell;
+            DataGridViewCell cell = baseDatagrid.CurrentCell;
             int columnIndex = cell.ColumnIndex;
             if(columnIndex == SqlQueries.getRolaList_rolaIdIndex && cell.Value != null)
             {
                 rolaId = cell.Value.ToString();
+                oldRola = currentRola;
+                currentRola = currentApp.getRola(rolaId);
             }
-            currentRola = currentApp.getRola(rolaId);
         }
+
+        #region Region - zapisywanie zmian
+
+        //--zapisywanie zmian w tej formatce
+        //
+        //datagrid po lewej
+        //
+        //tylko do odczytu
+        //
+        //
+        //datagrid po prawej
+        //
+        //edycja nazw ról aplikacji oraz dodawanie i usuwanie ról jest zablokowane
+        //
+        //--1. sytuacja gdy rola miała dostęp do modułu, zmieniony został zakres dostępu(np z 1 na 2)
+        //--update rola_upr set Grant_app = @newGrantAppValue where ID_rola = @idRola and ID_mod = @idModule
+        //
+        //--2. sytuacja, gdy rola miała dostęp do modułu, ale dostęp został jej odebrany
+        //--delete from rola_upr where ID_rola = @idRola and ID_mod = @idModule
+        //
+        //--3. sytuacja, gdy rola nie miała dostępu do mudułu
+        //--insert into rola_upr(ID_rola, ID_mod, Grant_app) values(@idRola, @idModule, @newGrantAppValue)
+
+        #endregion
 
     }
 }

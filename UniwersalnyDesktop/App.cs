@@ -9,8 +9,8 @@ namespace UniwersalnyDesktop
     //aplikacja zdefiniowana w bazie desktopu
     public class App
     {
-        public string appDisplayName { get; set; }
-        public string Id { get; set; }
+        public string displayName { get; set; }
+        public string id { get; set; }
         public List<string> rolaIdList { get; }     //zawiera ID ról
         public List<Rola> rolaList { get; }
         public Dictionary<string, Rola> rolaDict { get; }   //kluczem jest Id roli
