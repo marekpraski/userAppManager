@@ -476,6 +476,13 @@ namespace UniwersalnyDesktop
 
         }
 
+
+        private void EditUsersLabel_Click(object sender, EventArgs e)
+        {
+            UserEditorForm userEditor = new UserEditorForm(dbConnection, SqlQueries.getUsers +"'root'");
+            userEditor.ShowDialog();
+        }
+
         #endregion
 
 
@@ -1194,5 +1201,6 @@ namespace UniwersalnyDesktop
             readAllData();
             setupAdminForm();
         }
+
     }
 }

@@ -29,12 +29,12 @@ namespace UniwersalnyDesktop
         //
 
         //wszyscy użytkownicy za wyjątkiem Administratora
-        public static string getUsers = "select  login_user, windows_user, imie_user, nazwisko_user,ID_user from users_list where login_user is not null and login_user <> ";
-        public static int userSqlLoginIndex = 0;
-        public static int userWindowsLoginIndex = 1;
-        public static int userImieIndex = 2;
-        public static int userNazwiskoIndex = 3;
-        public static int userIdIndex = 4;
+        public static string getUsers = "select  ID_user, imie_user, nazwisko_user,login_user, windows_user from users_list where login_user is not null and login_user <> ";
+        public static int userSqlLoginIndex = 3;
+        public static int userWindowsLoginIndex = 4;
+        public static int userImieIndex = 1;
+        public static int userNazwiskoIndex = 2;
+        public static int userIdIndex = 0;
 
         //lista programów do wyświetlenia w appListView lub w edytorze, w zależności od warunku
         public static string getAppList = "select ap.ID_app, ap.appDisplayName, ap.appName, ap.name_app, ap.path_app, ap.appPath, ap.name_db, ap.srod_app, ap.variant from [dbo].[app_list] as ap " +

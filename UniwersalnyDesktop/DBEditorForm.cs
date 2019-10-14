@@ -162,7 +162,7 @@ namespace UniwersalnyDesktop
 
         protected virtual void BaseDatagridClickedEvent()
         {
-            MyMessageBox.display("db editor główna formatka");
+            //MyMessageBox.display("db editor główna formatka");
         }
 
 
@@ -291,11 +291,15 @@ namespace UniwersalnyDesktop
             string primaryKeyColumnName = queryData.getHeaders()[0];    //kluczem głównym MUSI być pierwsza kolumna
             object primaryKey = dg1Handler.getCellPrimaryKey(cell);
             string newValue = cellConverter.getConvertedValue(ref cell);
-            if (newValue == null)
+            if (primaryKey != null)
             {
-                return "update " + tableName + " set " + columnName + "= null" + " where " + primaryKeyColumnName + "='" + primaryKey.ToString() + "'";
+                if (newValue == null)   //tzn użytkownik skasował zawartość komórki
+                {
+                    return "update " + tableName + " set " + columnName + "= null" + " where " + primaryKeyColumnName + "='" + primaryKey.ToString() + "'";
+                }
+                return "update " + tableName + " set " + columnName + "=" + cellConverter.getConvertedValue(ref cell) + " where " + primaryKeyColumnName + "='" + primaryKey.ToString() + "'";
             }
-            return "update " + tableName + " set " + columnName + "=" + cellConverter.getConvertedValue(ref cell) + " where " + primaryKeyColumnName + "='" + primaryKey.ToString() + "'"; ;
+            return "";
         }
 
 

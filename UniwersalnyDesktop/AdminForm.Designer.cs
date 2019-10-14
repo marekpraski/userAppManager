@@ -46,6 +46,7 @@
             this.helpButton = new System.Windows.Forms.ToolStripButton();
             this.editAppsLabel = new System.Windows.Forms.Label();
             this.editRolaLabel = new System.Windows.Forms.Label();
+            this.editUsersLabel = new System.Windows.Forms.Label();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -71,6 +72,7 @@
             this.appListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
             this.appListView.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.appListView.HideSelection = false;
             this.appListView.Location = new System.Drawing.Point(313, 40);
             this.appListView.MultiSelect = false;
             this.appListView.Name = "appListView";
@@ -240,11 +242,25 @@
             this.editRolaLabel.Text = "edytuj";
             this.editRolaLabel.Click += new System.EventHandler(this.EditRolaLabel_Click);
             // 
+            // editUsersLabel
+            // 
+            this.editUsersLabel.AutoSize = true;
+            this.editUsersLabel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.editUsersLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.editUsersLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.editUsersLabel.Location = new System.Drawing.Point(260, 23);
+            this.editUsersLabel.Name = "editUsersLabel";
+            this.editUsersLabel.Size = new System.Drawing.Size(35, 13);
+            this.editUsersLabel.TabIndex = 11;
+            this.editUsersLabel.Text = "edytuj";
+            this.editUsersLabel.Click += new System.EventHandler(this.EditUsersLabel_Click);
+            // 
             // AdminForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(766, 441);
+            this.Controls.Add(this.editUsersLabel);
             this.Controls.Add(this.editRolaLabel);
             this.Controls.Add(this.editAppsLabel);
             this.Controls.Add(this.toolStrip1);
@@ -283,5 +299,6 @@
         private System.Windows.Forms.Label editAppsLabel;
         private System.Windows.Forms.Label editRolaLabel;
         private System.Windows.Forms.ToolStripButton refreshButton;
+        private System.Windows.Forms.Label editUsersLabel;
     }
 }
