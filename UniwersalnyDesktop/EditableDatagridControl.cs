@@ -16,6 +16,7 @@ namespace UniwersalnyDesktop
         private DataGridHandler dgHandler = new DataGridHandler();
 
         private bool checkBoxColumnAdded = false;           //używam przy sprawdzaniu, że checkbox jest zaznaczany/odznaczany przez użytkownika
+        private int checkBoxColumnIndex = 0;
         private bool undoButtonClicked = false;
 
         private DataGridCell changedCell;
@@ -91,12 +92,14 @@ namespace UniwersalnyDesktop
         }
 
 
-        public void addCheckboxColumn(int index, string headerText, int width)
+        public void insertCheckboxColumn(int index, string headerText, int width)
         {
             DataGridViewCheckBoxColumn chbCol = new DataGridViewCheckBoxColumn();
             chbCol.Width = width;
             chbCol.HeaderText = headerText;
             dataGridView1.Columns.Insert(index, chbCol);
+            this.checkBoxColumnIndex = index;
+            checkBoxColumnAdded = true;
         }
 
         public void hideDatagridColumn(int index)
@@ -108,11 +111,12 @@ namespace UniwersalnyDesktop
         public void disableDatagridColumn(int index)
         {
             dataGridView1.Columns[index].ReadOnly = true;
+            dataGridView1.Columns[index].DefaultCellStyle.BackColor = Color.LightGray;
         }
 
 
 
-        public void addTextDatagridColumn(int index, string headerText, int width)
+        public void insertTextDatagridColumn(int index, string headerText, int width)
         {
             DataGridViewTextBoxColumn col = new DataGridViewTextBoxColumn();
             col.HeaderText = headerText;
@@ -231,58 +235,54 @@ namespace UniwersalnyDesktop
             {
                 object newCellValue = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
 
-                //changedCell została utworzona gdy użytkownik rozpoczął edycję, metoda dataGridView_CellBeginEdit
-                changedCell.setCellValue(cellValueTypes.newValue, newCellValue);
-
-                changedCell.setCellIndex(cellIndexTypes.rowIndex, e.RowIndex);
-                changedCell.setCellIndex(cellIndexTypes.columnIndex, e.ColumnIndex);
-
-
-                //jeżeli nie zdefiniuję typu celki w ten sposób jak poniżej, celka nie przechodzi weryfikacji i nie zostaje zmieniona
-                //jest to zaszłość z DBEditor, gdzie typ danych jest czytany z bazy i weryfikowany przez CellConverter
-                //co jest konieczne do automatyzacji zapisu do bazy.
-                //Tutaj wartość celki jest zawsze tekstem, czyli typ bazodanowy "varchar". Wyjątkiem jest typ "Boolean" w checkboxie,
-
-                changedCell.DataTypeName = "varchar"; //(queryData.getDataTypes()[e.ColumnIndex]);
-
-                if (dgHandler.addChangedCell(changedCell))
+                //samo kliknięcie na komórkę zawierającą checkbox powoduje wywołanie zdarzenia cellBeginEdit i CellEndEdit, przy czym obie wartości są takie same (stan checkboxu się nie zmienił)
+                //nie chcę w takiej sytuacji generować celki chengedCell
+                if (changedCell.getCellValue(cellValueTypes.oldValue) != newCellValue)
                 {
-                    changeCellTextColour(changedCell, Color.Red);
-                    undoButton.Enabled = true;
-                    saveButton.Enabled = true;
-                }
-                else
-                {
-                    dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = changedCell.getCellValue(cellValueTypes.oldValue);
-                }
+                    //changedCell została utworzona gdy użytkownik rozpoczął edycję, metoda dataGridView_CellBeginEdit
+                    changedCell.setCellValue(cellValueTypes.newValue, newCellValue);
+
+                    changedCell.setCellIndex(cellIndexTypes.rowIndex, e.RowIndex);
+                    changedCell.setCellIndex(cellIndexTypes.columnIndex, e.ColumnIndex);
+
+
+                    //jeżeli nie zdefiniuję typu celki w ten sposób jak poniżej, celka nie przechodzi weryfikacji i nie zostaje zmieniona
+                    //jest to zaszłość z DBEditor, gdzie typ danych jest czytany z bazy i weryfikowany przez CellConverter
+                    //co jest konieczne do automatyzacji zapisu do bazy.
+                    //Tutaj wartość celki jest zawsze tekstem, czyli typ bazodanowy "varchar". Wyjątkiem jest typ "Boolean" w checkboxie,
+
+                    changedCell.DataTypeName = "varchar"; //(queryData.getDataTypes()[e.ColumnIndex]);
+
+                    if (dgHandler.addChangedCell(changedCell))
+                    {
+                        changeCellTextColour(changedCell, Color.Red);
+                        undoButton.Enabled = true;
+                        saveButton.Enabled = true;
+                    }
+                    else
+                    {
+                        dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = changedCell.getCellValue(cellValueTypes.oldValue);
+                    }
             }
+            else
+            {
+                changedCell.Dispose();
+            }
+        }
             undoButtonClicked = false;          //w przypadku cofania zmian w checkboxie wywoływane są zdarzenia cell begin edit i end edit
                                                 //nie chcę tego stąd warunek wykluczający gdy undoButton jest kliknięty
                                                 //reset tej zmiennej dopiero, gdy już sobie wywoła oba zdarzenia nie wchodząc do ich kodu
         }
 
         //
-        // Region -te dwie metody TYLKO wychwytywanie zaznaczania checkboxu w datagridzie
-        //checkboxy są zawsze tylko pierwszą kolumną i tak stawiam warunek
-        //stawiam warunek na inne kolumny, żeby te zdarzenia nie były wywoływane w przypadku edycji innych kolumn
+        // Region -ta metoda TYLKO wychwytywanie zaznaczania checkboxu w datagridzie
+        //stawiam warunek na inne kolumny, żeby to zdarzenie nie było wywoływane w przypadku edycji innych kolumn
         //
-
-        private void DataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (checkBoxColumnAdded)
-            {                
-                if (e.ColumnIndex == 0 && e.RowIndex > -1)
-                {
-                    bool selected = (bool)dataGridView1[e.ColumnIndex, e.RowIndex].Value;
-                }
-            }
-        }
-
         private void DataGridView1_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (checkBoxColumnAdded)
             {                
-                if (e.ColumnIndex == 0 && e.RowIndex > -1)
+                if (e.ColumnIndex == checkBoxColumnIndex && e.RowIndex > -1)
                 {
                     dataGridView1.EndEdit();
                 }

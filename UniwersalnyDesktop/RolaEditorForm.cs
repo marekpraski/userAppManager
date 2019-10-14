@@ -53,9 +53,9 @@ namespace UniwersalnyDesktop
 
             //muszę dodać chociaż jedną kolumnę zanim dodam wiersze
             //kolumna z checkboxami NIE MOŻE BYĆ PIERWSZA bo diabli biorą zdarzenia
-            moduleDatagrid.addTextDatagridColumn(moduleNamesColumnIndex, "moduły " + currentApp.displayName, 250);
-            moduleDatagrid.addCheckboxColumn(checkboxColumnIndex, "dostęp", 50);
-            moduleDatagrid.addTextDatagridColumn(accessRigthsColumnIndex, "uprawnienia", 80);
+            moduleDatagrid.insertTextDatagridColumn(moduleNamesColumnIndex, "moduły " + currentApp.displayName, 250);
+            moduleDatagrid.insertCheckboxColumn(checkboxColumnIndex, "dostęp", 50);
+            moduleDatagrid.insertTextDatagridColumn(accessRigthsColumnIndex, "uprawnienia", 80);
 
             moduleDatagrid.addDatagridRows(currentApp.getModuleNameList().Count);              
 

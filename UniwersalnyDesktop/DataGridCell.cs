@@ -9,7 +9,7 @@ namespace UniwersalnyDesktop
    public enum cellValueTypes { oldValue, newValue}
     public enum cellIndexTypes { rowIndex, columnIndex}
    
-    public class DataGridCell
+    public class DataGridCell : IDisposable
     {
 
         private object[] cellValue;
@@ -81,7 +81,35 @@ namespace UniwersalnyDesktop
             return index;
         }
 
+        //
+        // implementation of IDisposable interface
+        //
+        // Flag: Has Dispose already been called?
+        bool disposed = false;
+
+        // Public implementation of Dispose pattern callable by consumers.
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        // Protected implementation of Dispose pattern.
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
+            {
+                // Free any other managed objects here.
+                //
+            }
+
+            // Free any unmanaged objects here.
+            //
+            disposed = true;
+        }
+
     }
-
-
 }

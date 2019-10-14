@@ -214,7 +214,6 @@ namespace UniwersalnyDesktop
                     if (rowsRemaining > ProgramSettings.numberOfRowsToLoad)
                     {
                         loadNextButton.Text = "+" + ProgramSettings.numberOfRowsToLoad;
-
                     }
                 }
             }
@@ -234,8 +233,6 @@ namespace UniwersalnyDesktop
                     dg1Handler.addDataGridIndex(i, primaryKey);
                 }
             }
-
-
             if (baseDatagrid.AllowUserToAddRows)
             {
                 datagridRowIndex = baseDatagrid.Rows.Count - 1;   //gdy użytkownik ma możliwość dodawania wierszy w datagridzie, datagrid posiada dodatkowo jeden pusty wiersz na końcu

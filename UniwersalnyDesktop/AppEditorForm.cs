@@ -46,8 +46,8 @@ namespace UniwersalnyDesktop
             //datagrid w formatce nie ma żadnych kolumn na starcie, dodaję je; kolejność dodawania jest istotna
             //podczas aktualizacji odwołuję się do indeksu kolumny
             //nie ma to znaczenia, ale przyjmuję, że pierwsza kolumna zawiera klucz główny, służący do zapisywania zmian w bazie
-            moduleDatagrid.addTextDatagridColumn(moduleIdColumnIndex, "Id modułu", 80);
-            moduleDatagrid.addTextDatagridColumn(moduleNamesColumnIndex, "moduły aplikacji", 250);
+            moduleDatagrid.insertTextDatagridColumn(moduleIdColumnIndex, "Id modułu", 80);
+            moduleDatagrid.insertTextDatagridColumn(moduleNamesColumnIndex, "moduły aplikacji", 250);
             //kolumna zawierająca klucz główny będzie ukryta
             moduleDatagrid.disableDatagridColumn(moduleIdColumnIndex);
 

@@ -72,7 +72,7 @@ namespace UniwersalnyDesktop
             int hiddenCols = allCols - visibleCols;
             if (hiddenCols > 0)
             {
-                dataGridWidth = dataGrid.Columns.GetColumnsWidth(DataGridViewElementStates.Visible) + (dataGrid.Columns.Count - hiddenCols) * dataGridColumnPadding + dataGrid.RowHeadersWidth;
+                dataGridWidth = dataGrid.Columns.GetColumnsWidth(DataGridViewElementStates.Visible) + visibleCols * dataGridColumnPadding + dataGrid.RowHeadersWidth;
                 dataGrid.Width = dataGridWidth;
             }
             
