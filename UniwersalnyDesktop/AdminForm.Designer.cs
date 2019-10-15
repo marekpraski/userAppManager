@@ -71,8 +71,8 @@
             this.appListView.CheckBoxes = true;
             this.appListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
+            this.appListView.Enabled = false;
             this.appListView.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.appListView.HideSelection = false;
             this.appListView.Location = new System.Drawing.Point(313, 40);
             this.appListView.MultiSelect = false;
             this.appListView.Name = "appListView";

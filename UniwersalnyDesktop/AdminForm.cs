@@ -525,8 +525,16 @@ namespace UniwersalnyDesktop
         //domyślnie ten kolor jest bladoszary, dla mnie zbyt niewidoczny
         private void userTreeView_Leave(object sender, EventArgs e)
         {
-            currentSelectedUser.BackColor = Color.Aqua;
-            currentSelectedUser.ForeColor = Color.Black;
+            try
+            {
+                currentSelectedUser.BackColor = Color.Aqua;
+                currentSelectedUser.ForeColor = Color.Black;
+            }
+            catch (NullReferenceException ex)
+            {
+                MyMessageBox.display(ex.Message);
+            }
+
 
         }
 
