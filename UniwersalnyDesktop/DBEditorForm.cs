@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using DatabaseInterface;
 
 namespace UniwersalnyDesktop
 {
@@ -87,14 +88,14 @@ namespace UniwersalnyDesktop
         {
             DBWriter writer = new DBWriter(dbConnection);
             DBConnector connector = new DBConnector();
-            tableName = connector.getTableName(sqlQuery.ToLower());
+            tableName = connector.getTableNameFromQuery(sqlQuery.ToLower());
 
             string query;
             while (dg1Handler.checkChangesExist())
             {
                 DataGridCell cell = dg1Handler.getLastCellChangedAndUndoChanges();
                 query = generateUpdateQuery(cell);
-                writer.writeToDB(query);
+                writer.executeQuery(query);
                 changeCellTextColour(cell, Color.Black);
             }
             //blokuję przyciski zapisu i cofania, bo po zapisaniu zmian już nie ma czego zapisać ani cofnąć

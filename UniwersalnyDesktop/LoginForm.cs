@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DatabaseInterface;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -26,11 +27,6 @@ namespace UniwersalnyDesktop
         public LoginForm()
         {
             InitializeComponent();
-#if DEBUG
-            userLogin = "root";
-            userPassword = "root";
-            logIn();
-#endif
         }
 
 
@@ -109,14 +105,11 @@ namespace UniwersalnyDesktop
         private bool readUserata()
         {
             DBConnector dbConnector = new DBConnector(userLogin, userPassword);
-#if DEBUG
-            currentPath = @"C:\testDesktop\conf";
-#else
             currentPath = Application.StartupPath;
-#endif
+
             if (dbConnector.validateConfigFile(currentPath))
             {
-                dbConnection = dbConnector.getDBConnection(ConnectionSources.serverNameInFile, ConnectionTypes.sqlAuthorisation);
+                dbConnection = dbConnector.getDBConnection(ConnectionDataSource.serverAndDatabaseNamesInFile, ConnectionTypes.sqlAuthorisation);
                 dbReader = new DBReader(dbConnection);
 
                 string query = SqlQueries.getDesktopUserData + "'" + userLogin + "'";

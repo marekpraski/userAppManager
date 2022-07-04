@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using DatabaseInterface;
 
 namespace UniwersalnyDesktop
 {
@@ -1099,7 +1100,7 @@ namespace UniwersalnyDesktop
             DBWriter writer = new DBWriter(dbConnection);
             string query = generateQuery(changedDataBundle);
             MyMessageBox.display(query);
-            writer.writeToDB(query);
+            writer.executeQuery(query);
         }
 
 
