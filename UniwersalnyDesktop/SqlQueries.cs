@@ -24,28 +24,17 @@ namespace UniwersalnyDesktop
   
 
         
-        //
-        // wypełnianie okna AdminForm
-        //
-
-        //wszyscy użytkownicy za wyjątkiem Administratora
-        public static string getUsers = "select  ID_user, imie_user, nazwisko_user,login_user, windows_user from users_list where login_user is not null and login_user <> ";
-        public static int userSqlLoginIndex = 3;
-        public static int userWindowsLoginIndex = 4;
-        public static int userImieIndex = 1;
-        public static int userNazwiskoIndex = 2;
-        public static int userIdIndex = 0;
 
         //lista programów do wyświetlenia w appListView lub w edytorze, w zależności od warunku
-        public static string getAppList = "select ap.ID_app, ap.appDisplayName, ap.appName, ap.name_app, ap.path_app, ap.appPath, ap.name_db, ap.srod_app, ap.variant from [dbo].[app_list] as ap " +
-                                                    "inner join app_users as au on ap.ID_app = au.ID_app " +
-                                                    "inner join users_list as ul on ul.ID_user = au.ID_user " +
-                                                    "@filter" +
-                                                    "group by ap.ID_app, ap.appName, ap.name_app, ap.path_app, ap.appPath, ap.appDisplayName, ap.name_db, ap.srod_app, ap.variant";
+        //public static string getAppList = "select ap.ID_app, ap.appDisplayName, ap.appName, ap.name_app, ap.path_app, ap.appPath, ap.name_db, ap.srod_app, ap.variant from [dbo].[app_list] as ap " +
+        //                                            "inner join app_users as au on ap.ID_app = au.ID_app " +
+        //                                            "inner join users_list as ul on ul.ID_user = au.ID_user " +
+        //                                            "@filter" +
+        //                                            "group by ap.ID_app, ap.appName, ap.name_app, ap.path_app, ap.appPath, ap.appDisplayName, ap.name_db, ap.srod_app, ap.variant";
 
-        public static string appFilter_DisplayNameNotNull = "where ap.appDisplayName is not null ";
+        //public static string appFilter_DisplayNameNotNull = "where ap.appDisplayName is not null ";
 
-        public static int getAppList_appDisplayNameIndex = 1;
+        //public static int getAppList_appDisplayNameIndex = 1;
         public static int getAppList_appIdIndex = 0;
 
  
@@ -73,7 +62,7 @@ namespace UniwersalnyDesktop
 
 
         //moduły aplikacji i ich opisy i ich położenie w kwerendzie
-        public static string getAppModuleList = "select ID_mod, ID_app, name_mod from mod_app";
+        //public static string getAppModuleList = "select ID_mod, ID_app, name_mod from mod_app";
 
         public static int getAppModuleList_moduleIdIndex = 0;
         public static int getAppModuleList_moduleAppIdIndex = 1;

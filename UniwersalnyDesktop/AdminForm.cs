@@ -90,7 +90,7 @@ namespace UniwersalnyDesktop
         }
 
 
-        #region Region - wczytywanie danych na starcie formularza
+        #region wczytywanie danych na starcie formularza
 
         private void createDictionaries()
         {
@@ -126,21 +126,24 @@ namespace UniwersalnyDesktop
             getUserApps();
         }
 
+        #endregion
 
+        #region czytanie użytkowników z bazy danych 
         private void getUserData()
         {
-            string query = SqlQueries.getUsers + "'" + adminLogin + "'";
-            List<string[]> userData = dbReader.readFromDB(query).getQueryDataAsStrings();
+            string query = "select  ID_user, imie_user, nazwisko_user,login_user, windows_user from users_list where login_user is not null and login_user <> '" + adminLogin + "'";
+            QueryData userData = dbReader.readFromDB(query);
 
-            foreach(string[] data in userData)
+            for (int i = 0; i < userData.dataRowsNumber; i++)
             {
+
                 DesktopUser desktopUser = new DesktopUser();
-                desktopUser.name = data[SqlQueries.userImieIndex];
-                desktopUser.surname = data[SqlQueries.userNazwiskoIndex];
-                desktopUser.sqlLogin = data[SqlQueries.userSqlLoginIndex];
-                desktopUser.windowsLogin = data[SqlQueries.userWindowsLoginIndex];
-                desktopUser.id = data[SqlQueries.userIdIndex];
-                allUsersDict.Add(data[SqlQueries.userIdIndex], desktopUser);
+                desktopUser.name = userData.getDataValue(i, "imie_user").ToString();
+                desktopUser.surname = userData.getDataValue(i, "nazwisko_user").ToString();
+                desktopUser.sqlLogin = userData.getDataValue(i, "login_user").ToString();
+                desktopUser.windowsLogin = userData.getDataValue(i, "windows_user").ToString();
+                desktopUser.id = userData.getDataValue(i, "ID_user").ToString();
+                allUsersDict.Add(desktopUser.id, desktopUser);
             }
             groupUsers();
 
@@ -148,7 +151,7 @@ namespace UniwersalnyDesktop
             removeDuplicatedWindowsUsers();
         }
 
-       
+
         private void groupUsers()
         {
             string userDisplayName = "";
@@ -173,7 +176,7 @@ namespace UniwersalnyDesktop
 
         private void removeDuplicatedWindowsUsers()
         {
-            Dictionary<string,List<string>> users = new Dictionary<string,List<string>>();  //kluczem jest login windowsowy małymi literami, wartością jest lista id
+            Dictionary<string, List<string>> users = new Dictionary<string, List<string>>();  //kluczem jest login windowsowy małymi literami, wartością jest lista id
             DesktopUser user = null;
             List<string> idList = null;
 
@@ -181,7 +184,7 @@ namespace UniwersalnyDesktop
             foreach (string userId in windowsUsersDict.Keys)
             {
                 allUsersDict.TryGetValue(userId, out user);
- 
+
                 string windowsLogin = user.windowsLogin.ToLower();
                 string id = user.id;
 
@@ -198,106 +201,118 @@ namespace UniwersalnyDesktop
                 }
             }
 
-            foreach(string windowsLogin in users.Keys)
+            foreach (string windowsLogin in users.Keys)
             {
                 users.TryGetValue(windowsLogin, out idList);
                 if (idList.Count > 1)                           //tzn login powtarza się
                 {
-                    foreach(string userId in idList)
+                    foreach (string userId in idList)
                     {
                         windowsUsersDict.Remove(userId);
-                        duplicatedWindowsUsers.Add(userId, windowsLogin + " (id użytkownika = " + userId +")");
+                        duplicatedWindowsUsers.Add(userId, windowsLogin + " (id użytkownika = " + userId + ")");
                     }
                 }
             }
         }
+        #endregion
 
+        #region czytanie aplikacji i modułów i ról z bazy danych
         private void getAppData()
         {
-            string query = SqlQueries.getAppList.Replace("@filter", SqlQueries.appFilter_DisplayNameNotNull);
-            List<string[]> appData = dbReader.readFromDB(query).getQueryDataAsStrings(); 
+            string query = @"select ap.ID_app, ap.show_name, ap.name_app, ap.name_app, ap.path_app, ap.path_app, ap.name_db, ap.srod_app, ap.variant from [dbo].[app_list] as ap 
+                        inner join app_users as au on ap.ID_app = au.ID_app 
+                        inner join users_list as ul on ul.ID_user = au.ID_user 
+                        where ap.show_name is not null 
+                        group by ap.ID_app, ap.name_app, ap.name_app, ap.path_app, ap.show_name, ap.name_db, ap.srod_app, ap.variant";
+            QueryData appData = dbReader.readFromDB(query);
 
-            foreach (string[] data in appData)
+            for (int i = 0; i < appData.dataRowsNumber; i++)
             {
+
                 App app = new App();
-                app.id = data[SqlQueries.getAppList_appIdIndex];
-                app.displayName = data[SqlQueries.getAppList_appDisplayNameIndex];
-                appDictionary.Add(data[SqlQueries.getAppList_appIdIndex], app);
+                app.id = appData.getDataValue(i, "ID_app").ToString();
+                app.displayName = appData.getDataValue(i, "show_name").ToString(); ;
+                appDictionary.Add(app.id, app);
             }
         }
-
 
         private void getAppModules()
         {
             App app;
 
-            string query = SqlQueries.getAppModuleList;
-            QueryData modulesData = dbReader.readFromDB(query);
-            List<string[]> moduleDataList = modulesData.getQueryDataAsStrings();
-            foreach (string[] moduleData in moduleDataList)
+            string query = "select ID_mod, ID_app, name_mod from mod_app";
+            QueryData moduleData = dbReader.readFromDB(query);
+
+            for (int i = 0; i < moduleData.dataRowsNumber; i++)
             {
                 AppModule module = new AppModule();
-                module.id = moduleData[SqlQueries.getAppModuleList_moduleIdIndex];
-                module.name = moduleData[SqlQueries.getAppModuleList_moduleNameIndex];
-                module.appId = moduleData[SqlQueries.getAppModuleList_moduleAppIdIndex];
+                module.id = moduleData.getDataValue(i, "ID_mod").ToString();
+                module.name = moduleData.getDataValue(i, "name_mod").ToString();
+                module.appId = moduleData.getDataValue(i, "ID_app").ToString();
 
                 appDictionary.TryGetValue(module.appId, out app);
                 app.addModule(module);
                 moduleDict.Add(module.id, module);
             }
-        }
-
-
+        } 
 
         private void getRolaData()
         {
             App app;
 
-            string query = SqlQueries.getRolaList.Replace("@filter", "");
-            List<string[]> appRolaData = dbReader.readFromDB(query).getQueryDataAsStrings();
-            foreach (string[] rolaData in appRolaData)
-            {
+            string query = @"select ra.ID_rola, ra.name_rola, ra.descr_rola, al.ID_app, al.show_name from [dbo].[rola_app]  as ra 
+                            inner join app_list as al on ra.ID_app=al.ID_app";
+            QueryData appRolaData = dbReader.readFromDB(query);
+
+                for (int i = 0; i < appRolaData.dataRowsNumber; i++)
+                {
+
                 Rola rola = new Rola();
-                rola.id = rolaData[SqlQueries.getRolaList_rolaIdIndex];
-                rola.appId = rolaData[SqlQueries.getRolaList_rolaAppIdIndex];
-                rola.name = rolaData[SqlQueries.getRolaList_rolaNameIndex];
-                rola.description = rolaData[SqlQueries.getRolaList_rolaDescrIndex];
-                rola.appName = rolaData[SqlQueries.getRolaList_rolaAppNameIndex];
+                rola.id = appRolaData.getDataValue(i, "ID_rola").ToString();
+                rola.appId = appRolaData.getDataValue(i, "ID_app").ToString();
+                rola.name = appRolaData.getDataValue(i, "name_rola").ToString();
+                rola.description = appRolaData.getDataValue(i, "descr_rola").ToString();
+                rola.appName = appRolaData.getDataValue(i, "show_name").ToString();
 
                 getRolaAppModules(rola);
 
-                rolaDict.Add(rolaData[SqlQueries.getRolaList_rolaIdIndex], rola);
+                rolaDict.Add(rola.id, rola);
 
                 //dodaję role aplikacji w każdej aplikacji
                 appDictionary.TryGetValue(rola.appId, out app);
                 app.addRola(rola);
-            }
+                }
         }
 
         private void getRolaAppModules(Rola rola)
         {
             AppModule module;
-            string query = SqlQueries.getRolaModules + rola.id;
-            List<string[]> rolaModuleData = dbReader.readFromDB(query).getQueryDataAsStrings();
-            if (rolaModuleData.Count > 0)
+            string query = "select ID_mod, Grant_app from[dbo].[rola_upr] where ID_rola= " + rola.id;
+            QueryData rolaModuleData = dbReader.readFromDB(query);
+            if (rolaModuleData.dataRowsNumber > 0)
             {
-                foreach (string[] moduleData in rolaModuleData)
+                for (int i = 0; i < rolaModuleData.dataRowsNumber; i++)
                 {
-                    moduleDict.TryGetValue(moduleData[SqlQueries.getRolaModules_moduleId], out module);
-                    string grantApp = moduleData[SqlQueries.getRolaModules_GrantApp];
+                    moduleDict.TryGetValue(rolaModuleData.getDataValue(i, "ID_mod").ToString(), out module);
+                    string grantApp = rolaModuleData.getDataValue(i, "Grant_app").ToString();
                     rola.addModule(module, grantApp);
                 }
             }
         }
+        #endregion
 
+        #region czytanie z bazy danych ról użytkowników w aplikacjach
         //dane każdego użytkownika uzupełniam o zestawienie aplikacji do których ma uprawnienia wraz z rolami
         private void getUserApps()
         {
             DesktopUser user = null;
-            
+
             foreach (string userId in allUsersDict.Keys)
             {
-                string query = SqlQueries.getUserApps + "'" + userId + "'";
+                string query = @"select ap.ID_app from [dbo].[app_list] as ap 
+                                inner join app_users as au on ap.ID_app = au.ID_app 
+                                inner join users_list as ul on ul.ID_user = au.ID_user 
+                                where ap.show_name is not null and au.Grant_app = 1 and ul.ID_user = '" + userId + "'";
                 List<string[]> appList = dbReader.readFromDB(query).getQueryDataAsStrings();
                 List<string> appIdList = convertColumnDataToList(appList);                  //ta kwerenda zwraca pojedynczą listę, tj tylko id
 
@@ -311,17 +326,20 @@ namespace UniwersalnyDesktop
                         appDictionary.TryGetValue(appId, out app);
                         string rolaId = getAppRola(userId, appId);
                         rolaDict.TryGetValue(rolaId, out rola);
- 
+
                         user.addUpdateApp(app, rola);
                     }
                 }
             }
         }
 
-
         private string getAppRola(string userId, string appId)
         {
-            string query = SqlQueries.getUserAppRola.Replace("@appId", appId).Replace("@userId", userId);
+            string baseQuery = @"select ID_rola  from rola_app as ra 
+                                inner join app_list as ap on ap.ID_app = ra.ID_app 
+                                where ap.ID_app = @appId and 
+                                ID_rola in (select ID_rola from rola_users where ID_user = @userId)";
+            string query = baseQuery.Replace("@appId", appId).Replace("@userId", userId);
             QueryData windowsUserData = dbReader.readFromDB(query);
             List<string> rolaList = convertColumnDataToList(windowsUserData.getQueryDataAsStrings());
             if (rolaList.Count > 0)
@@ -330,8 +348,9 @@ namespace UniwersalnyDesktop
             }
             return "";
         }
+        #endregion
 
-
+        #region wtpełnianie drzew i list
         public void populateUserTreeview()
         {
             string[] treeviewBranchNames = { "użytkownicy sql", "użytkownicy domenowi" };
@@ -387,9 +406,7 @@ namespace UniwersalnyDesktop
                 listRow.Name = appId;
                 appListView.Items.Add(listRow);
             }
-        }
-
-
+        } 
         #endregion
 
 
@@ -447,14 +464,15 @@ namespace UniwersalnyDesktop
 
         #endregion
 
-
-
-
-        #region - Region - interakcja z użytkownikiem - labele (linki)
+        #region interakcja z użytkownikiem - labele (linki)
 
         private void EditAppsLabel_Click(object sender, EventArgs e)
         {
-            AppEditorForm appEditor = new AppEditorForm( dbConnection, SqlQueries.getAppList.Replace("@filter", ""), appDictionary);
+            string query = @"select ap.ID_app, ap.show_name, ap.name_app, ap.name_app, ap.path_app, ap.path_app, ap.name_db, ap.srod_app, ap.variant from [dbo].[app_list] as ap 
+                        inner join app_users as au on ap.ID_app = au.ID_app 
+                        inner join users_list as ul on ul.ID_user = au.ID_user                         
+                        group by ap.ID_app, ap.name_app, ap.name_app, ap.path_app, ap.show_name, ap.name_db, ap.srod_app, ap.variant";
+            AppEditorForm appEditor = new AppEditorForm( dbConnection, query, appDictionary);
             appEditor.ShowDialog();
         }
 
@@ -480,7 +498,8 @@ namespace UniwersalnyDesktop
 
         private void EditUsersLabel_Click(object sender, EventArgs e)
         {
-            UserEditorForm userEditor = new UserEditorForm(dbConnection, SqlQueries.getUsers +"'root'");
+            string query = "select  ID_user, imie_user, nazwisko_user,login_user, windows_user from users_list where login_user is not null and login_user <> '" + adminLogin + "'";
+            UserEditorForm userEditor = new UserEditorForm(dbConnection, query);
             userEditor.ShowDialog();
         }
 
