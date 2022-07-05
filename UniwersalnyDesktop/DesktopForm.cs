@@ -81,14 +81,17 @@ namespace UniwersalnyDesktop
 
         private void readDesktopData()
         {
-            string userLogin = userData.getQueryData()[0].ToList()[0].ToString();
-            string query = SqlQueries.getDesktopAppData + "'" + userLogin + "'";
+            string userLogin = userData.getDataValue(0, "login_user").ToString();
+            string query = @"select ap.ID_app, ap.name_app, ap.path_app, ap.show_name, au.Grant_app, ap.name_db from [dbo].[app_list] as ap 
+                                                    inner join app_users as au on ap.ID_app = au.ID_app 
+                                                    inner join users_list as ul on ul.ID_user = au.ID_user 
+                                                    where ap.name_db is not null and srod_app = 'Windows' and ul.login_user = '" + userLogin + "'";
             desktopData = dbReader.readFromDB(query);
         }
 
         private void setupDesktop()
         {
-            this.Text = "Zalogowano jako " + userData.getQueryData()[0].ToList()[2] + " " + userData.getQueryData()[0].ToList()[3];
+            this.Text = "Zalogowano jako " + userData.getDataValue(0, "imie_user").ToString() + " " + userData.getDataValue(0, "nazwisko_user").ToString();
             generateDesktopLayout();
         }
 
