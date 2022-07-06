@@ -38,9 +38,9 @@ namespace UniwersalnyDesktop
         {
             this.Text = "Edytor ról " + currentApp.displayName;
 
-            //ukrywam kolumny dotyczące aplikacji, bo i tak nie mogą być do edycji a wartości w nich niczego nie wnoszą
-            base.baseDatagrid.Columns[SqlQueries.getRolaList_rolaAppIdIndex].Visible = false;
-            base.baseDatagrid.Columns[SqlQueries.getRolaList_rolaAppNameIndex].Visible = false;
+            //ukrywam kolumny id i nazwy aplikacji, bo i tak nie mogą być do edycji a wartości w nich niczego nie wnoszą
+            base.baseDatagrid.Columns[3].Visible = false;
+            base.baseDatagrid.Columns[4].Visible = false;
             base.baseDatagrid.ReadOnly = true;
 
             //na starcie okna wyświetlam moduły roli pierwszej od góry
@@ -170,7 +170,7 @@ namespace UniwersalnyDesktop
             string rolaId = "";
             DataGridViewCell cell = baseDatagrid.CurrentCell;
             int columnIndex = cell.ColumnIndex;
-            if(columnIndex == SqlQueries.getRolaList_rolaIdIndex && cell.Value != null)
+            if(columnIndex == 0 && cell.Value != null)  //położenie Id roli aplikacji
             {
                 rolaId = cell.Value.ToString();
                 oldRola = currentRola;

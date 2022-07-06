@@ -1,13 +1,6 @@
 ﻿using DatabaseInterface;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using UtilityTools;
 
@@ -28,6 +21,12 @@ namespace UniwersalnyDesktop
         public LoginForm()
         {
             InitializeComponent();
+#if DEBUG
+            userLogin = "root";
+            userPassword = "root";
+            logIn();
+            this.Hide();
+#endif
         }
 
         #region interakcja z użytkownikiem

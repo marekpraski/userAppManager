@@ -83,7 +83,7 @@ namespace UniwersalnyDesktop
         {
             DataGridViewCell cell = baseDatagrid.CurrentCell;
             int columnIndex = cell.ColumnIndex;
-            if (columnIndex == SqlQueries.getAppList_appIdIndex && cell.Value != null)
+            if (columnIndex == 0 && cell.Value != null) //położenie ID aplikacji
             {
                 string appId = cell.Value.ToString();
                 if (appDictionary.ContainsKey(appId))

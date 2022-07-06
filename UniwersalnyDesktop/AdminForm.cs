@@ -437,7 +437,6 @@ namespace UniwersalnyDesktop
         {
             saveChanges();
             saveButton.Enabled = false;         //gdy true, pyta czy zapisać zmiany
-            this.Dispose();
             this.Close();
         }
 
@@ -483,7 +482,9 @@ namespace UniwersalnyDesktop
             {
                 App app;
                 appDictionary.TryGetValue(currentSelectedApp.Name, out app);
-                string query = SqlQueries.getRolaList.Replace("@filter", SqlQueries.getRolaList_rolaFilter_AppId) + app.id;
+                string query = @"select ra.ID_rola, ra.name_rola, ra.descr_rola, al.ID_app, al.appDisplayName from [dbo].[rola_app]  as ra 
+                                inner join app_list as al on ra.ID_app=al.ID_app 
+                                where al.ID_app = " + app.id;
 
                 RolaEditorForm dbRolaEditor = new RolaEditorForm(dbConnection, query, app);
                 dbRolaEditor.ShowDialog();
@@ -663,7 +664,8 @@ namespace UniwersalnyDesktop
         //zmienia kolor zaznaczonego po kliknięciu w inne okno; żeby działało parametr HideSelection musi być true
         private void AppListView_Leave(object sender, EventArgs e)
         {
-            currentSelectedApp.BackColor = Color.Aqua;
+            if(currentSelectedApp != null)
+                currentSelectedApp.BackColor = Color.Aqua;
         }
 
         #endregion
@@ -1139,6 +1141,18 @@ namespace UniwersalnyDesktop
 
         private string generateSingleQuery(DesktopUser user, string queryType, AppDataItem newAppData, AppDataItem oldAppData)
         {
+            string updateUserRola = "update rola_users set ID_rola = @newRolaId where ID_rola = @oldRolaId and ID_User = @userId; ";
+
+            string deleteUserApp = "update app_users set Grant_app=0 where ID_app = @appId and ID_user = @userId; ";
+
+            string deleteUserAppAndRola = @"delete from rola_users where ID_rola=@rolaId and ID_user=@userId; 
+                                            update app_users set Grant_app=0 where ID_app = @appId and ID_user = @userId; ";
+
+            string insertUserApp = @"update app_users set Grant_app=1 where ID_app = @appId and ID_user = @userId; ";
+
+            string insertUserAppAndRola = @"update app_users set Grant_app=1 where ID_app = @appId and ID_user = @userId; 
+                                            insert into rola_users(ID_rola, ID_user, descr) values(@rolaId, @userId, null); ";
+
             string newAppId = newAppData.appId;
             string newRolaId = newAppData.rolaId;
             string oldRolaId = "";
@@ -1156,24 +1170,24 @@ namespace UniwersalnyDesktop
                 case "delete":
                     if (oldRolaId.Equals(""))
                     {
-                        query = SqlQueries.deleteUserApp.Replace("@appId", oldAppId).Replace("@userId", user.id) + "\r\n";
+                        query = deleteUserApp.Replace("@appId", oldAppId).Replace("@userId", user.id) + "\r\n";
                     }
                     else
                     {
-                        query = SqlQueries.deleteUserAppAndRola.Replace("@appId", oldAppId).Replace("@rolaId", oldRolaId).Replace("@userId", user.id) + "\r\n";
+                        query = deleteUserAppAndRola.Replace("@appId", oldAppId).Replace("@rolaId", oldRolaId).Replace("@userId", user.id) + "\r\n";
                     }
                     break;
                 case "update":
-                        query = query = SqlQueries.updateUserRola.Replace("@newRolaId", newRolaId).Replace("@oldRolaId", oldRolaId).Replace("@userId", user.id) + "\r\n";
+                        query = updateUserRola.Replace("@newRolaId", newRolaId).Replace("@oldRolaId", oldRolaId).Replace("@userId", user.id) + "\r\n";
                     break;
                 case "insert":
                     if (newRolaId.Equals(""))
                     {
-                        query = SqlQueries.insertUserApp.Replace("@appId", newAppId).Replace("@userId", user.id) + "\r\n";
+                        query = insertUserApp.Replace("@appId", newAppId).Replace("@userId", user.id) + "\r\n";
                     }
                     else
                     {
-                        query = SqlQueries.insertUserAppAndRola.Replace("@appId", newAppId).Replace("@rolaId", newRolaId).Replace("@userId", user.id) + "\r\n";
+                        query = insertUserAppAndRola.Replace("@appId", newAppId).Replace("@rolaId", newRolaId).Replace("@userId", user.id) + "\r\n";
                     }
                     break;
             }
@@ -1207,6 +1221,7 @@ namespace UniwersalnyDesktop
             rolaDict.Clear();
             userAppChangeDict.Clear();
             userBackupDict.Clear();
+            moduleDict.Clear();
 
             userTreeView.Nodes.Clear();
             appListView.Items.Clear();

@@ -119,7 +119,6 @@
       <DependentUpon>MyMessageBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
-    <Compile Include="SqlQueries.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DesktopUser.cs" />
     <Compile Include="TextManipulator.cs" />
