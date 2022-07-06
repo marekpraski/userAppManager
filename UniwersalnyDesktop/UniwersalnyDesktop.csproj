@@ -46,27 +46,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddApplicationToProfile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddApplicationToProfile.designer.cs">
+      <DependentUpon>AddApplicationToProfile.cs</DependentUpon>
+    </Compile>
     <Compile Include="AdminForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="AdminForm.Designer.cs">
       <DependentUpon>AdminForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="App.cs" />
+    <Compile Include="DesktopItems\App.cs" />
     <Compile Include="AppDataDisplay.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="AppDataDisplay.Designer.cs">
       <DependentUpon>AppDataDisplay.cs</DependentUpon>
     </Compile>
-    <Compile Include="AppDataItem.cs" />
+    <Compile Include="DesktopItems\AppDataItem.cs" />
     <Compile Include="AppEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="AppEditorForm.Designer.cs">
       <DependentUpon>AppEditorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="AppModule.cs" />
+    <Compile Include="DesktopItems\AppModule.cs" />
     <Compile Include="CellConverter.cs" />
     <Compile Include="ChangedDataBundle.cs" />
     <Compile Include="ConnectionConfigurator.cs">
@@ -82,6 +88,13 @@
     </Compile>
     <Compile Include="DBEditorForm.Designer.cs">
       <DependentUpon>DBEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DesktopItems\DesktopProfile.cs" />
+    <Compile Include="DesktopProfileEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DesktopProfileEditor.Designer.cs">
+      <DependentUpon>DesktopProfileEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="EditableDatagridControl.cs">
       <SubType>UserControl</SubType>
@@ -104,7 +117,7 @@
     </Compile>
     <Compile Include="DBEditorFormatter.cs" />
     <Compile Include="ProgramSettings.cs" />
-    <Compile Include="Rola.cs" />
+    <Compile Include="DesktopItems\Rola.cs" />
     <Compile Include="DesktopForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -127,13 +140,16 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DesktopUser.cs" />
+    <Compile Include="DesktopItems\DesktopUser.cs" />
     <Compile Include="UserEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UserEditorForm.Designer.cs">
       <DependentUpon>UserEditorForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="AddApplicationToProfile.resx">
+      <DependentUpon>AddApplicationToProfile.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AdminForm.resx">
       <DependentUpon>AdminForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -148,6 +164,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DBEditorForm.resx">
       <DependentUpon>DBEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DesktopProfileEditor.resx">
+      <DependentUpon>DesktopProfileEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditableDatagridControl.resx">
       <DependentUpon>EditableDatagridControl.cs</DependentUpon>
@@ -208,6 +227,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Save_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Refresh_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Add_16x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

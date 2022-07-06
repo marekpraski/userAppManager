@@ -17,7 +17,7 @@ namespace UniwersalnyDesktop
         private QueryData userData;     //login_user=0, windows_user=1,imie_user=2, nazwisko_user=3
 
         private DBReader dbReader;
-        public SqlConnection dbConnection { get; private set; }
+        public static SqlConnection dbConnection { get; private set; }
         public LoginForm()
         {
             InitializeComponent();
@@ -74,7 +74,7 @@ namespace UniwersalnyDesktop
         #region logowanie - uruchamianie okna admina lub zwykłego użytkownika
         private void logIn()
         {
-            this.dbConnection = createSqlConnection();
+            dbConnection = createSqlConnection();
             if (verifyUser())
             {
                 ProgramSettings.UserType userType = getUserType();

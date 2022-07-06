@@ -52,6 +52,7 @@
             this.ustawZmiennaSrodowiskowaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.ZarzadzajProfilamiMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -269,7 +270,8 @@
             this.btnUstawieniaSystemowe.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnUstawieniaSystemowe.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aktualizujWpisyBibliotekMenuItem,
-            this.ustawZmiennaSrodowiskowaMenuItem});
+            this.ustawZmiennaSrodowiskowaMenuItem,
+            this.ZarzadzajProfilamiMenuItem});
             this.btnUstawieniaSystemowe.Image = global::UniwersalnyDesktop.Properties.Resources.Settings_16x;
             this.btnUstawieniaSystemowe.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnUstawieniaSystemowe.Name = "btnUstawieniaSystemowe";
@@ -299,6 +301,13 @@
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
+            // ZarzadzajProfilamiMenuItem
+            // 
+            this.ZarzadzajProfilamiMenuItem.Name = "ZarzadzajProfilamiMenuItem";
+            this.ZarzadzajProfilamiMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.ZarzadzajProfilamiMenuItem.Text = "Zarządzaj profilami";
+            this.ZarzadzajProfilamiMenuItem.Click += new System.EventHandler(this.ZarzadzajProfilamiMenuItem_Click);
             // 
             // AdminForm
             // 
@@ -350,5 +359,6 @@
         private System.Windows.Forms.ToolStripMenuItem ustawZmiennaSrodowiskowaMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem ZarzadzajProfilamiMenuItem;
     }
 }

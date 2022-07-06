@@ -14,7 +14,7 @@ namespace UniwersalnyDesktop
     public partial class AdminForm : Form
     {
 
-        #region Region - parametry
+        #region prywatne właściwości
 
         private DBReader dbReader;
         private SqlConnection dbConnection;
@@ -27,9 +27,9 @@ namespace UniwersalnyDesktop
         private Dictionary<string, string> sqlUsersDict;            //lista użytkowników sql, kluczem jest Id, wartością nazwa użytkownika wyświetlana w drzewie
         private Dictionary<string, string> windowsUsersDict;      //lista użytkowników domenowych, kluczem jest Id, , wartością nazwa użytkownika wyświetlana w drzewie
         private Dictionary<string, string> duplicatedWindowsUsers;        //jeżeli loginy  domenowe się powtarzają to ten program nie może działać poprawnie
-                                                                                 //wychwytuję powtarzające się loginy i je wyświetlam
+                                                                          //wychwytuję powtarzające się loginy i je wyświetlam
 
-
+        private Dictionary<string, DesktopProfile> profileDict;     //słownik wszystkich profili zdefiniowanych w Desktopie, kluczem jest id
         private Dictionary<string, App> appDictionary;             //lista wszystkich aplikacji zdefiniowanych w desktopie, kluczem jest Id
         private Dictionary<string, Rola> rolaDict;                //lista wszystkich ról aplikacji, kluczem jest Id_rola
         private Dictionary<string, AppModule> moduleDict;       //lista wszystkich modułów aplikacji, kluczem jest ID_mod
@@ -99,6 +99,7 @@ namespace UniwersalnyDesktop
             windowsUsersDict = new Dictionary<string, string>();
             duplicatedWindowsUsers = new Dictionary<string, string>();
 
+            profileDict = new Dictionary<string, DesktopProfile>();
             appDictionary = new Dictionary<string, App>();
             rolaDict = new Dictionary<string, Rola>();
             moduleDict = new Dictionary<string, AppModule>();
@@ -119,9 +120,11 @@ namespace UniwersalnyDesktop
         private void readAllData()
         {
             getUserData();
+            getProfileData();
             getAppData();
             getAppModules();
             getRolaData();
+            getProfileApps();
             getUserApps();
         }
 
@@ -216,13 +219,22 @@ namespace UniwersalnyDesktop
         #endregion
 
         #region czytanie aplikacji i modułów i ról z bazy danych
+
+        private void getProfileData()
+        {
+            string query = @"  select [ID_profile], [name_profile] from [profile_desktop]";
+            QueryData qd = new DBReader(LoginForm.dbConnection).readFromDB(query);
+            for (int i = 0; i < qd.dataRowsNumber; i++)
+            {
+                string id = qd.getDataValue(i, "ID_profile").ToString();
+                string name = qd.getDataValue(i, "name_profile").ToString();
+                this.profileDict.Add(id, new DesktopProfile(id, name));
+            }
+        }
+
         private void getAppData()
         {
-            string query = @"select ap.ID_app, ap.show_name, ap.name_app, ap.name_app, ap.path_app, ap.path_app, ap.name_db, ap.srod_app, ap.variant from [dbo].[app_list] as ap 
-                        inner join app_users as au on ap.ID_app = au.ID_app 
-                        inner join users_list as ul on ul.ID_user = au.ID_user 
-                        where ap.show_name is not null 
-                        group by ap.ID_app, ap.name_app, ap.name_app, ap.path_app, ap.show_name, ap.name_db, ap.srod_app, ap.variant";
+            string query = @"select ap.ID_app, ap.show_name, ap.name_app, ap.path_app, ap.name_db, ap.srod_app, ap.variant from [dbo].[app_list] as ap ";
             QueryData appData = dbReader.readFromDB(query);
 
             for (int i = 0; i < appData.dataRowsNumber; i++)
@@ -230,7 +242,9 @@ namespace UniwersalnyDesktop
 
                 App app = new App();
                 app.id = appData.getDataValue(i, "ID_app").ToString();
-                app.displayName = appData.getDataValue(i, "show_name").ToString(); ;
+                app.displayName = appData.getDataValue(i, "show_name").ToString();
+                app.databaseName = appData.getDataValue(i, "name_db").ToString();
+                app.executionPath = appData.getDataValue(i, "path_app").ToString();
                 appDictionary.Add(app.id, app);
             }
         }
@@ -296,6 +310,18 @@ namespace UniwersalnyDesktop
                     string grantApp = rolaModuleData.getDataValue(i, "Grant_app").ToString();
                     rola.addModule(module, grantApp);
                 }
+            }
+        }
+
+        private void getProfileApps()
+        {
+            string query = "  select [ID_profile], [ID_app] from [profile_app]";
+            QueryData qd = dbReader.readFromDB(query);
+            for (int i = 0; i < qd.dataRowsNumber; i++)
+            {
+                string profileId = qd.getDataValue(i, "ID_profile").ToString();
+                string appId = qd.getDataValue(i, "ID_app").ToString();
+                profileDict[profileId].addAppToProfile(appDictionary[appId]);
             }
         }
         #endregion
@@ -1244,6 +1270,7 @@ namespace UniwersalnyDesktop
             setupAdminForm();
         }
 
+        #region działanie elementów menu Ustawienia systemowe
         private void aktualizujWpisyBibliotekMenuItem_Click(object sender, EventArgs e)
         {
             string appPath = Application.StartupPath;
@@ -1259,7 +1286,7 @@ namespace UniwersalnyDesktop
                     pb.GacInstall(lib);
                     MessageBox.Show("Biblioteki zostały zaktualizowane", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-                catch(Exception ex) 
+                catch (Exception ex)
                 {
                     UtilityTools.MessageBoxError.ShowBox("Biblioteki zostały zaktualizowane", "Błąd", ex.Message + ex.StackTrace);
                 }
@@ -1297,10 +1324,17 @@ namespace UniwersalnyDesktop
 
                 MessageBox.Show("Zmienna została ustawiona", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
-                UtilityTools.MessageBoxError.ShowBox("Zmienna nie została ustawiona", "Błąd", ex.Message + ex.StackTrace); 
+                UtilityTools.MessageBoxError.ShowBox("Zmienna nie została ustawiona", "Błąd", ex.Message + ex.StackTrace);
             }
         }
+
+        private void ZarzadzajProfilamiMenuItem_Click(object sender, EventArgs e)
+        {
+            DesktopProfileEditor profileEditor = new DesktopProfileEditor(this.profileDict);
+            profileEditor.Show();
+        } 
+        #endregion
     }
 }
