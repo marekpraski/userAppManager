@@ -68,6 +68,12 @@
     <Compile Include="AppModule.cs" />
     <Compile Include="CellConverter.cs" />
     <Compile Include="ChangedDataBundle.cs" />
+    <Compile Include="ConnectionConfigurator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConnectionConfigurator.designer.cs">
+      <DependentUpon>ConnectionConfigurator.cs</DependentUpon>
+    </Compile>
     <Compile Include="DataGridCell.cs" />
     <Compile Include="DataGridHandler.cs" />
     <Compile Include="DBEditorForm.cs">
@@ -137,6 +143,9 @@
     <EmbeddedResource Include="AppEditorForm.resx">
       <DependentUpon>AppEditorForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ConnectionConfigurator.resx">
+      <DependentUpon>ConnectionConfigurator.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DBEditorForm.resx">
       <DependentUpon>DBEditorForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -166,6 +175,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="userEditorForm.resx">
       <DependentUpon>UserEditorForm.cs</DependentUpon>
@@ -192,6 +202,12 @@
       <Project>{958e338d-e246-40fb-b1c4-8b362756bbb5}</Project>
       <Name>UtilityTools</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Settings_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Save_16x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

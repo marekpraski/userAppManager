@@ -11,7 +11,7 @@ namespace UniwersalnyDesktop
         private string userLogin;
         private string userPassword;
 
-        private string mainPath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase.ToString();     //katalog z którego uruchamiany jest program, wykrywany przez DBConnector i ustawiany tutaj
+        public static string mainPath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase.ToString();     //katalog z którego uruchamiany jest program, wykrywany przez DBConnector i ustawiany tutaj
                                              //dla DEBUGA ustawiony jest w metodzie ReadAllData
 
         private QueryData userData;     //login_user=0, windows_user=1,imie_user=2, nazwisko_user=3
@@ -142,6 +142,13 @@ namespace UniwersalnyDesktop
             {
                 return ProgramSettings.UserType.RegularUser;
             }
+        }
+
+        private void btnUstawienia_Click(object sender, EventArgs e)
+        {
+            Form formConnectionConfiguration = new ConnectionConfigurator();
+            formConnectionConfiguration.Show();
+            formConnectionConfiguration.Activate();
         }
     }
 }
