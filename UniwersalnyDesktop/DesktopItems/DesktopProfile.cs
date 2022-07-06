@@ -25,5 +25,14 @@ namespace UniwersalnyDesktop
             if (applications.ContainsKey(aplikacja.id))
                 applications.Remove(aplikacja.id);
         }
+
+        /// <summary>
+        /// w parametrze id aplikacji
+        /// </summary>
+        internal void removeAppFromProfile(string idApp)
+        {
+            if (applications.ContainsKey(idApp))
+                applications.Remove(idApp);
+        }
     }
 }

@@ -1273,24 +1273,25 @@ namespace UniwersalnyDesktop
         #region działanie elementów menu Ustawienia systemowe
         private void aktualizujWpisyBibliotekMenuItem_Click(object sender, EventArgs e)
         {
-            string appPath = Application.StartupPath;
-            string[] paths = { @"\..\lib\" };
-            string targetDirectory = appPath + Path.Combine(paths);
+            MessageBox.Show("Co ja mam robić i po co???");
+            //string appPath = Application.StartupPath;
+            //string[] paths = { @"\..\lib\" };
+            //string targetDirectory = appPath + Path.Combine(paths);
 
-            string[] fileEntries = Directory.GetFiles(@targetDirectory, "*.*", SearchOption.AllDirectories);
-            foreach (string lib in fileEntries)
-            {
-                try
-                {
-                    System.EnterpriseServices.Internal.Publish pb = new System.EnterpriseServices.Internal.Publish();
-                    pb.GacInstall(lib);
-                    MessageBox.Show("Biblioteki zostały zaktualizowane", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    UtilityTools.MessageBoxError.ShowBox("Biblioteki zostały zaktualizowane", "Błąd", ex.Message + ex.StackTrace);
-                }
-            }
+            //string[] fileEntries = Directory.GetFiles(@targetDirectory, "*.*", SearchOption.AllDirectories);
+            //foreach (string lib in fileEntries)
+            //{
+            //    try
+            //    {
+            //        System.EnterpriseServices.Internal.Publish pb = new System.EnterpriseServices.Internal.Publish();
+            //        pb.GacInstall(lib);
+            //        MessageBox.Show("Biblioteki zostały zaktualizowane", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        UtilityTools.MessageBoxError.ShowBox("Biblioteki zostały zaktualizowane", "Błąd", ex.Message + ex.StackTrace);
+            //    }
+            //}
         }
 
         ///  <summary>

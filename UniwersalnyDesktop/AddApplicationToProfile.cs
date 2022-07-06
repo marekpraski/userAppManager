@@ -51,6 +51,7 @@ namespace UniwersalnyDesktop
                     app.displayName
                     );
             }
+            applicationDGV.Sort(applicationDGV.Columns["colNazwa"], System.ComponentModel.ListSortDirection.Ascending);
         }
         private void btnZapisz_Click(object sender, EventArgs e)
         {

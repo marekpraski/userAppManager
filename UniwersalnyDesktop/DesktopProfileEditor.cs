@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DatabaseInterface;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using UtilityTools;
@@ -34,7 +35,7 @@ namespace UniwersalnyDesktop
 
         }
 
-        private void btnDodaj_Click(object sender, EventArgs e)
+        private void btnDodajAplikacje_Click(object sender, EventArgs e)
         {
             string idProfile = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
             AddApplicationToProfile addAppForm = new AddApplicationToProfile(profileDict[idProfile]);
@@ -43,9 +44,30 @@ namespace UniwersalnyDesktop
                 fillDgvProfileApps(idProfile);
         }
 
-        private void btnUsun_Click(object sender, EventArgs e)
+        private void btnUsunAplikacje_Click(object sender, EventArgs e)
         {
+            string idProfile = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
+            string[] idApps = getSelectedApps();
+            for (int i = 0; i < idApps.Length; i++)
+            {
+                profileDict[idProfile].removeAppFromProfile(idApps[i]);
+            }
+            
+            string query = "delete from profile_app where ID_profile = " + idProfile + "  and ID_app in (" + String.Join(",", idApps) + "); ";
+            new DBWriter(LoginForm.dbConnection).executeQuery(query);
+            fillDgvProfileApps(idProfile);
+        }
 
+        private string[] getSelectedApps()
+        {
+            string[] ids = new string[dgvProfileApps.SelectedRows.Count];
+            int i = 0;
+            foreach(DataGridViewRow row in dgvProfileApps.SelectedRows)
+            {
+                ids[i] = row.Cells["colId"].Value.ToString();
+                i++;
+            }
+            return ids;
         }
 
         private void btnOdswiez_Click(object sender, EventArgs e)

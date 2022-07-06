@@ -237,5 +237,14 @@
   <ItemGroup>
     <None Include="Resources\Add_16x.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AddFile_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LinkRemoved_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LinkValidator_16x.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
