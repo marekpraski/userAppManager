@@ -62,8 +62,16 @@ namespace UniwersalnyDesktop
             }
         }
 
+        private void btnUstawienia_Click(object sender, EventArgs e)
+        {
+            Form formConnectionConfiguration = new ConnectionConfigurator();
+            formConnectionConfiguration.Show();
+            formConnectionConfiguration.Activate();
+        }
+
         #endregion
 
+        #region logowanie - uruchamianie okna admina lub zwykłego użytkownika
         private void logIn()
         {
             this.dbConnection = createSqlConnection();
@@ -81,7 +89,22 @@ namespace UniwersalnyDesktop
                 }
             }
         }
+        private void openDesktopForm()
+        {
+            DesktopForm desktop = new DesktopForm(userData, userPassword, dbReader, mainPath);
+            //this.Hide();
+            desktop.ShowDialog();
+        }
 
+        private void openAdminForm()
+        {
+            AdminForm adminForm = new AdminForm(userLogin, dbConnection, dbReader);
+            //this.Hide();
+            adminForm.ShowDialog();
+        }
+        #endregion
+
+        #region czytanie danych użytkownika
         private bool verifyUser()
         {
             this.userData = readUserata();
@@ -114,27 +137,11 @@ namespace UniwersalnyDesktop
             return dbReader.readFromDB(query);
         }
 
-
-        private void openDesktopForm()
-        {           
-            DesktopForm desktop = new DesktopForm(userData, userPassword, dbReader, mainPath);
-            //this.Hide();
-            desktop.ShowDialog();
-        }
-
-        private void openAdminForm()
-        {
-            AdminForm adminForm = new AdminForm(userLogin, dbConnection, dbReader);
-            //this.Hide();
-            adminForm.ShowDialog();
-        }
-
-
         private ProgramSettings.UserType getUserType()
         {
             string userName = userData.getDataValue(0, "imie_user").ToString() + " " + userData.getDataValue(0, "nazwisko_user").ToString();
-                
-            if(userName.Equals(ProgramSettings.administratorName))
+
+            if (userName.Equals(ProgramSettings.administratorName))
             {
                 return ProgramSettings.UserType.Administrator;
             }
@@ -142,13 +149,8 @@ namespace UniwersalnyDesktop
             {
                 return ProgramSettings.UserType.RegularUser;
             }
-        }
+        } 
+        #endregion
 
-        private void btnUstawienia_Click(object sender, EventArgs e)
-        {
-            Form formConnectionConfiguration = new ConnectionConfigurator();
-            formConnectionConfiguration.Show();
-            formConnectionConfiguration.Activate();
-        }
     }
 }

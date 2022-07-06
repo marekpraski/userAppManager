@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using DatabaseInterface;
+using System.IO;
+using Microsoft.Win32;
+using System.Diagnostics.Contracts;
+using System.Runtime.InteropServices;
 
 namespace UniwersalnyDesktop
 {
@@ -1245,5 +1244,63 @@ namespace UniwersalnyDesktop
             setupAdminForm();
         }
 
+        private void aktualizujWpisyBibliotekMenuItem_Click(object sender, EventArgs e)
+        {
+            string appPath = Application.StartupPath;
+            string[] paths = { @"\..\lib\" };
+            string targetDirectory = appPath + Path.Combine(paths);
+
+            string[] fileEntries = Directory.GetFiles(@targetDirectory, "*.*", SearchOption.AllDirectories);
+            foreach (string lib in fileEntries)
+            {
+                try
+                {
+                    System.EnterpriseServices.Internal.Publish pb = new System.EnterpriseServices.Internal.Publish();
+                    pb.GacInstall(lib);
+                    MessageBox.Show("Biblioteki zostały zaktualizowane", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch(Exception ex) 
+                {
+                    UtilityTools.MessageBoxError.ShowBox("Biblioteki zostały zaktualizowane", "Błąd", ex.Message + ex.StackTrace);
+                }
+            }
+        }
+
+        ///  <summary>
+        ///  constant for registering and authentication of users
+        ///  </summary>
+        ///
+        const int HWND_BROADCAST = 0xffff;
+        const uint WM_SETTINGCHANGE = 0x001a;
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        static extern bool SendNotifyMessage(IntPtr hWnd, uint Msg,
+            UIntPtr wParam, string lParam);
+
+        private void ustawZmiennaSrodowiskowaMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (var envKey = Registry.LocalMachine.OpenSubKey(
+                    @"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",
+                    true))
+                {
+                    Contract.Assert(envKey != null, @"registry key is missing!");
+
+                    string appPath = Application.StartupPath;
+                    string[] paths = { @"\config.xml" };
+                    string path = appPath + Path.Combine(paths);
+
+                    envKey.SetValue("desktopConfFile", path);
+                    SendNotifyMessage((IntPtr)HWND_BROADCAST, WM_SETTINGCHANGE, (UIntPtr)0, "Environment");
+                }
+
+                MessageBox.Show("Zmienna została ustawiona", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch(Exception ex) 
+            {
+                UtilityTools.MessageBoxError.ShowBox("Zmienna nie została ustawiona", "Błąd", ex.Message + ex.StackTrace); 
+            }
+        }
     }
 }
