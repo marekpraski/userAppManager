@@ -1294,7 +1294,7 @@ namespace UniwersalnyDesktop
 
             readAllData();
             setupAdminForm();
-        } 
+        }
         #endregion
 
     }

@@ -39,6 +39,12 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.btnUstawieniaSystemowe = new System.Windows.Forms.ToolStripDropDownButton();
+            this.aktualizujWpisyBibliotekMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ustawZmiennaSrodowiskowaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ZarzadzajProfilamiMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.saveButton = new System.Windows.Forms.ToolStripButton();
             this.saveAndCloseButton = new System.Windows.Forms.ToolStripButton();
             this.statusInformationButton = new System.Windows.Forms.ToolStripButton();
@@ -47,12 +53,6 @@
             this.editAppsLabel = new System.Windows.Forms.Label();
             this.editRolaLabel = new System.Windows.Forms.Label();
             this.editUsersLabel = new System.Windows.Forms.Label();
-            this.btnUstawieniaSystemowe = new System.Windows.Forms.ToolStripDropDownButton();
-            this.aktualizujWpisyBibliotekMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ustawZmiennaSrodowiskowaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.ZarzadzajProfilamiMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -173,6 +173,50 @@
             this.toolStrip1.TabIndex = 8;
             this.toolStrip1.Text = "toolStrip1";
             // 
+            // btnUstawieniaSystemowe
+            // 
+            this.btnUstawieniaSystemowe.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnUstawieniaSystemowe.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aktualizujWpisyBibliotekMenuItem,
+            this.ustawZmiennaSrodowiskowaMenuItem,
+            this.ZarzadzajProfilamiMenuItem});
+            this.btnUstawieniaSystemowe.Image = global::UniwersalnyDesktop.Properties.Resources.Settings_16x;
+            this.btnUstawieniaSystemowe.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnUstawieniaSystemowe.Name = "btnUstawieniaSystemowe";
+            this.btnUstawieniaSystemowe.Size = new System.Drawing.Size(29, 22);
+            this.btnUstawieniaSystemowe.Text = "Ustawienia systemowe";
+            // 
+            // aktualizujWpisyBibliotekMenuItem
+            // 
+            this.aktualizujWpisyBibliotekMenuItem.Name = "aktualizujWpisyBibliotekMenuItem";
+            this.aktualizujWpisyBibliotekMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.aktualizujWpisyBibliotekMenuItem.Text = "Aktualizuj wpisy bibliotek";
+            this.aktualizujWpisyBibliotekMenuItem.Click += new System.EventHandler(this.aktualizujWpisyBibliotekMenuItem_Click);
+            // 
+            // ustawZmiennaSrodowiskowaMenuItem
+            // 
+            this.ustawZmiennaSrodowiskowaMenuItem.Name = "ustawZmiennaSrodowiskowaMenuItem";
+            this.ustawZmiennaSrodowiskowaMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.ustawZmiennaSrodowiskowaMenuItem.Text = "Ustaw zmienną środowiskową";
+            this.ustawZmiennaSrodowiskowaMenuItem.Click += new System.EventHandler(this.ustawZmiennaSrodowiskowaMenuItem_Click);
+            // 
+            // ZarzadzajProfilamiMenuItem
+            // 
+            this.ZarzadzajProfilamiMenuItem.Name = "ZarzadzajProfilamiMenuItem";
+            this.ZarzadzajProfilamiMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.ZarzadzajProfilamiMenuItem.Text = "Zarządzaj profilami";
+            this.ZarzadzajProfilamiMenuItem.Click += new System.EventHandler(this.ZarzadzajProfilamiMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
             // saveButton
             // 
             this.saveButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -264,50 +308,6 @@
             this.editUsersLabel.TabIndex = 11;
             this.editUsersLabel.Text = "edytuj";
             this.editUsersLabel.Click += new System.EventHandler(this.EditUsersLabel_Click);
-            // 
-            // btnUstawieniaSystemowe
-            // 
-            this.btnUstawieniaSystemowe.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnUstawieniaSystemowe.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aktualizujWpisyBibliotekMenuItem,
-            this.ustawZmiennaSrodowiskowaMenuItem,
-            this.ZarzadzajProfilamiMenuItem});
-            this.btnUstawieniaSystemowe.Image = global::UniwersalnyDesktop.Properties.Resources.Settings_16x;
-            this.btnUstawieniaSystemowe.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnUstawieniaSystemowe.Name = "btnUstawieniaSystemowe";
-            this.btnUstawieniaSystemowe.Size = new System.Drawing.Size(29, 22);
-            this.btnUstawieniaSystemowe.Text = "Ustawienia systemowe";
-            // 
-            // aktualizujWpisyBibliotekMenuItem
-            // 
-            this.aktualizujWpisyBibliotekMenuItem.Name = "aktualizujWpisyBibliotekMenuItem";
-            this.aktualizujWpisyBibliotekMenuItem.Size = new System.Drawing.Size(232, 22);
-            this.aktualizujWpisyBibliotekMenuItem.Text = "Aktualizuj wpisy bibliotek";
-            this.aktualizujWpisyBibliotekMenuItem.Click += new System.EventHandler(this.aktualizujWpisyBibliotekMenuItem_Click);
-            // 
-            // ustawZmiennaSrodowiskowaMenuItem
-            // 
-            this.ustawZmiennaSrodowiskowaMenuItem.Name = "ustawZmiennaSrodowiskowaMenuItem";
-            this.ustawZmiennaSrodowiskowaMenuItem.Size = new System.Drawing.Size(232, 22);
-            this.ustawZmiennaSrodowiskowaMenuItem.Text = "Ustaw zmienną środowiskową";
-            this.ustawZmiennaSrodowiskowaMenuItem.Click += new System.EventHandler(this.ustawZmiennaSrodowiskowaMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
-            // 
-            // ZarzadzajProfilamiMenuItem
-            // 
-            this.ZarzadzajProfilamiMenuItem.Name = "ZarzadzajProfilamiMenuItem";
-            this.ZarzadzajProfilamiMenuItem.Size = new System.Drawing.Size(232, 22);
-            this.ZarzadzajProfilamiMenuItem.Text = "Zarządzaj profilami";
-            this.ZarzadzajProfilamiMenuItem.Click += new System.EventHandler(this.ZarzadzajProfilamiMenuItem_Click);
             // 
             // AdminForm
             // 

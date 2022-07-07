@@ -19,17 +19,19 @@ namespace UniwersalnyDesktop
             fillProfileCombo();
         }
 
+        #region metody na starcie formatki
         private void fillProfileCombo()
         {
             cbProfiles.Items.Clear();
             cbProfiles.Text = "";
-            foreach(string id in profileDict.Keys)
+            foreach (string id in profileDict.Keys)
             {
                 cbProfiles.Items.Add(new ComboboxItem(profileDict[id].name, id));
             }
             cbProfiles.DisplayMember = "displayText";
             cbProfiles.ValueMember = "value";
-        }
+        } 
+        #endregion
 
         #region kliknięcie przycisków na pasku narzędziowym
 
