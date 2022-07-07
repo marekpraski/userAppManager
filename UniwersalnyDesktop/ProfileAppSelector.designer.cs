@@ -1,6 +1,6 @@
 ﻿namespace UniwersalnyDesktop
 {
-    partial class AddApplicationToProfile
+    partial class ProfileAppSelector
     {
         /// <summary>
         /// Required designer variable.

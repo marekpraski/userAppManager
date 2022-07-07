@@ -6,9 +6,15 @@ namespace UniwersalnyDesktop
 {
     public class DesktopProfile
     {
-        public string name { get; }
-        public string id { get; }
+        public string name { get; set; }
+        public string id { get; set; }
+        public string domena { get; set; }
+        public string ldap { get; set; }
         public Dictionary<string, App> applications { get; } = new Dictionary<string, App>();    //kluczem jest id aplikacji
+
+        public DesktopProfile()
+        {
+        }
 
         public DesktopProfile(string profileId, string profileName )
         {

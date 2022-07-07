@@ -5,14 +5,14 @@ using DatabaseInterface;
 
 namespace UniwersalnyDesktop
 {
-    public partial class AddApplicationToProfile : Form
+    public partial class ProfileAppSelector : Form
     {
 
         private DesktopProfile editedProfile;
         private Dictionary<string, App> appDict = new Dictionary<string, App>();
         List<App> addedApps = new List<App>();
 
-        public AddApplicationToProfile(DesktopProfile editedProfile)
+        public ProfileAppSelector(DesktopProfile editedProfile)
         {
             InitializeComponent();
             this.editedProfile = editedProfile;

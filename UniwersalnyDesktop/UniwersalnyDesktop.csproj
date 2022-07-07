@@ -46,11 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddApplicationToProfile.cs">
+    <Compile Include="enums\FormMode.cs" />
+    <Compile Include="ProfileAppSelector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AddApplicationToProfile.designer.cs">
-      <DependentUpon>AddApplicationToProfile.cs</DependentUpon>
+    <Compile Include="ProfileAppSelector.designer.cs">
+      <DependentUpon>ProfileAppSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="AdminForm.cs">
       <SubType>Form</SubType>
@@ -90,11 +91,11 @@
       <DependentUpon>DBEditorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="DesktopItems\DesktopProfile.cs" />
-    <Compile Include="DesktopProfileEditor.cs">
+    <Compile Include="ProfileEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DesktopProfileEditor.Designer.cs">
-      <DependentUpon>DesktopProfileEditor.cs</DependentUpon>
+    <Compile Include="ProfileEditor.Designer.cs">
+      <DependentUpon>ProfileEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="EditableDatagridControl.cs">
       <SubType>UserControl</SubType>
@@ -103,6 +104,12 @@
       <DependentUpon>EditableDatagridControl.cs</DependentUpon>
     </Compile>
     <Compile Include="EditableDatagridControlEventArgs.cs" />
+    <Compile Include="ProfileNew.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProfileNew.Designer.cs">
+      <DependentUpon>ProfileNew.cs</DependentUpon>
+    </Compile>
     <Compile Include="RolaEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -147,8 +154,8 @@
     <Compile Include="UserEditorForm.Designer.cs">
       <DependentUpon>UserEditorForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="AddApplicationToProfile.resx">
-      <DependentUpon>AddApplicationToProfile.cs</DependentUpon>
+    <EmbeddedResource Include="ProfileAppSelector.resx">
+      <DependentUpon>ProfileAppSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="AdminForm.resx">
       <DependentUpon>AdminForm.cs</DependentUpon>
@@ -165,11 +172,14 @@
     <EmbeddedResource Include="DBEditorForm.resx">
       <DependentUpon>DBEditorForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DesktopProfileEditor.resx">
-      <DependentUpon>DesktopProfileEditor.cs</DependentUpon>
+    <EmbeddedResource Include="ProfileEditor.resx">
+      <DependentUpon>ProfileEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditableDatagridControl.resx">
       <DependentUpon>EditableDatagridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProfileNew.resx">
+      <DependentUpon>ProfileNew.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="RolaEditorForm.resx">
       <DependentUpon>RolaEditorForm.cs</DependentUpon>
@@ -245,6 +255,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\LinkValidator_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Edit_16x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -69,14 +69,6 @@ namespace UniwersalnyDesktop
 
         #endregion
 
-        //
-        //
-        //czytanie danych oraz ładowanie drzewa użytkowników i listy aplikacji na starcie formularza
-        //po tej akcji formularz się otwiera i czeka na pierwszą interakcję użytkownika
-        //
-        //
-
-
         public AdminForm(string adminLogin, SqlConnection dbConnection, DBReader dbReader)
         {
             this.dbReader = dbReader;
@@ -87,7 +79,6 @@ namespace UniwersalnyDesktop
             readAllData();
             setupAdminForm();
         }
-
 
         #region wczytywanie danych na starcie formularza
 
@@ -218,17 +209,20 @@ namespace UniwersalnyDesktop
         }
         #endregion
 
-        #region czytanie aplikacji i modułów i ról z bazy danych
+        #region czytanie profili, aplikacji, modułów i ról z bazy danych
 
         private void getProfileData()
         {
-            string query = @"  select [ID_profile], [name_profile] from [profile_desktop]";
+            string query = @"  select ID_profile, name_profile, domena, ldap from [profile_desktop]";
             QueryData qd = new DBReader(LoginForm.dbConnection).readFromDB(query);
             for (int i = 0; i < qd.dataRowsNumber; i++)
             {
                 string id = qd.getDataValue(i, "ID_profile").ToString();
                 string name = qd.getDataValue(i, "name_profile").ToString();
-                this.profileDict.Add(id, new DesktopProfile(id, name));
+                DesktopProfile newProfile = new DesktopProfile(id, name);
+                newProfile.domena = qd.getDataValue(i, "domena").ToString();
+                newProfile.ldap = qd.getDataValue(i, "ldap").ToString();
+                this.profileDict.Add(id, newProfile);
             }
         }
 
@@ -434,13 +428,6 @@ namespace UniwersalnyDesktop
         } 
         #endregion
 
-
-        //
-        //
-        //zdarzenia 
-        //
-        //
-
         #region Region - interakcja z użytkownikiem - pasek narzędziowy
 
         private void HelpButton_Click(object sender, EventArgs e)
@@ -531,7 +518,6 @@ namespace UniwersalnyDesktop
 
         #endregion
 
-
         #region Region - zdarzenia na formularzu AdminForm
 
 
@@ -561,8 +547,6 @@ namespace UniwersalnyDesktop
 
 
         #endregion
-
-
 
         #region Region - interakcja z użytkownikiem - zdarzenia na drzewie użytkowników
 
@@ -633,9 +617,6 @@ namespace UniwersalnyDesktop
 
         #endregion
 
-
-
-
         #region Region - interakcja z użytkownikiem - zdarzenia na liście programów
 
         //zaznaczenie aplikacji na liście appListView powoduje wypełnienie roli tej aplikacji w appRoleListView oraz zafajkowanie checkboxa roli, którą ma ten użytkowni
@@ -695,8 +676,6 @@ namespace UniwersalnyDesktop
 
         #endregion
 
-
-
         #region Region - interakcja z użytkownikiem - zdarzenia na liście ról
 
         private void rolaListView_ItemChecked(object sender, ItemCheckedEventArgs e)
@@ -744,13 +723,6 @@ namespace UniwersalnyDesktop
 
         #endregion
 
-
-        //
-        //
-        //aktualizacja listy aplikacji i ról na skutek interakcji użytkownika
-        //
-        //
-
         #region Region - metody wywoływane na drzewie użytkowników na skutek akcji użytkownika
 
         private void toggleSelectedNodeColour()
@@ -770,8 +742,6 @@ namespace UniwersalnyDesktop
 
 
         #endregion
-
-
 
         #region Region - metody wywoływane na liście aplikacji na skutek akcji użytkownika
 
@@ -828,8 +798,6 @@ namespace UniwersalnyDesktop
         }
 
         #endregion
-
-
 
         #region Region - metody wywoływane na liście ról na skutek akcji użytkownika
 
@@ -947,14 +915,6 @@ namespace UniwersalnyDesktop
 
         
         #endregion
-
-
-        //
-        //
-        //zapamiętywanie zmian i zapisywanie zmian
-        //
-        //
-
 
         #region Region : zapamiętywanie zmian
 
@@ -1135,7 +1095,6 @@ namespace UniwersalnyDesktop
 
         #endregion
 
-
         #region Region : zapisywanie zmian do bazy
 
 
@@ -1222,55 +1181,7 @@ namespace UniwersalnyDesktop
 
         #endregion
 
-
-
-        private List<string> convertColumnDataToList(List<string[]> tableData, int columnNr = 0)
-        {
-            List<string> columnData = new List<string>();
-            for (int i = 0; i < tableData.Count; i++)
-            {
-                string columnItem = tableData[i][columnNr];
-                columnData.Add(columnItem);
-            }
-            return columnData;
-        }
-
-
-        private void resetAdminForm()
-        {
-            allUsersDict.Clear();
-            sqlUsersDict.Clear();
-            windowsUsersDict.Clear();
-            duplicatedWindowsUsers.Clear();
-            appDictionary.Clear();
-            rolaDict.Clear();
-            userAppChangeDict.Clear();
-            userBackupDict.Clear();
-            moduleDict.Clear();
-
-            userTreeView.Nodes.Clear();
-            appListView.Items.Clear();
-            rolaListView.Items.Clear();
-
-            currentSelectedUser = null;
-            previousSelectedUser = null;
-            currentSelectedApp = null;
-            previousSelectedApp = null;
-            previousCheckedRola = null;
-            currentCheckedRola = null;
-            userTreeViewMouseClicked = false;
-            appListMouseClicked = false;
-            rolaListMouseClicked = false;
-
-            saveButton.Enabled = false;
-            saveAndCloseButton.Enabled = false;
-            statusInformationButton.Enabled = false;
-
-            readAllData();
-            setupAdminForm();
-        }
-
-        #region działanie elementów menu Ustawienia systemowe
+        #region interakcja - wybór pozycji menu Ustawienia systemowe
         private void aktualizujWpisyBibliotekMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Co ja mam robić i po co???");
@@ -1333,9 +1244,58 @@ namespace UniwersalnyDesktop
 
         private void ZarzadzajProfilamiMenuItem_Click(object sender, EventArgs e)
         {
-            DesktopProfileEditor profileEditor = new DesktopProfileEditor(this.profileDict);
+            ProfileEditor profileEditor = new ProfileEditor(this.profileDict);
             profileEditor.Show();
+        }
+        #endregion
+
+        #region metody pomocnicze
+        private List<string> convertColumnDataToList(List<string[]> tableData, int columnNr = 0)
+        {
+            List<string> columnData = new List<string>();
+            for (int i = 0; i < tableData.Count; i++)
+            {
+                string columnItem = tableData[i][columnNr];
+                columnData.Add(columnItem);
+            }
+            return columnData;
+        }
+
+
+        private void resetAdminForm()
+        {
+            allUsersDict.Clear();
+            sqlUsersDict.Clear();
+            windowsUsersDict.Clear();
+            duplicatedWindowsUsers.Clear();
+            appDictionary.Clear();
+            rolaDict.Clear();
+            userAppChangeDict.Clear();
+            userBackupDict.Clear();
+            moduleDict.Clear();
+
+            userTreeView.Nodes.Clear();
+            appListView.Items.Clear();
+            rolaListView.Items.Clear();
+
+            currentSelectedUser = null;
+            previousSelectedUser = null;
+            currentSelectedApp = null;
+            previousSelectedApp = null;
+            previousCheckedRola = null;
+            currentCheckedRola = null;
+            userTreeViewMouseClicked = false;
+            appListMouseClicked = false;
+            rolaListMouseClicked = false;
+
+            saveButton.Enabled = false;
+            saveAndCloseButton.Enabled = false;
+            statusInformationButton.Enabled = false;
+
+            readAllData();
+            setupAdminForm();
         } 
         #endregion
+
     }
 }
