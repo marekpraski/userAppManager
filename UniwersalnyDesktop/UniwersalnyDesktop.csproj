@@ -73,10 +73,10 @@
       <DependentUpon>AdminForm.cs</DependentUpon>
     </Compile>
     <Compile Include="DesktopItems\App.cs" />
-    <Compile Include="AppDataDisplay.cs">
+    <Compile Include="userControls\AppDataDisplay.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="AppDataDisplay.Designer.cs">
+    <Compile Include="userControls\AppDataDisplay.Designer.cs">
       <DependentUpon>AppDataDisplay.cs</DependentUpon>
     </Compile>
     <Compile Include="DesktopItems\AppDataItem.cs" />
@@ -110,13 +110,13 @@
     <Compile Include="ProfileEditor.Designer.cs">
       <DependentUpon>ProfileEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditableDatagridControl.cs">
+    <Compile Include="userControls\EditableDatagridControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="EditableDatagridControl.Designer.cs">
+    <Compile Include="userControls\EditableDatagridControl.Designer.cs">
       <DependentUpon>EditableDatagridControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditableDatagridControlEventArgs.cs" />
+    <Compile Include="userControls\EditableDatagridControlEventArgs.cs" />
     <Compile Include="ProfileNew.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -179,7 +179,7 @@
     <EmbeddedResource Include="AdminForm.resx">
       <DependentUpon>AdminForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="AppDataDisplay.resx">
+    <EmbeddedResource Include="userControls\AppDataDisplay.resx">
       <DependentUpon>AppDataDisplay.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="AppEditorForm.resx">
@@ -194,7 +194,7 @@
     <EmbeddedResource Include="ProfileEditor.resx">
       <DependentUpon>ProfileEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditableDatagridControl.resx">
+    <EmbeddedResource Include="userControls\EditableDatagridControl.resx">
       <DependentUpon>EditableDatagridControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProfileNew.resx">
