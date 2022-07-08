@@ -42,7 +42,6 @@
             this.btnUstawieniaSystemowe = new System.Windows.Forms.ToolStripDropDownButton();
             this.aktualizujWpisyBibliotekMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ustawZmiennaSrodowiskowaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ZarzadzajProfilamiMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.saveButton = new System.Windows.Forms.ToolStripButton();
@@ -53,6 +52,10 @@
             this.editAppsLabel = new System.Windows.Forms.Label();
             this.editRolaLabel = new System.Windows.Forms.Label();
             this.editUsersLabel = new System.Windows.Forms.Label();
+            this.profileListView = new System.Windows.Forms.ListView();
+            this.label4 = new System.Windows.Forms.Label();
+            this.editProfileLabel = new System.Windows.Forms.Label();
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -61,9 +64,9 @@
             this.userTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.userTreeView.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.userTreeView.Location = new System.Drawing.Point(12, 40);
+            this.userTreeView.Location = new System.Drawing.Point(11, 177);
             this.userTreeView.Name = "userTreeView";
-            this.userTreeView.Size = new System.Drawing.Size(295, 383);
+            this.userTreeView.Size = new System.Drawing.Size(295, 342);
             this.userTreeView.TabIndex = 0;
             this.userTreeView.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.UserTreeView_BeforeSelect);
             this.userTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.userTreeView_AfterSelect);
@@ -80,10 +83,10 @@
             this.appListView.Enabled = false;
             this.appListView.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.appListView.HideSelection = false;
-            this.appListView.Location = new System.Drawing.Point(313, 40);
+            this.appListView.Location = new System.Drawing.Point(312, 177);
             this.appListView.MultiSelect = false;
             this.appListView.Name = "appListView";
-            this.appListView.Size = new System.Drawing.Size(178, 383);
+            this.appListView.Size = new System.Drawing.Size(178, 342);
             this.appListView.TabIndex = 2;
             this.appListView.UseCompatibleStateImageBehavior = false;
             this.appListView.View = System.Windows.Forms.View.Details;
@@ -108,11 +111,11 @@
             this.rolaListView.Enabled = false;
             this.rolaListView.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.rolaListView.HideSelection = false;
-            this.rolaListView.Location = new System.Drawing.Point(497, 40);
+            this.rolaListView.Location = new System.Drawing.Point(496, 177);
             this.rolaListView.MultiSelect = false;
             this.rolaListView.Name = "rolaListView";
             this.rolaListView.ShowItemToolTips = true;
-            this.rolaListView.Size = new System.Drawing.Size(257, 383);
+            this.rolaListView.Size = new System.Drawing.Size(257, 342);
             this.rolaListView.TabIndex = 2;
             this.rolaListView.UseCompatibleStateImageBehavior = false;
             this.rolaListView.View = System.Windows.Forms.View.Details;
@@ -132,7 +135,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 24);
+            this.label1.Location = new System.Drawing.Point(11, 161);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(65, 13);
             this.label1.TabIndex = 4;
@@ -141,7 +144,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(310, 24);
+            this.label2.Location = new System.Drawing.Point(309, 161);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(49, 13);
             this.label2.TabIndex = 5;
@@ -150,7 +153,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(494, 24);
+            this.label3.Location = new System.Drawing.Point(493, 161);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(65, 13);
             this.label3.TabIndex = 6;
@@ -169,7 +172,7 @@
             this.helpButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(766, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(767, 25);
             this.toolStrip1.TabIndex = 8;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -178,8 +181,7 @@
             this.btnUstawieniaSystemowe.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnUstawieniaSystemowe.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aktualizujWpisyBibliotekMenuItem,
-            this.ustawZmiennaSrodowiskowaMenuItem,
-            this.ZarzadzajProfilamiMenuItem});
+            this.ustawZmiennaSrodowiskowaMenuItem});
             this.btnUstawieniaSystemowe.Image = global::UniwersalnyDesktop.Properties.Resources.Settings_16x;
             this.btnUstawieniaSystemowe.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnUstawieniaSystemowe.Name = "btnUstawieniaSystemowe";
@@ -199,13 +201,6 @@
             this.ustawZmiennaSrodowiskowaMenuItem.Size = new System.Drawing.Size(232, 22);
             this.ustawZmiennaSrodowiskowaMenuItem.Text = "Ustaw zmienną środowiskową";
             this.ustawZmiennaSrodowiskowaMenuItem.Click += new System.EventHandler(this.ustawZmiennaSrodowiskowaMenuItem_Click);
-            // 
-            // ZarzadzajProfilamiMenuItem
-            // 
-            this.ZarzadzajProfilamiMenuItem.Name = "ZarzadzajProfilamiMenuItem";
-            this.ZarzadzajProfilamiMenuItem.Size = new System.Drawing.Size(232, 22);
-            this.ZarzadzajProfilamiMenuItem.Text = "Zarządzaj profilami";
-            this.ZarzadzajProfilamiMenuItem.Click += new System.EventHandler(this.ZarzadzajProfilamiMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -276,7 +271,7 @@
             this.editAppsLabel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.editAppsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.editAppsLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.editAppsLabel.Location = new System.Drawing.Point(446, 24);
+            this.editAppsLabel.Location = new System.Drawing.Point(445, 161);
             this.editAppsLabel.Name = "editAppsLabel";
             this.editAppsLabel.Size = new System.Drawing.Size(35, 13);
             this.editAppsLabel.TabIndex = 9;
@@ -289,7 +284,7 @@
             this.editRolaLabel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.editRolaLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.editRolaLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.editRolaLabel.Location = new System.Drawing.Point(706, 24);
+            this.editRolaLabel.Location = new System.Drawing.Point(705, 161);
             this.editRolaLabel.Name = "editRolaLabel";
             this.editRolaLabel.Size = new System.Drawing.Size(35, 13);
             this.editRolaLabel.TabIndex = 10;
@@ -302,18 +297,63 @@
             this.editUsersLabel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.editUsersLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.editUsersLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.editUsersLabel.Location = new System.Drawing.Point(260, 23);
+            this.editUsersLabel.Location = new System.Drawing.Point(259, 160);
             this.editUsersLabel.Name = "editUsersLabel";
             this.editUsersLabel.Size = new System.Drawing.Size(35, 13);
             this.editUsersLabel.TabIndex = 11;
             this.editUsersLabel.Text = "edytuj";
             this.editUsersLabel.Click += new System.EventHandler(this.EditUsersLabel_Click);
             // 
+            // profileListView
+            // 
+            this.profileListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader4});
+            this.profileListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.profileListView.HideSelection = false;
+            this.profileListView.Location = new System.Drawing.Point(12, 48);
+            this.profileListView.MultiSelect = false;
+            this.profileListView.Name = "profileListView";
+            this.profileListView.Size = new System.Drawing.Size(739, 97);
+            this.profileListView.TabIndex = 12;
+            this.profileListView.UseCompatibleStateImageBehavior = false;
+            this.profileListView.View = System.Windows.Forms.View.Details;
+            this.profileListView.SelectedIndexChanged += new System.EventHandler(this.profileListView_SelectedIndexChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 32);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(35, 13);
+            this.label4.TabIndex = 13;
+            this.label4.Text = "profile";
+            // 
+            // editProfileLabel
+            // 
+            this.editProfileLabel.AutoSize = true;
+            this.editProfileLabel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.editProfileLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.editProfileLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.editProfileLabel.Location = new System.Drawing.Point(706, 32);
+            this.editProfileLabel.Name = "editProfileLabel";
+            this.editProfileLabel.Size = new System.Drawing.Size(35, 13);
+            this.editProfileLabel.TabIndex = 14;
+            this.editProfileLabel.Text = "edytuj";
+            this.editProfileLabel.Click += new System.EventHandler(this.editProfileLabel_Click);
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "nazwa";
+            this.columnHeader4.Width = 730;
+            // 
             // AdminForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(766, 441);
+            this.ClientSize = new System.Drawing.Size(767, 528);
+            this.Controls.Add(this.editProfileLabel);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.profileListView);
             this.Controls.Add(this.editUsersLabel);
             this.Controls.Add(this.editRolaLabel);
             this.Controls.Add(this.editAppsLabel);
@@ -359,6 +399,9 @@
         private System.Windows.Forms.ToolStripMenuItem ustawZmiennaSrodowiskowaMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripMenuItem ZarzadzajProfilamiMenuItem;
+        private System.Windows.Forms.ListView profileListView;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label editProfileLabel;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
     }
 }

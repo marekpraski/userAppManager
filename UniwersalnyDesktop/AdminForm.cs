@@ -24,7 +24,7 @@ namespace UniwersalnyDesktop
         //słowniki danych podstawowych
         //
         private Dictionary<string, DesktopUser> allUsersDict;            //lista wszystkich użytkowników desktopu, kluczem jest Id
-        private Dictionary<string, string> sqlUsersDict;            //lista użytkowników sql, kluczem jest Id, wartością nazwa użytkownika wyświetlana w drzewie
+        private Dictionary<string, DesktopUser> profileUsersDict;            //lista użytkowników sql, kluczem jest Id, wartością nazwa użytkownika wyświetlana w drzewie
         private Dictionary<string, string> windowsUsersDict;      //lista użytkowników domenowych, kluczem jest Id, , wartością nazwa użytkownika wyświetlana w drzewie
         private Dictionary<string, string> duplicatedWindowsUsers;        //jeżeli loginy  domenowe się powtarzają to ten program nie może działać poprawnie
                                                                           //wychwytuję powtarzające się loginy i je wyświetlam
@@ -80,13 +80,41 @@ namespace UniwersalnyDesktop
             setupAdminForm();
         }
 
+        #region metody podczas zamykania formularza AdminForm
+
+        private void AdminForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (saveButton.Enabled)
+            {
+                string userId = currentSelectedUser.Name;
+                MyMessageBoxResults result = MyMessageBox.display("Czy zapisać zmiany?", MessageBoxType.YesNoCancel);
+                if (result == MyMessageBoxResults.Yes)
+                {
+                    saveChanges();
+                    userBackupDict.Clear();
+                    userAppChangeDict.Clear();
+                    //ładowanie ustawień dla nowego użytkownika
+                }
+                else if (result == MyMessageBoxResults.Cancel)
+                {
+                    e.Cancel = true;
+                }
+                else     //result == MyMessageBoxResults.No
+                {
+                    //nic nie rób, po prostu zamknij formularz
+                }
+            }
+        }
+
+        #endregion
+
         #region wczytywanie danych na starcie formularza
 
         private void createDictionaries()
         {
             allUsersDict = new Dictionary<string, DesktopUser>();
 
-            sqlUsersDict = new Dictionary<string, string>();
+            profileUsersDict = new Dictionary<string, DesktopUser>();
             windowsUsersDict = new Dictionary<string, string>();
             duplicatedWindowsUsers = new Dictionary<string, string>();
 
@@ -103,11 +131,9 @@ namespace UniwersalnyDesktop
 
         private void setupAdminForm()
         {
-            populateUserTreeview();                                 //użytkownicy sql i domenowi
-            populateAppListview();                                   //aplikacje
+            populateProfileListView();
         }
 
- 
         private void readAllData()
         {
             getUserData();
@@ -153,11 +179,6 @@ namespace UniwersalnyDesktop
             foreach (string userId in allUsersDict.Keys)
             {
                 allUsersDict.TryGetValue(userId, out user);
-                if (user.sqlLogin != "")
-                {
-                    userDisplayName = user.sqlLogin + " (" + user.name + " " + user.surname + ")";      //nazwa użytkownika wyświetlana w drzewie
-                    sqlUsersDict.Add(user.id, userDisplayName);
-                }
 
                 if (user.windowsLogin != "")
                 {
@@ -214,7 +235,18 @@ namespace UniwersalnyDesktop
         private void getProfileData()
         {
             string query = @"  select ID_profile, name_profile, domena, ldap from [profile_desktop]";
-            QueryData qd = new DBReader(LoginForm.dbConnection).readFromDB(query);
+            string query2 = @"SELECT  ID_profile, lu.ID_user FROM [profile_users] pu
+                                inner join 
+                                users_list lu on pu.ID_user = lu.ID_user
+                                where login_user is not null and login_user <> '" + adminLogin + "'";
+            QueryData[] qd = new DBReader(LoginForm.dbConnection).readFromDB(new string[] { query, query2 });
+
+            addProfilesToDict(qd[0]);
+            assignUsersToProfiles(qd[1]);
+        }
+
+        private void addProfilesToDict(QueryData qd)
+        {
             for (int i = 0; i < qd.dataRowsNumber; i++)
             {
                 string id = qd.getDataValue(i, "ID_profile").ToString();
@@ -223,6 +255,16 @@ namespace UniwersalnyDesktop
                 newProfile.domena = qd.getDataValue(i, "domena").ToString();
                 newProfile.ldap = qd.getDataValue(i, "ldap").ToString();
                 this.profileDict.Add(id, newProfile);
+            }
+        }
+
+        private void assignUsersToProfiles(QueryData qd)
+        {
+            for (int i = 0; i < qd.dataRowsNumber; i++)
+            {
+                string profileId = qd.getDataValue(i, "ID_profile").ToString();
+                string userId = qd.getDataValue(i, "ID_user").ToString();
+                profileDict[profileId].addUserToProfile(allUsersDict[userId]);
             }
         }
 
@@ -369,44 +411,35 @@ namespace UniwersalnyDesktop
         }
         #endregion
 
-        #region wtpełnianie drzew i list
-        public void populateUserTreeview()
+        #region wypełnianie drzewa użytkowników
+        public void populateUserTreeview(Dictionary<string, DesktopUser> usersDict)
         {
-            string[] treeviewBranchNames = { "użytkownicy sql", "użytkownicy domenowi" };
-            Dictionary<string, string>[] treeviewBranchItems = { sqlUsersDict, windowsUsersDict };
+            userTreeView.Nodes.Clear();
+            string[] treeviewBranchNames = { "użytkownicy przypisani do profilu" };
+            Dictionary<string, DesktopUser>[] treeviewBranchItems = { usersDict };
 
             for (int i = 0; i < treeviewBranchNames.Length; i++)            //nie używam foreach bo potrzebuję iteratora do znalezienia nazwy gałęzi
             {
-                Dictionary<string, string> oneBranchItems = treeviewBranchItems[i];
+                Dictionary<string, DesktopUser> oneBranchItems = treeviewBranchItems[i];
                 TreeNode[] childNodes = populateTreviewBranch(oneBranchItems);
                 TreeNode parentNode = new TreeNode(treeviewBranchNames[i], childNodes);
                 parentNode.Name = "";                                                    //przypisuę pusty string, żeby mi nie wywalało błędu podczas wyciągania tekstu z taga w metodzie userTreeView_AfterSelect
                 userTreeView.Nodes.Add(parentNode);
             }
 
-            //jeżeli są jakieś zduplikowane loginy to do drzewa dodaję dodatkową gałąź
-            if (duplicatedWindowsUsers.Count > 0)
-            {
-                TreeNode[] childNodes = populateTreviewBranch(duplicatedWindowsUsers);
-                TreeNode parentNode = new TreeNode("zduplikowane loginy", childNodes);
-                parentNode.ForeColor = Color.Red;
-                parentNode.Name = "";
-                userTreeView.Nodes.Add(parentNode);
-            }
+            userTreeView.ExpandAll();
         }
 
 
-        public TreeNode[] populateTreviewBranch(Dictionary<string, string> items)
+        public TreeNode[] populateTreviewBranch(Dictionary<string, DesktopUser> items)
         {
             TreeNode[] childNodes = new TreeNode[items.Count];
             int i = 0;
-            string userDisplayName = "";
             DesktopUser user = null;
             foreach (string userId in items.Keys)
             {
-                items.TryGetValue(userId, out userDisplayName);
-                allUsersDict.TryGetValue(userId, out user);
-                TreeNode treeNode = new TreeNode(userDisplayName);
+                items.TryGetValue(userId, out user);
+                TreeNode treeNode = new TreeNode(user.name);
                 treeNode.Name = user.id;
                 childNodes[i] = treeNode;
                 i++;
@@ -414,9 +447,24 @@ namespace UniwersalnyDesktop
             return childNodes;
         }
 
+        #endregion
+
+        #region wypełnianie listy profili i aplikacji
+        private void populateProfileListView()
+        {
+            DesktopProfile profile = null;
+            foreach (string profileId in profileDict.Keys)
+            {
+                profileDict.TryGetValue(profileId, out profile);
+                ListViewItem listRow = new ListViewItem(profile.name);
+                listRow.Name = profileId;
+                profileListView.Items.Add(listRow);
+            }
+        }
 
         private void populateAppListview()
         {
+            appListView.Items.Clear();
             App app = null;
             foreach (string appId in appDictionary.Keys)
             {
@@ -425,7 +473,7 @@ namespace UniwersalnyDesktop
                 listRow.Name = appId;
                 appListView.Items.Add(listRow);
             }
-        } 
+        }  
         #endregion
 
         #region Region - interakcja z użytkownikiem - pasek narzędziowy
@@ -436,14 +484,11 @@ namespace UniwersalnyDesktop
             MyMessageBox.display(helpMessage);
         }
 
-
         private void SaveButton_Click(object sender, EventArgs e)
         {
             saveChanges();
             resetAdminForm();
         }
-
-
 
         private void SaveAndCloseButton_Click(object sender, EventArgs e)
         {
@@ -452,13 +497,10 @@ namespace UniwersalnyDesktop
             this.Close();
         }
 
-
         private void StatusInformationButton_Click(object sender, EventArgs e)
         {
             displayChanges();
         }
-
-
 
         private void RefreshButton_Click(object sender, EventArgs e)
         {
@@ -471,7 +513,6 @@ namespace UniwersalnyDesktop
                 resetAdminForm();
             }
         }
-
 
         #endregion
 
@@ -518,36 +559,6 @@ namespace UniwersalnyDesktop
 
         #endregion
 
-        #region Region - zdarzenia na formularzu AdminForm
-
-
-        private void AdminForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (saveButton.Enabled)
-            {
-                string userId = currentSelectedUser.Name;
-                MyMessageBoxResults result = MyMessageBox.display("Czy zapisać zmiany?", MessageBoxType.YesNoCancel);
-                if (result == MyMessageBoxResults.Yes)
-                {
-                    saveChanges();
-                    userBackupDict.Clear();
-                    userAppChangeDict.Clear();
-                    //ładowanie ustawień dla nowego użytkownika
-                }
-                else if (result == MyMessageBoxResults.Cancel)
-                {
-                    e.Cancel = true;
-                }
-                else     //result == MyMessageBoxResults.No
-                {
-                    //nic nie rób, po prostu zamknij formularz
-                }
-            }
-        }
-
-
-        #endregion
-
         #region Region - interakcja z użytkownikiem - zdarzenia na drzewie użytkowników
 
 
@@ -555,26 +566,17 @@ namespace UniwersalnyDesktop
         //domyślnie ten kolor jest bladoszary, dla mnie zbyt niewidoczny
         private void userTreeView_Leave(object sender, EventArgs e)
         {
-            try
-            {
-                currentSelectedUser.BackColor = Color.Aqua;
-                currentSelectedUser.ForeColor = Color.Black;
-            }
-            catch (NullReferenceException ex)
-            {
-                MyMessageBox.display(ex.Message);
-            }
+            if (currentSelectedUser == null)
+                return;
 
-
+            currentSelectedUser.BackColor = Color.Aqua;
+            currentSelectedUser.ForeColor = Color.Black;
         }
-
 
         private void UserTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             userTreeViewMouseClicked = true;
         }
-
-
 
         private void UserTreeView_BeforeSelect(object sender, TreeViewCancelEventArgs e)
         {
@@ -743,6 +745,19 @@ namespace UniwersalnyDesktop
 
         #endregion
 
+        #region interakcja - zmiana wyboru profilu
+        private void profileListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (profileListView.SelectedItems.Count == 0)
+                return;
+            ListViewItem selectedItem = profileListView.SelectedItems[0];
+            string profileId = selectedItem.Name;
+            appDictionary = profileDict[profileId].applications;
+            populateUserTreeview(profileDict[profileId].profileUsers);
+            populateAppListview();
+        } 
+        #endregion
+
         #region Region - metody wywoływane na liście aplikacji na skutek akcji użytkownika
 
         private void updateListBoxes()
@@ -753,12 +768,14 @@ namespace UniwersalnyDesktop
             List<App> userApps = user.getApps();
 
             //jeżeli user ma jakieś uprawnienia to te aplikacje zafajkowuję oraz rolę zaznaczonej
+            //ale dany profil może nie zawierać tej aplikacji, więc to też sprawdzam
             if (userApps != null)
             {
                 foreach (App app in userApps)
                 {
                     ListViewItem appItem = appListView.Items[app.id];
-                    appItem.Checked = true;
+                    if(appItem != null)
+                        appItem.Checked = true;
                 }
                 checkRolaCheckbox();
             }
@@ -775,8 +792,6 @@ namespace UniwersalnyDesktop
             }
         }
 
-
-
         private void resetPreviousSelectedAppColour()
         {
             if (previousSelectedApp != null)
@@ -785,8 +800,6 @@ namespace UniwersalnyDesktop
             }
             previousSelectedApp = currentSelectedApp;
         }
-
-
 
         private void setCurrentSelectedApp()
         {
@@ -1244,6 +1257,10 @@ namespace UniwersalnyDesktop
 
         private void ZarzadzajProfilamiMenuItem_Click(object sender, EventArgs e)
         {
+
+        }
+        private void editProfileLabel_Click(object sender, EventArgs e)
+        {
             ProfileEditor profileEditor = new ProfileEditor(this.profileDict);
             profileEditor.Show();
         }
@@ -1265,7 +1282,7 @@ namespace UniwersalnyDesktop
         private void resetAdminForm()
         {
             allUsersDict.Clear();
-            sqlUsersDict.Clear();
+            profileUsersDict.Clear();
             windowsUsersDict.Clear();
             duplicatedWindowsUsers.Clear();
             appDictionary.Clear();
@@ -1295,6 +1312,7 @@ namespace UniwersalnyDesktop
             readAllData();
             setupAdminForm();
         }
+
         #endregion
 
     }
