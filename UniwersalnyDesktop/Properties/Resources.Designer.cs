@@ -63,6 +63,16 @@ namespace UniwersalnyDesktop.Properties {
         /// <summary>
         ///   Wyszukuje zlokalizowany zasób typu System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap AccountAttribute_16x {
+            get {
+                object obj = ResourceManager.GetObject("AccountAttribute_16x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Wyszukuje zlokalizowany zasób typu System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Add_16x {
             get {
                 object obj = ResourceManager.GetObject("Add_16x", resourceCulture);

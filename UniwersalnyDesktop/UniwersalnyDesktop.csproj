@@ -53,6 +53,12 @@
     <Compile Include="AddUserForm.designer.cs">
       <DependentUpon>AddUserForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PasswordChanger.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PasswordChanger.designer.cs">
+      <DependentUpon>PasswordChanger.cs</DependentUpon>
+    </Compile>
     <Compile Include="enums\FormMode.cs" />
     <Compile Include="ProfileAppSelector.cs">
       <SubType>Form</SubType>
@@ -164,6 +170,9 @@
     <EmbeddedResource Include="AddUserForm.resx">
       <DependentUpon>AddUserForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PasswordChanger.resx">
+      <DependentUpon>PasswordChanger.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ProfileAppSelector.resx">
       <DependentUpon>ProfileAppSelector.cs</DependentUpon>
     </EmbeddedResource>
@@ -268,6 +277,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Edit_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AccountAttribute_16x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -25,7 +25,7 @@ namespace UniwersalnyDesktop
         public static int verticalButtonPadding = 10;
 
         //rozlokowanie groupboxów
-        public static int firstGroupboxVerticalLocation = 10;
+        public static int firstGroupboxVerticalLocation = 20;
         public static int horizontalGroupboxPadding = 10;
         public static int verticalGroupboxPadding = 0;
 

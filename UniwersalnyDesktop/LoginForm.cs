@@ -8,8 +8,8 @@ namespace UniwersalnyDesktop
 {
     public partial class LoginForm : Form
     {
-        private string userLogin;
-        private string userPassword;
+        public static string userLogin;
+        public static string userPassword;
 
         public static string mainPath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase.ToString();     //katalog z którego uruchamiany jest program, wykrywany przez DBConnector i ustawiany tutaj
                                                                                                                         //dla DEBUGA ustawiony jest w metodzie ReadAllData
@@ -21,12 +21,12 @@ namespace UniwersalnyDesktop
         public LoginForm()
         {
             InitializeComponent();
-#if DEBUG
-            userLogin = "root";
-            userPassword = "root";
-            logIn();
-            this.Hide();
-#endif
+//#if DEBUG
+//            userLogin = "root";
+//            userPassword = "root";
+//            logIn();
+//            this.Hide();
+//#endif
         }
 
         #region interakcja z użytkownikiem
@@ -41,7 +41,7 @@ namespace UniwersalnyDesktop
             userPassword = passwordTextBox.Text;
         }
 
-        private void LoginButton_Click(object sender, EventArgs e)
+        private void btnZaloguj_Click(object sender, EventArgs e)
         {
             logIn();
         }

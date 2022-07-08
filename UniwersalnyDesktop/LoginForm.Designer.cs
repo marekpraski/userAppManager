@@ -28,70 +28,89 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.userNameTextBox = new System.Windows.Forms.TextBox();
             this.passwordTextBox = new System.Windows.Forms.TextBox();
-            this.loginButton = new System.Windows.Forms.Button();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.btnZaloguj = new System.Windows.Forms.Button();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.btnUstawienia = new System.Windows.Forms.ToolStripButton();
+            this.btnZmienProfil = new System.Windows.Forms.ToolStripButton();
+            this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.toolStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(41, 36);
+            this.label1.Location = new System.Drawing.Point(97, 194);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(60, 13);
+            this.label1.Size = new System.Drawing.Size(62, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "użytkownik";
+            this.label1.Text = "Użytkownik";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(44, 79);
+            this.label2.Location = new System.Drawing.Point(97, 220);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(34, 13);
+            this.label2.Size = new System.Drawing.Size(36, 13);
             this.label2.TabIndex = 1;
-            this.label2.Text = "hasło";
+            this.label2.Text = "Hasło";
             // 
             // userNameTextBox
             // 
-            this.userNameTextBox.Location = new System.Drawing.Point(134, 36);
+            this.userNameTextBox.Location = new System.Drawing.Point(163, 191);
             this.userNameTextBox.Name = "userNameTextBox";
-            this.userNameTextBox.Size = new System.Drawing.Size(206, 20);
+            this.userNameTextBox.Size = new System.Drawing.Size(156, 20);
             this.userNameTextBox.TabIndex = 2;
             this.userNameTextBox.TextChanged += new System.EventHandler(this.UserNameTextBox_TextChanged);
             // 
             // passwordTextBox
             // 
-            this.passwordTextBox.Location = new System.Drawing.Point(134, 79);
+            this.passwordTextBox.Location = new System.Drawing.Point(163, 217);
             this.passwordTextBox.Name = "passwordTextBox";
-            this.passwordTextBox.Size = new System.Drawing.Size(206, 20);
+            this.passwordTextBox.Size = new System.Drawing.Size(156, 20);
             this.passwordTextBox.TabIndex = 3;
             this.passwordTextBox.TextChanged += new System.EventHandler(this.PasswordTextBox_TextChanged);
             this.passwordTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.passwordTextbox_KeyDown);
             // 
-            // loginButton
-            // 
-            this.loginButton.Location = new System.Drawing.Point(167, 128);
-            this.loginButton.Name = "loginButton";
-            this.loginButton.Size = new System.Drawing.Size(123, 23);
-            this.loginButton.TabIndex = 4;
-            this.loginButton.Text = "zaloguj";
-            this.loginButton.UseVisualStyleBackColor = true;
-            this.loginButton.Click += new System.EventHandler(this.LoginButton_Click);
-            // 
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnUstawienia});
+            this.btnUstawienia,
+            this.btnZmienProfil});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(402, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(353, 25);
             this.toolStrip1.TabIndex = 5;
             this.toolStrip1.Text = "toolStrip1";
+            // 
+            // btnZaloguj
+            // 
+            this.btnZaloguj.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(48)))));
+            this.btnZaloguj.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.btnZaloguj.ForeColor = System.Drawing.Color.White;
+            this.btnZaloguj.Location = new System.Drawing.Point(188, 253);
+            this.btnZaloguj.Name = "btnZaloguj";
+            this.btnZaloguj.Size = new System.Drawing.Size(75, 23);
+            this.btnZaloguj.TabIndex = 9;
+            this.btnZaloguj.Text = "Zaloguj";
+            this.btnZaloguj.UseVisualStyleBackColor = false;
+            this.btnZaloguj.Click += new System.EventHandler(this.btnZaloguj_Click);
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
+            this.pictureBox2.Location = new System.Drawing.Point(23, 182);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(56, 64);
+            this.pictureBox2.TabIndex = 8;
+            this.pictureBox2.TabStop = false;
             // 
             // btnUstawienia
             // 
@@ -103,13 +122,33 @@
             this.btnUstawienia.Text = "Ustawienia";
             this.btnUstawienia.Click += new System.EventHandler(this.btnUstawienia_Click);
             // 
+            // btnZmienProfil
+            // 
+            this.btnZmienProfil.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnZmienProfil.Image = global::UniwersalnyDesktop.Properties.Resources.AccountAttribute_16x;
+            this.btnZmienProfil.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnZmienProfil.Name = "btnZmienProfil";
+            this.btnZmienProfil.Size = new System.Drawing.Size(23, 22);
+            this.btnZmienProfil.Text = "Zmień profil";
+            // 
+            // pictureBoxLogo
+            // 
+            this.pictureBoxLogo.Location = new System.Drawing.Point(100, 43);
+            this.pictureBoxLogo.Name = "pictureBoxLogo";
+            this.pictureBoxLogo.Size = new System.Drawing.Size(150, 102);
+            this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBoxLogo.TabIndex = 10;
+            this.pictureBoxLogo.TabStop = false;
+            // 
             // LoginForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(402, 182);
+            this.ClientSize = new System.Drawing.Size(353, 288);
+            this.Controls.Add(this.pictureBoxLogo);
+            this.Controls.Add(this.btnZaloguj);
+            this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.loginButton);
             this.Controls.Add(this.passwordTextBox);
             this.Controls.Add(this.userNameTextBox);
             this.Controls.Add(this.label2);
@@ -119,6 +158,8 @@
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.LoginForm_KeyPress);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -130,9 +171,12 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox userNameTextBox;
         private System.Windows.Forms.TextBox passwordTextBox;
-        private System.Windows.Forms.Button loginButton;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton btnUstawienia;
+        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.Button btnZaloguj;
+        private System.Windows.Forms.ToolStripButton btnZmienProfil;
+        private System.Windows.Forms.PictureBox pictureBoxLogo;
     }
 }
 

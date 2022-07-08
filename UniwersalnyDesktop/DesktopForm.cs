@@ -73,6 +73,15 @@ namespace UniwersalnyDesktop
 
         #endregion
 
+        #region wybór opcji z paska menu
+
+        private void zmienHasloMenuItem_Click(object sender, EventArgs e)
+        {
+            Form formChangePass = new PasswordChanger();
+            formChangePass.ShowDialog();
+        }
+        #endregion
+
         private void readDesktopData()
         {
             string userLogin = userData.getDataValue(0, "login_user").ToString();
