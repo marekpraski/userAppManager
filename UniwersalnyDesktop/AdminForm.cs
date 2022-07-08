@@ -752,10 +752,11 @@ namespace UniwersalnyDesktop
                 return;
             ListViewItem selectedItem = profileListView.SelectedItems[0];
             string profileId = selectedItem.Name;
-            appDictionary = profileDict[profileId].applications;
-            populateUserTreeview(profileDict[profileId].profileUsers);
+            appDictionary = profileDict[profileId].getAppDictionary();
+            populateUserTreeview(profileDict[profileId].getUserDictionary());
             populateAppListview();
-        } 
+        }
+
         #endregion
 
         #region Region - metody wywoływane na liście aplikacji na skutek akcji użytkownika
@@ -1261,7 +1262,7 @@ namespace UniwersalnyDesktop
         }
         private void editProfileLabel_Click(object sender, EventArgs e)
         {
-            ProfileEditor profileEditor = new ProfileEditor(this.profileDict);
+            ProfileEditor profileEditor = new ProfileEditor(this.profileDict, this.allUsersDict, this.appDictionary);
             profileEditor.Show();
         }
         #endregion

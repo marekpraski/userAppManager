@@ -1,13 +1,10 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UniwersalnyDesktop
 {
     //aplikacja zdefiniowana w bazie desktopu
-    public class App
+    public class App : IProfileItem
     {
         public string displayName { get; set; }
         public string id { get; set; }

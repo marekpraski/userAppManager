@@ -42,11 +42,17 @@ namespace UniwersalnyDesktop
             this.label3 = new System.Windows.Forms.Label();
             this.labelDomena = new System.Windows.Forms.Label();
             this.labelLdap = new System.Windows.Forms.Label();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnDodajProfil = new System.Windows.Forms.ToolStripButton();
+            this.btnEdytujProfil = new System.Windows.Forms.ToolStripButton();
+            this.btnUsunProfil = new System.Windows.Forms.ToolStripButton();
             this.btnDodajAplikacje = new System.Windows.Forms.ToolStripButton();
             this.btnUsunAplikacje = new System.Windows.Forms.ToolStripButton();
-            this.btnDodajProfil = new System.Windows.Forms.ToolStripButton();
-            this.btnUsunProfil = new System.Windows.Forms.ToolStripButton();
-            this.btnEdytujProfil = new System.Windows.Forms.ToolStripButton();
+            this.btnDodajUzytkownika = new System.Windows.Forms.ToolStripButton();
+            this.btnUsunUzytkownika = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProfileApps)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -119,11 +125,17 @@ namespace UniwersalnyDesktop
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnDodajAplikacje,
-            this.btnUsunAplikacje,
             this.btnDodajProfil,
             this.btnEdytujProfil,
-            this.btnUsunProfil});
+            this.btnUsunProfil,
+            this.toolStripSeparator2,
+            this.toolStripSeparator1,
+            this.btnDodajAplikacje,
+            this.btnUsunAplikacje,
+            this.toolStripSeparator4,
+            this.toolStripSeparator3,
+            this.btnDodajUzytkownika,
+            this.btnUsunUzytkownika});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1071, 25);
@@ -168,6 +180,55 @@ namespace UniwersalnyDesktop
             this.labelLdap.TabIndex = 19;
             this.labelLdap.Text = "label4";
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnDodajProfil
+            // 
+            this.btnDodajProfil.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnDodajProfil.Image = global::UniwersalnyDesktop.Properties.Resources.Add_16x;
+            this.btnDodajProfil.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnDodajProfil.Name = "btnDodajProfil";
+            this.btnDodajProfil.Size = new System.Drawing.Size(23, 22);
+            this.btnDodajProfil.Text = "Dodaj nowy profil";
+            this.btnDodajProfil.Click += new System.EventHandler(this.btnDodajProfil_Click);
+            // 
+            // btnEdytujProfil
+            // 
+            this.btnEdytujProfil.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnEdytujProfil.Image = global::UniwersalnyDesktop.Properties.Resources.Edit_16x;
+            this.btnEdytujProfil.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnEdytujProfil.Name = "btnEdytujProfil";
+            this.btnEdytujProfil.Size = new System.Drawing.Size(23, 22);
+            this.btnEdytujProfil.Text = "Edytuj profil";
+            this.btnEdytujProfil.Click += new System.EventHandler(this.btnEdytujProfil_Click);
+            // 
+            // btnUsunProfil
+            // 
+            this.btnUsunProfil.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnUsunProfil.Image = global::UniwersalnyDesktop.Properties.Resources.delete;
+            this.btnUsunProfil.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnUsunProfil.Name = "btnUsunProfil";
+            this.btnUsunProfil.Size = new System.Drawing.Size(23, 22);
+            this.btnUsunProfil.Text = "Usuń profil";
+            // 
             // btnDodajAplikacje
             // 
             this.btnDodajAplikacje.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -188,34 +249,24 @@ namespace UniwersalnyDesktop
             this.btnUsunAplikacje.Text = "Usuń aplikację z profilu";
             this.btnUsunAplikacje.Click += new System.EventHandler(this.btnUsunAplikacje_Click);
             // 
-            // btnDodajProfil
+            // btnDodajUzytkownika
             // 
-            this.btnDodajProfil.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnDodajProfil.Image = global::UniwersalnyDesktop.Properties.Resources.Add_16x;
-            this.btnDodajProfil.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnDodajProfil.Name = "btnDodajProfil";
-            this.btnDodajProfil.Size = new System.Drawing.Size(23, 22);
-            this.btnDodajProfil.Text = "Dodaj nowy profil";
-            this.btnDodajProfil.Click += new System.EventHandler(this.btnDodajProfil_Click);
+            this.btnDodajUzytkownika.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnDodajUzytkownika.Image = global::UniwersalnyDesktop.Properties.Resources.AddUser_16x;
+            this.btnDodajUzytkownika.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnDodajUzytkownika.Name = "btnDodajUzytkownika";
+            this.btnDodajUzytkownika.Size = new System.Drawing.Size(23, 22);
+            this.btnDodajUzytkownika.Text = "Dodaj użytkownika do profilu";
+            this.btnDodajUzytkownika.Click += new System.EventHandler(this.btnDodajUzytkownika_Click);
             // 
-            // btnUsunProfil
+            // btnUsunUzytkownika
             // 
-            this.btnUsunProfil.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnUsunProfil.Image = global::UniwersalnyDesktop.Properties.Resources.delete;
-            this.btnUsunProfil.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnUsunProfil.Name = "btnUsunProfil";
-            this.btnUsunProfil.Size = new System.Drawing.Size(23, 22);
-            this.btnUsunProfil.Text = "Usuń profil";
-            // 
-            // btnEdytujProfil
-            // 
-            this.btnEdytujProfil.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnEdytujProfil.Image = global::UniwersalnyDesktop.Properties.Resources.Edit_16x;
-            this.btnEdytujProfil.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnEdytujProfil.Name = "btnEdytujProfil";
-            this.btnEdytujProfil.Size = new System.Drawing.Size(23, 22);
-            this.btnEdytujProfil.Text = "Edytuj profil";
-            this.btnEdytujProfil.Click += new System.EventHandler(this.btnEdytujProfil_Click);
+            this.btnUsunUzytkownika.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnUsunUzytkownika.Image = global::UniwersalnyDesktop.Properties.Resources.DeleteUser_16x;
+            this.btnUsunUzytkownika.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnUsunUzytkownika.Name = "btnUsunUzytkownika";
+            this.btnUsunUzytkownika.Size = new System.Drawing.Size(23, 22);
+            this.btnUsunUzytkownika.Text = "Usuń użytkownika z profilu";
             // 
             // ProfileEditor
             // 
@@ -259,5 +310,11 @@ namespace UniwersalnyDesktop
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label labelDomena;
         private System.Windows.Forms.Label labelLdap;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripButton btnDodajUzytkownika;
+        private System.Windows.Forms.ToolStripButton btnUsunUzytkownika;
     }
 }

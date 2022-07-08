@@ -10,8 +10,8 @@ namespace UniwersalnyDesktop
         public string id { get; set; }
         public string domena { get; set; }
         public string ldap { get; set; }
-        public Dictionary<string, App> applications { get; } = new Dictionary<string, App>();    //kluczem jest id aplikacji
-        public Dictionary<string, DesktopUser> profileUsers { get; } = new Dictionary<string, DesktopUser>();  //kluczem jest id użytkownika
+        public Dictionary<string, IProfileItem> applications { get; } = new Dictionary<string, IProfileItem>();    //kluczem jest id aplikacji
+        public Dictionary<string, IProfileItem> users { get; } = new Dictionary<string, IProfileItem>();  //kluczem jest id użytkownika
 
         public DesktopProfile()
         {
@@ -44,14 +44,52 @@ namespace UniwersalnyDesktop
 
         public void addUserToProfile(DesktopUser user)
         {
-            if (!profileUsers.ContainsKey(user.id))
-                profileUsers.Add(user.id, user);
+            if (!users.ContainsKey(user.id))
+                users.Add(user.id, user);
         }
 
         public void removeUserFromProfile(string userId)
         {
-            if (profileUsers.ContainsKey(userId))
-                profileUsers.Remove(userId);
+            if (users.ContainsKey(userId))
+                users.Remove(userId);
+        }
+        public Dictionary<string, App> getAppDictionary()
+        {
+            Dictionary<string, App> apps = new Dictionary<string, App>();
+            foreach (string id in this.applications.Keys)
+            {
+                apps.Add(id, this.applications[id] as App);
+            }
+            return apps;
+        }
+
+        public Dictionary<string, DesktopUser> getUserDictionary()
+        {
+            Dictionary<string, DesktopUser> apps = new Dictionary<string, DesktopUser>();
+            foreach (string id in this.users.Keys)
+            {
+                apps.Add(id, this.users[id] as DesktopUser);
+            }
+            return apps;
+        }
+
+        internal Dictionary<string, IProfileItem> getIProfileItems(Dictionary<string, App> appDictionary)
+        {
+            Dictionary<string, IProfileItem> items = new Dictionary<string, IProfileItem>();
+            foreach(string id in appDictionary.Keys)
+            {
+                items.Add(id, appDictionary[id]);
+            }
+            return items;
+        }
+        internal Dictionary<string, IProfileItem> getIProfileItems(Dictionary<string, DesktopUser> userDict)
+        {
+            Dictionary<string, IProfileItem> items = new Dictionary<string, IProfileItem>();
+            foreach (string id in userDict.Keys)
+            {
+                items.Add(id, userDict[id]);
+            }
+            return items;
         }
     }
 }

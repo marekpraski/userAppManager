@@ -1,6 +1,6 @@
 ﻿namespace UniwersalnyDesktop
 {
-    partial class ProfileAppSelector
+    partial class ProfileItemSelector
     {
         /// <summary>
         /// Required designer variable.
@@ -29,14 +29,14 @@
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
-            this.applicationDGV = new System.Windows.Forms.DataGridView();
+            this.dgvItems = new System.Windows.Forms.DataGridView();
             this.colId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colNazwa = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colDodaj = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnZapisz = new System.Windows.Forms.ToolStripButton();
             this.labelProfileName = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.applicationDGV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvItems)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,21 +49,21 @@
             this.label1.TabIndex = 3;
             this.label1.Text = "Profil:";
             // 
-            // applicationDGV
+            // dgvItems
             // 
-            this.applicationDGV.AllowUserToAddRows = false;
-            this.applicationDGV.AllowUserToDeleteRows = false;
-            this.applicationDGV.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.dgvItems.AllowUserToAddRows = false;
+            this.dgvItems.AllowUserToDeleteRows = false;
+            this.dgvItems.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.applicationDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.applicationDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dgvItems.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvItems.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colId,
             this.colNazwa,
             this.colDodaj});
-            this.applicationDGV.Location = new System.Drawing.Point(98, 71);
-            this.applicationDGV.Name = "applicationDGV";
-            this.applicationDGV.Size = new System.Drawing.Size(500, 428);
-            this.applicationDGV.TabIndex = 5;
+            this.dgvItems.Location = new System.Drawing.Point(98, 71);
+            this.dgvItems.Name = "dgvItems";
+            this.dgvItems.Size = new System.Drawing.Size(500, 428);
+            this.dgvItems.TabIndex = 5;
             // 
             // colId
             // 
@@ -112,16 +112,17 @@
             this.labelProfileName.TabIndex = 9;
             this.labelProfileName.Text = "label2";
             // 
-            // AddApplicationToProfile
+            // ProfileItemSelector
             // 
             this.ClientSize = new System.Drawing.Size(610, 511);
             this.Controls.Add(this.labelProfileName);
             this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.applicationDGV);
+            this.Controls.Add(this.dgvItems);
             this.Controls.Add(this.label1);
-            this.Name = "AddApplicationToProfile";
+            this.Name = "ProfileItemSelector";
             this.Text = "SoftMineDesktop - Adminitsrator - Dodanie aplikacji do profilu";
-            ((System.ComponentModel.ISupportInitialize)(this.applicationDGV)).EndInit();
+            this.Load += new System.EventHandler(this.ProfileItemSelector_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvItems)).EndInit();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -133,7 +134,7 @@
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.DataGridView applicationDGV;
+        private System.Windows.Forms.DataGridView dgvItems;
         private System.Windows.Forms.DataGridViewTextBoxColumn colId;
         private System.Windows.Forms.DataGridViewTextBoxColumn colNazwa;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colDodaj;

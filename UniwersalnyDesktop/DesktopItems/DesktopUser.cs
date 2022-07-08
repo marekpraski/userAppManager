@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UniwersalnyDesktop
 {
-    public class DesktopUser : ICloneable
+    public class DesktopUser : ICloneable, IProfileItem
     {
         public string name { get; set; }
         public string surname { get; set; }
@@ -14,6 +11,13 @@ namespace UniwersalnyDesktop
         public string windowsLogin { get; set; }
         public string sqlLogin { get; set; }
         public Dictionary<App, AppDataItem> userAppDict { get; }
+
+        public string displayName => getDisplayName();
+
+        private string getDisplayName()
+        {
+            return name + " " + surname;
+        }
 
         public DesktopUser()
         {

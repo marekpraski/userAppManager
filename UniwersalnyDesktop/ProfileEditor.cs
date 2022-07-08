@@ -9,13 +9,18 @@ namespace UniwersalnyDesktop
     public partial class ProfileEditor : Form
     {
         private Dictionary<string, DesktopProfile> profileDict;     //słownik wszystkich profili zdefiniowanych w Desktopie, kluczem jest id
+        private readonly Dictionary<string, DesktopUser> allUsersDict;
+        private readonly Dictionary<string, App> appDictionary;
+
         private ProfileEditor()
         {
             InitializeComponent();
         }
-        public ProfileEditor(Dictionary<string, DesktopProfile> profileDict) : this()
+        public ProfileEditor(Dictionary<string, DesktopProfile> profileDict, Dictionary<string, DesktopUser> allUsersDict, Dictionary<string, App> appDictionary) : this()
         {
             this.profileDict = profileDict;
+            this.allUsersDict = allUsersDict;
+            this.appDictionary = appDictionary;
             fillProfileCombo();
         }
 
@@ -38,10 +43,19 @@ namespace UniwersalnyDesktop
         private void btnDodajAplikacje_Click(object sender, EventArgs e)
         {
             string idProfile = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
-            ProfileAppSelector addAppForm = new ProfileAppSelector(profileDict[idProfile]);
+            ProfileItemSelector addAppForm = new ProfileItemSelector(profileDict[idProfile], profileDict[idProfile].getIProfileItems(this.appDictionary));
             addAppForm.ShowDialog();
             if(addAppForm.DialogResult == DialogResult.OK)
-                fillDgvProfileApps(idProfile);
+                fillDgv(idProfile);
+        }
+
+        private void btnDodajUzytkownika_Click(object sender, EventArgs e)
+        {
+            string idProfile = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
+            ProfileItemSelector addAppForm = new ProfileItemSelector(profileDict[idProfile], profileDict[idProfile].getIProfileItems(this.allUsersDict));
+            addAppForm.ShowDialog();
+            if (addAppForm.DialogResult == DialogResult.OK)
+                fillDgv(idProfile);
         }
 
         private void btnUsunAplikacje_Click(object sender, EventArgs e)
@@ -55,7 +69,7 @@ namespace UniwersalnyDesktop
             
             string query = "delete from profile_app where ID_profile = " + idProfile + "  and ID_app in (" + String.Join(",", idApps) + "); ";
             new DBWriter(LoginForm.dbConnection).executeQuery(query);
-            fillDgvProfileApps(idProfile);
+            fillDgv(idProfile);
         }
 
         private string[] getSelectedApps()
@@ -101,7 +115,7 @@ namespace UniwersalnyDesktop
         {
             string profileId = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
             fillProfileDetais(profileId);
-            fillDgvProfileApps(profileId);
+            fillDgv(profileId);
         }
 
         private void fillProfileDetais(string profileId)
@@ -112,13 +126,13 @@ namespace UniwersalnyDesktop
         #endregion
 
         #region wypełnianie datagrida
-        private void fillDgvProfileApps(string profileId)
+        private void fillDgv(string profileId)
         {
             dgvProfileApps.Rows.Clear();
             DesktopProfile profile = profileDict[profileId];
             foreach (string appId in profile.applications.Keys)
             {
-                App app = profile.applications[appId];
+                App app = profile.applications[appId] as App;
                 addOneDgvRow(app);
             }
             dgvProfileApps.Sort(dgvProfileApps.Columns["colNazwa"], System.ComponentModel.ListSortDirection.Ascending);
