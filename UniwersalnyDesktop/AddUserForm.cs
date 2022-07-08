@@ -14,6 +14,7 @@ namespace UniwersalnyDesktop
         private List<string> userWindowsAuth = new List<string>();
         public string windowField;
         private NumberHandler nh = new NumberHandler();
+        private readonly string[] authorisationTypes = new string[] { "Domenowe i sql", "Tylko domenowe", "Tylko sql" };
 
         public AddUserForm()
         {
@@ -25,15 +26,15 @@ namespace UniwersalnyDesktop
         private void AddUserPermission_Load(object sender, EventArgs e)
         {
             loadPolaUzytkownicyIUprawnienia();
-            this.Height = 100;
-            btnZapisz.Enabled = false;
+            formSettingsMixedAuthentication();
         }
 
         private void loadPolaUzytkownicyIUprawnienia()
         {
-            typUzytkownikaCB.Items.Add("Windows authentication");
-            typUzytkownikaCB.Items.Add("SQL Server authentication");
-            typUzytkownikaCB.Items.Add("Mix");
+            typUzytkownikaCB.Items.Add(authorisationTypes[0]);
+            typUzytkownikaCB.Items.Add(authorisationTypes[1]);
+            typUzytkownikaCB.Items.Add(authorisationTypes[2]);
+            typUzytkownikaCB.SelectedIndex = 0;
         }
 
         #endregion
@@ -69,7 +70,7 @@ namespace UniwersalnyDesktop
                         userWindowsAuth = userList;
                         foreach (var a in userList)
                         {
-                            uzytkownikCB.Items.Add(a);
+                            cbUzytkownik.Items.Add(a);
                         }
                     }
                     catch (Exception exe)
@@ -86,7 +87,7 @@ namespace UniwersalnyDesktop
             {
                 foreach (var a in userWindowsAuth)
                 {
-                    uzytkownikCB.Items.Add(a);
+                    cbUzytkownik.Items.Add(a);
                 }
             }
         }
@@ -100,42 +101,57 @@ namespace UniwersalnyDesktop
         ///
         private void typUzytkownikaCB_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (typUzytkownikaCB.SelectedItem.ToString() == "Windows authentication")
+            if (typUzytkownikaCB.SelectedItem.ToString() == authorisationTypes[1])
             {
-                gbDane.Visible = false;
-                uzytkownikCB.Visible = true;
-                label7.Visible = true;
-                this.Height = 130;
+                formSettingsWindowsAuthentication();
 
                 string domainName = System.Environment.UserDomainName;
                 getDomainUsers(domainName);
             }
-            else if (typUzytkownikaCB.SelectedItem.ToString() == "SQL Server authentication")
+            else if (typUzytkownikaCB.SelectedItem.ToString() == authorisationTypes[2])
             {
-                gbDane.Visible = true;
-                gbDane.Location = new Point(12, 61);
-                uzytkownikCB.Visible = false;
-                label7.Visible = false;
-                this.Height = 321;
+                formSettingsSqlAuthentication();
             }
-            else if (typUzytkownikaCB.SelectedItem.ToString() == "Mix")
+            else if (typUzytkownikaCB.SelectedItem.ToString() == authorisationTypes[0])
             {
-                gbDane.Visible = true;
-                gbDane.Location = new Point(12, 94);
-                uzytkownikCB.Visible = true;
-                label7.Visible = true;
-                this.Height = 364;
-
-                imieTB.Enabled = false;
-                nazwiskoTB.Enabled = false;
-
-                loginTB.Enabled = true;
+                formSettingsMixedAuthentication();
 
                 string domainName = System.Environment.UserDomainName;
                 getDomainUsers(domainName);
 
             }
-        } 
+        }
+
+        private void formSettingsWindowsAuthentication()
+        {
+            gbDane.Visible = false;
+            cbUzytkownik.Visible = true;
+            label7.Visible = true;
+            this.Height = 130;
+        }
+
+        private void formSettingsSqlAuthentication()
+        {
+            gbDane.Visible = true;
+            gbDane.Location = new Point(12, 61);
+            cbUzytkownik.Visible = false;
+            label7.Visible = false;
+            this.Height = 284;
+        }
+
+        private void formSettingsMixedAuthentication()
+        {
+            gbDane.Visible = true;
+            gbDane.Location = new Point(12, 94);
+            cbUzytkownik.Visible = true;
+            label7.Visible = true;
+            this.Height = 327;
+
+            imieTB.Enabled = false;
+            nazwiskoTB.Enabled = false;
+
+            loginTB.Enabled = true;
+        }
         #endregion
 
         #region zmiana wyboru użytkownika w kombo
@@ -146,8 +162,6 @@ namespace UniwersalnyDesktop
         ///
         private void uzytkownikCB_SelectedIndexChanged(object sender, EventArgs e)
         {
-            checkIfFieldsAreFilled();
-            //fill data of the selecetd user
             fillData();
         }
 
@@ -158,15 +172,15 @@ namespace UniwersalnyDesktop
         ///
         private void fillData()
         {
-            if (typUzytkownikaCB.SelectedItem.ToString() == "Mix")
+            if (typUzytkownikaCB.SelectedItem.ToString() == authorisationTypes[0])
             {
-                if (uzytkownikCB.SelectedIndex > -1)
+                if (cbUzytkownik.SelectedIndex > -1)
                 {
                     string domainName = System.Environment.UserDomainName;
                     using (PrincipalContext pc = new PrincipalContext(ContextType.Domain, domainName, "DC=" + domainName + ",DC=local"))
                     {
                         UserPrincipal user = new UserPrincipal(pc);
-                        user = UserPrincipal.FindByIdentity(pc, uzytkownikCB.Text);
+                        user = UserPrincipal.FindByIdentity(pc, cbUzytkownik.Text);
                         if (user != null)
                         {
                             windowField = domainName + "\\" + user.SamAccountName.ToString();
@@ -183,129 +197,49 @@ namespace UniwersalnyDesktop
         ///  enable/disable button - zatwierdzB based on authentication method
         ///  </summary>
         ///
-        private void checkIfFieldsAreFilled()
+        private bool checkIfFieldsAreFilled()
         {
-            if (typUzytkownikaCB.SelectedItem.ToString() == "Windows authentication")
-            {
-                if (uzytkownikCB.SelectedIndex > -1)
-                {
-                    btnZapisz.Enabled = true;
-                }
-            }
-            else if (typUzytkownikaCB.SelectedItem.ToString() == "SQL Server authentication")
-            {
-                if (loginTB.Text != "" && hasloTB.Text != "" && potwierdzHasloTB.Text != "")
-                {
-                    if (hasloTB.Text != potwierdzHasloTB.Text)
-                    {
-                        btnZapisz.Enabled = false;
-                    }
-                    else
-                    {
-                        btnZapisz.Enabled = true;
-                    }
-                }
-                else
-                {
-                    btnZapisz.Enabled = false;
-                }
-            }
-            else if (typUzytkownikaCB.SelectedItem.ToString() == "Mix")
-            {
-                if (uzytkownikCB.SelectedIndex > -1)
-                {
-                    if (loginTB.Text != "" && hasloTB.Text != "" && potwierdzHasloTB.Text != "")
-                    {
-                        if (hasloTB.Text != potwierdzHasloTB.Text)
-                        {
-                            btnZapisz.Enabled = false;
-                        }
-                        else
-                        {
-                            btnZapisz.Enabled = true;
-                        }
-                    }
-                    else
-                    {
-                        btnZapisz.Enabled = false;
-                    }
-                }
-            }
-        }
-        #endregion
+            if (typUzytkownikaCB.SelectedItem.ToString() == authorisationTypes[1])
+                return windowsMandatoryFieldsFilled();
+            else if (typUzytkownikaCB.SelectedItem.ToString() == authorisationTypes[2])
+                return sqlMandatoryFieldsFilled();
+            else if (typUzytkownikaCB.SelectedItem.ToString() == authorisationTypes[0])
+                return sqlMandatoryFieldsFilled() && windowsMandatoryFieldsFilled();
 
-        #region zmiana tekstu w polach tekstowych
-        ///  <summary>
-        ///  loginTB_TextChanged function
-        ///  load function checkIfFieldsAreFilled
-        ///  </summary>
-        ///
-        private void loginTB_TextChanged(object sender, EventArgs e)
-        {
-            checkIfFieldsAreFilled();
+            return false;
         }
-        ///  <summary>
-        ///  hasloTB_TextChanged function
-        ///  load functino checkIfFieldsAreFilled
-        ///  </summary>
-        ///
-        private void hasloTB_TextChanged(object sender, EventArgs e)
+        private bool sqlMandatoryFieldsFilled()
         {
-            checkIfFieldsAreFilled();
-        }
-        ///  <summary>
-        ///  potwierdzHasloTB_TextChanged function
-        ///  load function checkIfFieldsAreFilled
-        ///  </summary>
-        ///
-        private void potwierdzHasloTB_TextChanged(object sender, EventArgs e)
-        {
-            checkIfFieldsAreFilled();
-        }
-        #endregion
+            if (!String.IsNullOrEmpty(loginTB.Text) && !String.IsNullOrEmpty(tbHaslo.Text))
+                return true;
 
-        #region walidacja zawartości pól obowiązkowych
-        // Validate a required field. Return true if the field is valid.
-        private bool RequiredFieldIsBlank(ErrorProvider err1, ErrorProvider err2, TextBox txt1, TextBox txt2)
-        {
-
-            if (txt1.Text == txt2.Text || txt1.Text == "" || txt2.Text == "")
-            {
-                // Clear the error.
-                err1.SetError(txt1, "");
-                err2.SetError(txt2, "");
-                return false;
-            }
-            else
-            {
-                // Set the error.
-                err1.SetError(txt1, "Hasło i potwierdzenie hasła są różne.");
-                err2.SetError(txt2, "Hasło i potwierdzenie hasła są różne.");
-                return false;
-            }
+            return false;
         }
-
-        private void hasloTB_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private bool windowsMandatoryFieldsFilled()
         {
-            e.Cancel = RequiredFieldIsBlank(errorProvider1, errorProvider2, hasloTB, potwierdzHasloTB);
+            if (cbUzytkownik.SelectedIndex > -1)
+                return true;
+
+            return false;
         }
-
-        private void potwierdzHasloTB_Validating(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            e.Cancel = RequiredFieldIsBlank(errorProvider1, errorProvider2, hasloTB, potwierdzHasloTB);
-        } 
         #endregion
 
         #region naciśnięcie przycisku Zapisz
         private void btnZapisz_Click(object sender, EventArgs e)
         {
-            if (typUzytkownikaCB.SelectedItem.ToString() == "Windows authentication")
+            if (!checkIfFieldsAreFilled())
+            {
+                MessageBox.Show("Nie wszystkie pola są wypełnione");
+                return;
+            }
+
+            if (typUzytkownikaCB.SelectedItem.ToString() == authorisationTypes[1])
                 addWindowsUser();
 
-            else if (typUzytkownikaCB.SelectedItem.ToString() == "SQL Server authentication")
+            else if (typUzytkownikaCB.SelectedItem.ToString() == authorisationTypes[2])
                 addSqlUser();
 
-            else if (typUzytkownikaCB.SelectedItem.ToString() == "Mix")
+            else if (typUzytkownikaCB.SelectedItem.ToString() == authorisationTypes[0])
                 addMixedUser();
         }
 
@@ -315,13 +249,13 @@ namespace UniwersalnyDesktop
 
         private void addWindowsUser()
         {
-            if (uzytkownikCB.SelectedIndex > -1)
+            if (cbUzytkownik.SelectedIndex > -1)
             {
                 string domainName = System.Environment.UserDomainName;
                 using (PrincipalContext pc = new PrincipalContext(ContextType.Domain, domainName, "DC=" + domainName + ",DC=local"))
                 {
                     UserPrincipal user = new UserPrincipal(pc);
-                    user = UserPrincipal.FindByIdentity(pc, uzytkownikCB.Text);
+                    user = UserPrincipal.FindByIdentity(pc, cbUzytkownik.Text);
                     if (user != null)
                     {
                         string nazwaTabeli = "users_list";
@@ -370,9 +304,6 @@ namespace UniwersalnyDesktop
 
         private void addSqlUser()
         {
-            if (!mandatoryFieldsCorrect())
-                return;
-
             string nazwaTabeli = "users_list";
             List<string> nazwyKolumn = new List<string>();
             nazwyKolumn.Add("imie_user");
@@ -409,7 +340,7 @@ namespace UniwersalnyDesktop
                 string sql = "INSERT INTO " + nazwaTabeli + " ( " + string.Join(",", nazwyKolumn.ToArray()) + " ) VALUES ( '" + string.Join("','", nazwyWartosci.ToArray()) + "'); ";
 
                 string procedura = " BEGIN TRY " +
-                        " exec AddUserDB " + "'" + loginTB.Text.ToString() + "'" + ", '" + hasloTB.Text + "' , 'SoftMineDesktop', 'SoftMine','dbo' " +
+                        " exec AddUserDB " + "'" + loginTB.Text.ToString() + "'" + ", '" + tbHaslo.Text + "' , 'SoftMineDesktop', 'SoftMine','dbo' " +
                         " SELECT 'SUCCESS' " +
                         " END TRY " +
                         " BEGIN CATCH " +
@@ -434,9 +365,6 @@ namespace UniwersalnyDesktop
 
         private void addMixedUser()
         {
-            if (!mandatoryFieldsCorrect())
-                return;
-
             string nazwaTabeli = "users_list";
             List<string> nazwyKolumn = new List<string>();
             nazwyKolumn.Add("imie_user");
@@ -475,7 +403,7 @@ namespace UniwersalnyDesktop
 
                 string sql = "INSERT INTO " + nazwaTabeli + " ( " + string.Join(",", nazwyKolumn.ToArray()) + " ) VALUES ( '" + string.Join("','", nazwyWartosci.ToArray()) + "'); ";
                 string procedura1 = " BEGIN TRY " +
-                                    " exec AddUserDB " + "'" + loginTB.Text.ToString() + "'" + ", '" + hasloTB.Text + "' , 'SoftMineDesktop', 'SoftMine','dbo' " +
+                                    " exec AddUserDB " + "'" + loginTB.Text.ToString() + "'" + ", '" + tbHaslo.Text + "' , 'SoftMineDesktop', 'SoftMine','dbo' " +
                                     " SELECT 'SUCCESS' " +
                                     " END TRY " +
                                     " BEGIN CATCH " +
@@ -503,19 +431,6 @@ namespace UniwersalnyDesktop
                 else
                     MessageBox.Show("Użytkownik nie został dodany.\n" + comment, "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-        private bool mandatoryFieldsCorrect()
-        {
-            if (String.IsNullOrEmpty(loginTB.Text) || String.IsNullOrEmpty(hasloTB.Text) || String.IsNullOrEmpty(potwierdzHasloTB.Text))
-                return false;
-
-            if (hasloTB.Text != potwierdzHasloTB.Text)
-            {
-                string msg = "Podane hasła się róźnią.";
-                MessageBox.Show(msg, "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return false;
-            }
-            return true;
         }
 
         public int checkIfLoginIsInDatabase(string name)

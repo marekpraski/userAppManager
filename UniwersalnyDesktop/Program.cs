@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Principal;
 using System.Windows.Forms;
 using UtilityTools;
 
@@ -26,7 +27,7 @@ namespace UniwersalnyDesktop
             {
                 Application.Exit();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MessageBoxError.ShowBox(e);
             }

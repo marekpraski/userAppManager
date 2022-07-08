@@ -12,7 +12,7 @@ namespace UniwersalnyDesktop
         private string userPassword;
 
         public static string mainPath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase.ToString();     //katalog z którego uruchamiany jest program, wykrywany przez DBConnector i ustawiany tutaj
-                                             //dla DEBUGA ustawiony jest w metodzie ReadAllData
+                                                                                                                        //dla DEBUGA ustawiony jest w metodzie ReadAllData
 
         private QueryData userData;     //login_user=0, windows_user=1,imie_user=2, nazwisko_user=3
 
