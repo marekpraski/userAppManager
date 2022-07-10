@@ -53,6 +53,7 @@
     <Compile Include="AddUserForm.designer.cs">
       <DependentUpon>AddUserForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DesktopItems\AppProfileParameters.cs" />
     <Compile Include="DesktopItems\IProfileItem.cs" />
     <Compile Include="PasswordChanger.cs">
       <SubType>Form</SubType>
@@ -287,6 +288,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AddUser_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ASX_FileToTable_blue_16x_.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

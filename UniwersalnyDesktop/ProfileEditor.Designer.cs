@@ -29,30 +29,37 @@ namespace UniwersalnyDesktop
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.dgvProfileApps = new System.Windows.Forms.DataGridView();
             this.colId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colNazwa = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colSerwer = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colBazaDanych = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colSterownik = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colRaport = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cbProfiles = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.btnDodajProfil = new System.Windows.Forms.ToolStripButton();
+            this.btnEdytujProfil = new System.Windows.Forms.ToolStripButton();
+            this.btnUsunProfil = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnDodajAplikacje = new System.Windows.Forms.ToolStripButton();
+            this.btnUsunAplikacje = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnDodajUzytkownika = new System.Windows.Forms.ToolStripButton();
+            this.btnUsunUzytkownika = new System.Windows.Forms.ToolStripButton();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.labelDomena = new System.Windows.Forms.Label();
             this.labelLdap = new System.Windows.Forms.Label();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnDodajProfil = new System.Windows.Forms.ToolStripButton();
-            this.btnEdytujProfil = new System.Windows.Forms.ToolStripButton();
-            this.btnUsunProfil = new System.Windows.Forms.ToolStripButton();
-            this.btnDodajAplikacje = new System.Windows.Forms.ToolStripButton();
-            this.btnUsunAplikacje = new System.Windows.Forms.ToolStripButton();
-            this.btnDodajUzytkownika = new System.Windows.Forms.ToolStripButton();
-            this.btnUsunUzytkownika = new System.Windows.Forms.ToolStripButton();
+            this.label4 = new System.Windows.Forms.Label();
+            this.tbSerwer = new System.Windows.Forms.TextBox();
+            this.btnKopiujSerwer = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.btnZapisz = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProfileApps)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -67,11 +74,12 @@ namespace UniwersalnyDesktop
             this.colNazwa,
             this.colSerwer,
             this.colBazaDanych,
+            this.colSterownik,
             this.colRaport});
             this.dgvProfileApps.Location = new System.Drawing.Point(12, 84);
             this.dgvProfileApps.Name = "dgvProfileApps";
             this.dgvProfileApps.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvProfileApps.Size = new System.Drawing.Size(1048, 380);
+            this.dgvProfileApps.Size = new System.Drawing.Size(1205, 380);
             this.dgvProfileApps.TabIndex = 9;
             // 
             // colId
@@ -97,6 +105,12 @@ namespace UniwersalnyDesktop
             this.colBazaDanych.HeaderText = "Baza danych";
             this.colBazaDanych.Name = "colBazaDanych";
             this.colBazaDanych.Width = 150;
+            // 
+            // colSterownik
+            // 
+            this.colSterownik.HeaderText = "Sterownik ODBC";
+            this.colSterownik.Name = "colSterownik";
+            this.colSterownik.Width = 150;
             // 
             // colRaport
             // 
@@ -125,6 +139,7 @@ namespace UniwersalnyDesktop
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnZapisz,
             this.btnDodajProfil,
             this.btnEdytujProfil,
             this.btnUsunProfil,
@@ -138,67 +153,9 @@ namespace UniwersalnyDesktop
             this.btnUsunUzytkownika});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1071, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(1229, 25);
             this.toolStrip1.TabIndex = 13;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(98, 62);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(45, 13);
-            this.label2.TabIndex = 14;
-            this.label2.Text = "domena";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(313, 62);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(27, 13);
-            this.label3.TabIndex = 16;
-            this.label3.Text = "ldap";
-            // 
-            // labelDomena
-            // 
-            this.labelDomena.AutoSize = true;
-            this.labelDomena.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelDomena.Location = new System.Drawing.Point(149, 62);
-            this.labelDomena.Name = "labelDomena";
-            this.labelDomena.Size = new System.Drawing.Size(41, 13);
-            this.labelDomena.TabIndex = 18;
-            this.labelDomena.Text = "label4";
-            // 
-            // labelLdap
-            // 
-            this.labelLdap.AutoSize = true;
-            this.labelLdap.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelLdap.Location = new System.Drawing.Point(346, 62);
-            this.labelLdap.Name = "labelLdap";
-            this.labelLdap.Size = new System.Drawing.Size(41, 13);
-            this.labelLdap.TabIndex = 19;
-            this.labelLdap.Text = "label4";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
             // 
             // btnDodajProfil
             // 
@@ -229,6 +186,16 @@ namespace UniwersalnyDesktop
             this.btnUsunProfil.Size = new System.Drawing.Size(23, 22);
             this.btnUsunProfil.Text = "Usuń profil";
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
             // btnDodajAplikacje
             // 
             this.btnDodajAplikacje.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -249,6 +216,16 @@ namespace UniwersalnyDesktop
             this.btnUsunAplikacje.Text = "Usuń aplikację z profilu";
             this.btnUsunAplikacje.Click += new System.EventHandler(this.btnUsunAplikacje_Click);
             // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
             // btnDodajUzytkownika
             // 
             this.btnDodajUzytkownika.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -268,11 +245,89 @@ namespace UniwersalnyDesktop
             this.btnUsunUzytkownika.Size = new System.Drawing.Size(23, 22);
             this.btnUsunUzytkownika.Text = "Usuń użytkownika z profilu";
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(642, 59);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(45, 13);
+            this.label2.TabIndex = 14;
+            this.label2.Text = "domena";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(857, 59);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(27, 13);
+            this.label3.TabIndex = 16;
+            this.label3.Text = "ldap";
+            // 
+            // labelDomena
+            // 
+            this.labelDomena.AutoSize = true;
+            this.labelDomena.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelDomena.Location = new System.Drawing.Point(693, 59);
+            this.labelDomena.Name = "labelDomena";
+            this.labelDomena.Size = new System.Drawing.Size(41, 13);
+            this.labelDomena.TabIndex = 18;
+            this.labelDomena.Text = "label4";
+            // 
+            // labelLdap
+            // 
+            this.labelLdap.AutoSize = true;
+            this.labelLdap.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelLdap.Location = new System.Drawing.Point(890, 59);
+            this.labelLdap.Name = "labelLdap";
+            this.labelLdap.Size = new System.Drawing.Size(41, 13);
+            this.labelLdap.TabIndex = 19;
+            this.labelLdap.Text = "label4";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(101, 59);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(38, 13);
+            this.label4.TabIndex = 20;
+            this.label4.Text = "serwer";
+            // 
+            // tbSerwer
+            // 
+            this.tbSerwer.Location = new System.Drawing.Point(145, 55);
+            this.tbSerwer.Name = "tbSerwer";
+            this.tbSerwer.Size = new System.Drawing.Size(250, 20);
+            this.tbSerwer.TabIndex = 21;
+            // 
+            // btnKopiujSerwer
+            // 
+            this.btnKopiujSerwer.Image = global::UniwersalnyDesktop.Properties.Resources.ASX_FileToTable_blue_16x_;
+            this.btnKopiujSerwer.Location = new System.Drawing.Point(401, 55);
+            this.btnKopiujSerwer.Name = "btnKopiujSerwer";
+            this.btnKopiujSerwer.Size = new System.Drawing.Size(23, 23);
+            this.btnKopiujSerwer.TabIndex = 22;
+            this.toolTip1.SetToolTip(this.btnKopiujSerwer, "Przypisz serwer do wszystkich aplikacji");
+            this.btnKopiujSerwer.UseVisualStyleBackColor = true;
+            this.btnKopiujSerwer.Click += new System.EventHandler(this.btnKopiujSerwer_Click);
+            // 
+            // btnZapisz
+            // 
+            this.btnZapisz.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnZapisz.Image = global::UniwersalnyDesktop.Properties.Resources.Save_16x;
+            this.btnZapisz.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnZapisz.Name = "btnZapisz";
+            this.btnZapisz.Size = new System.Drawing.Size(23, 22);
+            this.btnZapisz.Text = "Zapisz miany";
+            this.btnZapisz.Click += new System.EventHandler(this.btnZapisz_Click);
+            // 
             // ProfileEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1071, 473);
+            this.ClientSize = new System.Drawing.Size(1229, 473);
+            this.Controls.Add(this.btnKopiujSerwer);
+            this.Controls.Add(this.tbSerwer);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.labelLdap);
             this.Controls.Add(this.labelDomena);
             this.Controls.Add(this.label3);
@@ -298,11 +353,6 @@ namespace UniwersalnyDesktop
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton btnUsunAplikacje;
         private System.Windows.Forms.ToolStripButton btnDodajAplikacje;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colId;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colNazwa;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colSerwer;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colBazaDanych;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colRaport;
         private System.Windows.Forms.ToolStripButton btnDodajProfil;
         private System.Windows.Forms.ToolStripButton btnUsunProfil;
         private System.Windows.Forms.ToolStripButton btnEdytujProfil;
@@ -316,5 +366,16 @@ namespace UniwersalnyDesktop
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripButton btnDodajUzytkownika;
         private System.Windows.Forms.ToolStripButton btnUsunUzytkownika;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox tbSerwer;
+        private System.Windows.Forms.Button btnKopiujSerwer;
+        private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colId;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colNazwa;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colSerwer;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colBazaDanych;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colSterownik;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colRaport;
+        private System.Windows.Forms.ToolStripButton btnZapisz;
     }
 }

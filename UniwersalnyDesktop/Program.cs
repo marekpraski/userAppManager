@@ -15,7 +15,7 @@ namespace UniwersalnyDesktop
         static void Main()
         {
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetCompatibleTextRenderingDefault(false);            
 
             try
             {

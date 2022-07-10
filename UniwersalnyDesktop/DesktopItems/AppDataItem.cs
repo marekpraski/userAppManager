@@ -2,7 +2,9 @@
 namespace UniwersalnyDesktop
 {
 
-    //do przechowywania uprawnień użytkownika do aplikacji i ról użytkownika
+    /// <summary>
+    /// przechowuje uprawnienia użytkownika do aplikacji i ról użytkownika
+    /// </summary>
     public class AppDataItem
     {
         public string appId { get; set; }

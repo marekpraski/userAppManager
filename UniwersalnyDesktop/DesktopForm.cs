@@ -85,10 +85,10 @@ namespace UniwersalnyDesktop
         private void readDesktopData()
         {
             string userLogin = userData.getDataValue(0, "login_user").ToString();
-            string query = @"select ap.ID_app, ap.name_app, ap.path_app, ap.show_name, au.Grant_app, ap.name_db from [dbo].[app_list] as ap 
+            string query = @"select ap.ID_app, ap.name_app, ap.path_app, ap.show_name, au.Grant_app, ap.name_db, app.runFromDesktop from [dbo].[app_list] as ap 
                                                     inner join app_users as au on ap.ID_app = au.ID_app 
                                                     inner join users_list as ul on ul.ID_user = au.ID_user 
-                                                    where ap.name_db is not null and srod_app = 'Windows' and ul.login_user = '" + userLogin + "'";
+                                                    where ap.name_db is not null and srod_app = 'Windows' and app.runFromDesktop = 1 and ul.login_user = '" + userLogin + "'";
             desktopData = dbReader.readFromDB(query);
         }
 

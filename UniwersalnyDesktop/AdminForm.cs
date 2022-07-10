@@ -230,7 +230,7 @@ namespace UniwersalnyDesktop
         }
         #endregion
 
-        #region czytanie profili, aplikacji, modułów i ról z bazy danych
+        #region czytanie profili z bazy danych
 
         private void getProfileData()
         {
@@ -267,10 +267,14 @@ namespace UniwersalnyDesktop
                 profileDict[profileId].addUserToProfile(allUsersDict[userId]);
             }
         }
+        #endregion
+
+        #region czytanie aplikacji, modułów i ról z bazy danych
 
         private void getAppData()
         {
-            string query = @"select ap.ID_app, ap.show_name, ap.name_app, ap.path_app, ap.name_db, ap.srod_app, ap.variant from [dbo].[app_list] as ap ";
+            UtilityTools.NumberHandler nh = new UtilityTools.NumberHandler();
+            string query = @"select ap.ID_app, ap.show_name, ap.name_app, ap.path_app, ap.name_db, ap.srod_app, ap.variant, ap.runFromDesktop from [dbo].[app_list] as ap ";
             QueryData appData = dbReader.readFromDB(query);
 
             for (int i = 0; i < appData.dataRowsNumber; i++)
@@ -279,8 +283,9 @@ namespace UniwersalnyDesktop
                 App app = new App();
                 app.id = appData.getDataValue(i, "ID_app").ToString();
                 app.displayName = appData.getDataValue(i, "show_name").ToString();
-                app.databaseName = appData.getDataValue(i, "name_db").ToString();
+                app.defaultDatabaseName = appData.getDataValue(i, "name_db").ToString();
                 app.executionPath = appData.getDataValue(i, "path_app").ToString();
+                app.runFromDesktop = nh.tryGetBool(appData.getDataValue(i, "runFromDesktop"));
                 appDictionary.Add(app.id, app);
             }
         }
@@ -351,15 +356,19 @@ namespace UniwersalnyDesktop
 
         private void getProfileApps()
         {
-            string query = "  select [ID_profile], [ID_app] from [profile_app]";
+            string query = "  select ID_profile, ID_app, app_params from [profile_app]";
             QueryData qd = dbReader.readFromDB(query);
             for (int i = 0; i < qd.dataRowsNumber; i++)
             {
                 string profileId = qd.getDataValue(i, "ID_profile").ToString();
                 string appId = qd.getDataValue(i, "ID_app").ToString();
+                string appProfileParams = qd.getDataValue(i, "app_params").ToString();
+                AppProfileParameters appParams = new AppProfileParameters(profileId, appId, appProfileParams);
+                appDictionary[appId].addAppProfileParameters(appParams);
                 profileDict[profileId].addAppToProfile(appDictionary[appId]);
             }
         }
+
         #endregion
 
         #region czytanie z bazy danych ról użytkowników w aplikacjach
@@ -439,7 +448,7 @@ namespace UniwersalnyDesktop
             foreach (string userId in items.Keys)
             {
                 items.TryGetValue(userId, out user);
-                TreeNode treeNode = new TreeNode(user.name);
+                TreeNode treeNode = new TreeNode(user.displayName + "  ( " + user.sqlLogin + ",  " + user.windowsLogin + " )");
                 treeNode.Name = user.id;
                 childNodes[i] = treeNode;
                 i++;

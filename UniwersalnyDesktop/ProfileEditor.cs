@@ -1,6 +1,7 @@
 ﻿using DatabaseInterface;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Windows.Forms;
 using UtilityTools;
 
@@ -35,10 +36,60 @@ namespace UniwersalnyDesktop
             }
             cbProfiles.DisplayMember = "displayText";
             cbProfiles.ValueMember = "value";
-        } 
+        }
         #endregion
 
-        #region kliknięcie przycisków na pasku narzędziowym
+        #region kliknięcie przycisku Zapisz
+
+        private void btnZapisz_Click(object sender, EventArgs e)
+        {
+            dgvProfileApps.EndEdit();
+            string idProfile = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
+            updateProfileApps(idProfile);
+            string query = generateUpdateQuery(idProfile);
+            updateToDB(query);
+        }
+
+        private void updateProfileApps(string idProfile)
+        {
+            for (int i = 0; i < dgvProfileApps.RowCount; i++)
+            {
+                string appId = dgvProfileApps.Rows[i].Cells["colId"].Value.ToString();
+                AppProfileParameters appParams = new AppProfileParameters(idProfile, appId);
+                appParams.databaseName = dgvProfileApps.Rows[i].Cells["colBazaDanych"].Value == null ? "" : dgvProfileApps.Rows[i].Cells["colBazaDanych"].Value.ToString();
+                appParams.serverName = dgvProfileApps.Rows[i].Cells["colSerwer"].Value == null ? "" : dgvProfileApps.Rows[i].Cells["colSerwer"].Value.ToString();
+                appParams.reportPath = dgvProfileApps.Rows[i].Cells["colRaport"].Value == null ? "" : dgvProfileApps.Rows[i].Cells["colRaport"].Value.ToString();
+                appParams.driverOdbc = dgvProfileApps.Rows[i].Cells["colSterownik"].Value == null ? "" : dgvProfileApps.Rows[i].Cells["colSterownik"].Value.ToString();
+                appDictionary[appId].addAppProfileParameters(appParams);
+            }
+        }
+
+        private string generateUpdateQuery(string idProfile)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < dgvProfileApps.RowCount; i++)
+            {
+                string appId = dgvProfileApps.Rows[i].Cells["colId"].Value.ToString();
+                string paramsAsXml = appDictionary[appId].getAppProfileSpecificSettingsAsXml(idProfile);
+                sb.Append(" Update [profile_app] set app_params = '");
+                sb.Append(paramsAsXml);
+                sb.Append("' where ID_profile = ");
+                sb.Append(idProfile);
+                sb.Append(" and ID_app = ");
+                sb.Append(appId);
+                sb.Append("; ");
+            }
+
+            return sb.ToString();
+        }
+
+        private void updateToDB(string query)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region kliknięcie przycisków na paska narzędziowym
 
         private void btnDodajAplikacje_Click(object sender, EventArgs e)
         {
@@ -110,6 +161,16 @@ namespace UniwersalnyDesktop
 
         #endregion
 
+        #region kliknięcie przycisku "kopiuj nazwę serwera"
+        private void btnKopiujSerwer_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < dgvProfileApps.RowCount; i++)
+            {
+                dgvProfileApps.Rows[i].Cells["col"].Value = tbSerwer.Text;
+            }
+        } 
+        #endregion
+
         #region zmiana wyboru w kombo
         private void cbProfiles_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -133,21 +194,21 @@ namespace UniwersalnyDesktop
             foreach (string appId in profile.applications.Keys)
             {
                 App app = profile.applications[appId] as App;
-                addOneDgvRow(app);
+                addOneDgvRow(app, profileId);
             }
             dgvProfileApps.Sort(dgvProfileApps.Columns["colNazwa"], System.ComponentModel.ListSortDirection.Ascending);
         }
 
-        private void addOneDgvRow(App app)
+        private void addOneDgvRow(App app, string profileId)
         {
             if (String.IsNullOrEmpty(app.displayName))
                 return;
             dgvProfileApps.Rows.Add(
                                 app.id,
                                 app.displayName,
-                                app.serverName,
-                                app.databaseName,
-                                app.reportSerwerLink
+                                app.getServerName(profileId),
+                                app.getDatabaseName(profileId),
+                                app.getReportPath(profileId)
                                 );
         }
         #endregion
