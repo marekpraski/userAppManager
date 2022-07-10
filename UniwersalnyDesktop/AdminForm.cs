@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Data.SqlClient;
-using DatabaseInterface;
 using System.IO;
 using Microsoft.Win32;
 using System.Diagnostics.Contracts;
@@ -16,18 +14,13 @@ namespace UniwersalnyDesktop
 
         #region prywatne właściwości
 
-        private DBReader dbReader;
-        private SqlConnection dbConnection;
         private string adminLogin;                              //login użytkownika, ale z założenia jest to Administrator skoro jest w tym oknie, inna nazwa bo chcę odróżnić od "user" który jest zwykłym użytkownikiem
+        private DesktopDataHandler dataHandler;
 
-        //
         //słowniki danych podstawowych
         //
         private Dictionary<string, DesktopUser> allUsersDict;            //lista wszystkich użytkowników desktopu, kluczem jest Id
         private Dictionary<string, DesktopUser> profileUsersDict;            //lista użytkowników sql, kluczem jest Id, wartością nazwa użytkownika wyświetlana w drzewie
-        private Dictionary<string, string> windowsUsersDict;      //lista użytkowników domenowych, kluczem jest Id, , wartością nazwa użytkownika wyświetlana w drzewie
-        private Dictionary<string, string> duplicatedWindowsUsers;        //jeżeli loginy  domenowe się powtarzają to ten program nie może działać poprawnie
-                                                                          //wychwytuję powtarzające się loginy i je wyświetlam
 
         private Dictionary<string, DesktopProfile> profileDict;     //słownik wszystkich profili zdefiniowanych w Desktopie, kluczem jest id
         private Dictionary<string, App> appDictionary;             //lista wszystkich aplikacji zdefiniowanych w desktopie, kluczem jest Id
@@ -69,14 +62,18 @@ namespace UniwersalnyDesktop
 
         #endregion
 
-        public AdminForm(string adminLogin, SqlConnection dbConnection, DBReader dbReader)
+        public AdminForm(string adminLogin)
         {
-            this.dbReader = dbReader;
             this.adminLogin = adminLogin;
-            this.dbConnection = dbConnection;
             InitializeComponent();
+            initialSetup();
+        }
+
+        private void initialSetup()
+        {
+            this.dataHandler = new DesktopDataHandler(this.adminLogin);
             createDictionaries();
-            readAllData();
+            getAllData();
             setupAdminForm();
         }
 
@@ -112,17 +109,6 @@ namespace UniwersalnyDesktop
 
         private void createDictionaries()
         {
-            allUsersDict = new Dictionary<string, DesktopUser>();
-
-            profileUsersDict = new Dictionary<string, DesktopUser>();
-            windowsUsersDict = new Dictionary<string, string>();
-            duplicatedWindowsUsers = new Dictionary<string, string>();
-
-            profileDict = new Dictionary<string, DesktopProfile>();
-            appDictionary = new Dictionary<string, App>();
-            rolaDict = new Dictionary<string, Rola>();
-            moduleDict = new Dictionary<string, AppModule>();
-
             //przygotowanie do zapisywania zmian
             userBackupDict = new Dictionary<string, DesktopUser>();
             userAppChangeDict = new Dictionary<DesktopUser, Dictionary<App, AppDataItem>>();
@@ -134,290 +120,16 @@ namespace UniwersalnyDesktop
             populateProfileListView();
         }
 
-        private void readAllData()
+        private void getAllData()
         {
-            getUserData();
-            getProfileData();
-            getAppData();
-            getAppModules();
-            getRolaData();
-            getProfileApps();
-            getUserApps();
+            this.allUsersDict = this.dataHandler.allUsersDict;
+            this.profileUsersDict = this.dataHandler.profileUsersDict;
+            this.profileDict = this.dataHandler.profileDict;
+            this.appDictionary = this.dataHandler.appDictionary;
+            this.moduleDict = this.dataHandler.moduleDict;
+            this.rolaDict = this.dataHandler.rolaDict;
         }
 
-        #endregion
-
-        #region czytanie użytkowników z bazy danych 
-        private void getUserData()
-        {
-            string query = "select  ID_user, imie_user, nazwisko_user,login_user, windows_user from users_list where login_user is not null and login_user <> '" + adminLogin + "'";
-            QueryData userData = dbReader.readFromDB(query);
-
-            for (int i = 0; i < userData.dataRowsNumber; i++)
-            {
-
-                DesktopUser desktopUser = new DesktopUser();
-                desktopUser.name = userData.getDataValue(i, "imie_user").ToString();
-                desktopUser.surname = userData.getDataValue(i, "nazwisko_user").ToString();
-                desktopUser.sqlLogin = userData.getDataValue(i, "login_user").ToString();
-                desktopUser.windowsLogin = userData.getDataValue(i, "windows_user").ToString();
-                desktopUser.id = userData.getDataValue(i, "ID_user").ToString();
-                allUsersDict.Add(desktopUser.id, desktopUser);
-            }
-            groupUsers();
-
-            //usuwam ze słowników wszystkich zduplikowanych użytkowników, bo w kolejnych kwerendach wyszukujących programów dla użytkowników wyniki są niejednoznaczne
-            removeDuplicatedWindowsUsers();
-        }
-
-
-        private void groupUsers()
-        {
-            string userDisplayName = "";
-            DesktopUser user = null;
-
-            foreach (string userId in allUsersDict.Keys)
-            {
-                allUsersDict.TryGetValue(userId, out user);
-
-                if (user.windowsLogin != "")
-                {
-                    userDisplayName = user.windowsLogin + " (" + user.name + " " + user.surname + ")";      //nazwa użytkownika wyświetlana w drzewie
-                    windowsUsersDict.Add(user.id, userDisplayName);
-                }
-            }
-        }
-
-        private void removeDuplicatedWindowsUsers()
-        {
-            Dictionary<string, List<string>> users = new Dictionary<string, List<string>>();  //kluczem jest login windowsowy małymi literami, wartością jest lista id
-            DesktopUser user = null;
-            List<string> idList = null;
-
-            //wypełniam słownik, żeby pogrupować użytkowników po ich loginach windowsowych SPROWADZONYCH DO LOWERCASE 
-            foreach (string userId in windowsUsersDict.Keys)
-            {
-                allUsersDict.TryGetValue(userId, out user);
-
-                string windowsLogin = user.windowsLogin.ToLower();
-                string id = user.id;
-
-                if (users.ContainsKey(windowsLogin))
-                {
-                    users.TryGetValue(windowsLogin, out idList);
-                    idList.Add(id);
-                }
-                else
-                {
-                    idList = new List<string>();
-                    idList.Add(id);
-                    users.Add(windowsLogin, idList);
-                }
-            }
-
-            foreach (string windowsLogin in users.Keys)
-            {
-                users.TryGetValue(windowsLogin, out idList);
-                if (idList.Count > 1)                           //tzn login powtarza się
-                {
-                    foreach (string userId in idList)
-                    {
-                        windowsUsersDict.Remove(userId);
-                        duplicatedWindowsUsers.Add(userId, windowsLogin + " (id użytkownika = " + userId + ")");
-                    }
-                }
-            }
-        }
-        #endregion
-
-        #region czytanie profili z bazy danych
-
-        private void getProfileData()
-        {
-            string query = @"  select ID_profile, name_profile, domena, ldap from [profile_desktop]";
-            string query2 = @"SELECT  ID_profile, lu.ID_user FROM [profile_users] pu
-                                inner join 
-                                users_list lu on pu.ID_user = lu.ID_user
-                                where login_user is not null and login_user <> '" + adminLogin + "'";
-            QueryData[] qd = new DBReader(LoginForm.dbConnection).readFromDB(new string[] { query, query2 });
-
-            addProfilesToDict(qd[0]);
-            assignUsersToProfiles(qd[1]);
-        }
-
-        private void addProfilesToDict(QueryData qd)
-        {
-            for (int i = 0; i < qd.dataRowsNumber; i++)
-            {
-                string id = qd.getDataValue(i, "ID_profile").ToString();
-                string name = qd.getDataValue(i, "name_profile").ToString();
-                DesktopProfile newProfile = new DesktopProfile(id, name);
-                newProfile.domena = qd.getDataValue(i, "domena").ToString();
-                newProfile.ldap = qd.getDataValue(i, "ldap").ToString();
-                this.profileDict.Add(id, newProfile);
-            }
-        }
-
-        private void assignUsersToProfiles(QueryData qd)
-        {
-            for (int i = 0; i < qd.dataRowsNumber; i++)
-            {
-                string profileId = qd.getDataValue(i, "ID_profile").ToString();
-                string userId = qd.getDataValue(i, "ID_user").ToString();
-                profileDict[profileId].addUserToProfile(allUsersDict[userId]);
-            }
-        }
-        #endregion
-
-        #region czytanie aplikacji, modułów i ról z bazy danych
-
-        private void getAppData()
-        {
-            UtilityTools.NumberHandler nh = new UtilityTools.NumberHandler();
-            string query = @"select ap.ID_app, ap.show_name, ap.name_app, ap.path_app, ap.name_db, ap.srod_app, ap.variant, ap.runFromDesktop from [dbo].[app_list] as ap ";
-            QueryData appData = dbReader.readFromDB(query);
-
-            for (int i = 0; i < appData.dataRowsNumber; i++)
-            {
-
-                App app = new App();
-                app.id = appData.getDataValue(i, "ID_app").ToString();
-                app.displayName = appData.getDataValue(i, "show_name").ToString();
-                app.defaultDatabaseName = appData.getDataValue(i, "name_db").ToString();
-                app.executionPath = appData.getDataValue(i, "path_app").ToString();
-                app.runFromDesktop = nh.tryGetBool(appData.getDataValue(i, "runFromDesktop"));
-                appDictionary.Add(app.id, app);
-            }
-        }
-
-        private void getAppModules()
-        {
-            App app;
-
-            string query = "select ID_mod, ID_app, name_mod from mod_app";
-            QueryData moduleData = dbReader.readFromDB(query);
-
-            for (int i = 0; i < moduleData.dataRowsNumber; i++)
-            {
-                AppModule module = new AppModule();
-                module.id = moduleData.getDataValue(i, "ID_mod").ToString();
-                module.name = moduleData.getDataValue(i, "name_mod").ToString();
-                module.appId = moduleData.getDataValue(i, "ID_app").ToString();
-
-                appDictionary.TryGetValue(module.appId, out app);
-                app.addModule(module);
-                moduleDict.Add(module.id, module);
-            }
-        } 
-
-        private void getRolaData()
-        {
-            App app;
-
-            string query = @"select ra.ID_rola, ra.name_rola, ra.descr_rola, al.ID_app, al.show_name from [dbo].[rola_app]  as ra 
-                            inner join app_list as al on ra.ID_app=al.ID_app";
-            QueryData appRolaData = dbReader.readFromDB(query);
-
-                for (int i = 0; i < appRolaData.dataRowsNumber; i++)
-                {
-
-                Rola rola = new Rola();
-                rola.id = appRolaData.getDataValue(i, "ID_rola").ToString();
-                rola.appId = appRolaData.getDataValue(i, "ID_app").ToString();
-                rola.name = appRolaData.getDataValue(i, "name_rola").ToString();
-                rola.description = appRolaData.getDataValue(i, "descr_rola").ToString();
-                rola.appName = appRolaData.getDataValue(i, "show_name").ToString();
-
-                getRolaAppModules(rola);
-
-                rolaDict.Add(rola.id, rola);
-
-                //dodaję role aplikacji w każdej aplikacji
-                appDictionary.TryGetValue(rola.appId, out app);
-                app.addRola(rola);
-                }
-        }
-
-        private void getRolaAppModules(Rola rola)
-        {
-            AppModule module;
-            string query = "select ID_mod, Grant_app from[dbo].[rola_upr] where ID_rola= " + rola.id;
-            QueryData rolaModuleData = dbReader.readFromDB(query);
-            if (rolaModuleData.dataRowsNumber > 0)
-            {
-                for (int i = 0; i < rolaModuleData.dataRowsNumber; i++)
-                {
-                    moduleDict.TryGetValue(rolaModuleData.getDataValue(i, "ID_mod").ToString(), out module);
-                    string grantApp = rolaModuleData.getDataValue(i, "Grant_app").ToString();
-                    rola.addModule(module, grantApp);
-                }
-            }
-        }
-
-        private void getProfileApps()
-        {
-            string query = "  select ID_profile, ID_app, app_params from [profile_app]";
-            QueryData qd = dbReader.readFromDB(query);
-            for (int i = 0; i < qd.dataRowsNumber; i++)
-            {
-                string profileId = qd.getDataValue(i, "ID_profile").ToString();
-                string appId = qd.getDataValue(i, "ID_app").ToString();
-                string appProfileParams = qd.getDataValue(i, "app_params").ToString();
-                AppProfileParameters appParams = new AppProfileParameters(profileId, appId, appProfileParams);
-                appDictionary[appId].addAppProfileParameters(appParams);
-                profileDict[profileId].addAppToProfile(appDictionary[appId]);
-            }
-        }
-
-        #endregion
-
-        #region czytanie z bazy danych ról użytkowników w aplikacjach
-        //dane każdego użytkownika uzupełniam o zestawienie aplikacji do których ma uprawnienia wraz z rolami
-        private void getUserApps()
-        {
-            DesktopUser user = null;
-
-            foreach (string userId in allUsersDict.Keys)
-            {
-                string query = @"select ap.ID_app from [dbo].[app_list] as ap 
-                                inner join app_users as au on ap.ID_app = au.ID_app 
-                                inner join users_list as ul on ul.ID_user = au.ID_user 
-                                where ap.show_name is not null and au.Grant_app = 1 and ul.ID_user = '" + userId + "'";
-                List<string[]> appList = dbReader.readFromDB(query).getQueryDataAsStrings();
-                List<string> appIdList = convertColumnDataToList(appList);                  //ta kwerenda zwraca pojedynczą listę, tj tylko id
-
-                allUsersDict.TryGetValue(userId, out user);
-                if (appIdList.Count > 0)
-                {
-                    App app;
-                    Rola rola;
-                    foreach (string appId in appIdList)
-                    {
-                        appDictionary.TryGetValue(appId, out app);
-                        string rolaId = getAppRola(userId, appId);
-                        rolaDict.TryGetValue(rolaId, out rola);
-
-                        user.addUpdateApp(app, rola);
-                    }
-                }
-            }
-        }
-
-        private string getAppRola(string userId, string appId)
-        {
-            string baseQuery = @"select ID_rola  from rola_app as ra 
-                                inner join app_list as ap on ap.ID_app = ra.ID_app 
-                                where ap.ID_app = @appId and 
-                                ID_rola in (select ID_rola from rola_users where ID_user = @userId)";
-            string query = baseQuery.Replace("@appId", appId).Replace("@userId", userId);
-            QueryData windowsUserData = dbReader.readFromDB(query);
-            List<string> rolaList = convertColumnDataToList(windowsUserData.getQueryDataAsStrings());
-            if (rolaList.Count > 0)
-            {
-                return rolaList[0];         //zawsze jest tylko jedna rola
-            }
-            return "";
-        }
         #endregion
 
         #region wypełnianie drzewa użytkowników
@@ -525,15 +237,15 @@ namespace UniwersalnyDesktop
 
         #endregion
 
-        #region interakcja z użytkownikiem - labele (linki)
+        #region interakcja z użytkownikiem kliknięcie labeli "Edytuj"
 
         private void EditAppsLabel_Click(object sender, EventArgs e)
         {
-            string query = @"select ap.ID_app, ap.show_name, ap.name_app, ap.name_app, ap.path_app, ap.path_app, ap.name_db, ap.srod_app, ap.variant from [dbo].[app_list] as ap 
+            string query = @"select ap.ID_app, ap.show_name, ap.name_app, ap.path_app, ap.name_db, ap.srod_app, ap.variant from [dbo].[app_list] as ap 
                         inner join app_users as au on ap.ID_app = au.ID_app 
                         inner join users_list as ul on ul.ID_user = au.ID_user                         
                         group by ap.ID_app, ap.name_app, ap.name_app, ap.path_app, ap.show_name, ap.name_db, ap.srod_app, ap.variant";
-            AppEditorForm appEditor = new AppEditorForm( dbConnection, query, appDictionary);
+            AppEditorForm appEditor = new AppEditorForm(query, appDictionary);
             appEditor.ShowDialog();
         }
 
@@ -548,22 +260,27 @@ namespace UniwersalnyDesktop
                                 inner join app_list as al on ra.ID_app=al.ID_app 
                                 where al.ID_app = " + app.id;
 
-                RolaEditorForm dbRolaEditor = new RolaEditorForm(dbConnection, query, app);
+                RolaEditorForm dbRolaEditor = new RolaEditorForm(query, app);
                 dbRolaEditor.ShowDialog();
             }
             else
             {
                 MyMessageBox.display("należy zaznaczyć aplikację");
             }
-
         }
 
 
         private void EditUsersLabel_Click(object sender, EventArgs e)
         {
             string query = "select  ID_user, imie_user, nazwisko_user,login_user, windows_user from users_list where login_user is not null and login_user <> '" + adminLogin + "'";
-            UserEditorForm userEditor = new UserEditorForm(dbConnection, query);
+            UserEditorForm userEditor = new UserEditorForm(query);
             userEditor.ShowDialog();
+        }
+
+        private void editProfileLabel_Click(object sender, EventArgs e)
+        {
+            ProfileEditor profileEditor = new ProfileEditor(this.profileDict, this.allUsersDict, this.appDictionary);
+            profileEditor.Show();
         }
 
         #endregion
@@ -1120,87 +837,10 @@ namespace UniwersalnyDesktop
 
         #region Region : zapisywanie zmian do bazy
 
-
         private void saveChanges()
         {
-            ChangedDataBundle changedDataBundle = new ChangedDataBundle(userAppChangeDict, userBackupDict);
-
-            DBWriter writer = new DBWriter(dbConnection);
-            string query = generateQuery(changedDataBundle);
-            MyMessageBox.display(query);
-            writer.executeQuery(query);
+            this.dataHandler.saveChanges(userBackupDict, userAppChangeDict);
         }
-
-
-        private string generateQuery(ChangedDataBundle changedDataBundle)
-        {
-            string query = "";
-            foreach (DesktopUser user in changedDataBundle.getUsers())
-            {
-                foreach (App app in changedDataBundle.getChangedUserApps(user))
-                {
-                    query += generateSingleQuery(user, changedDataBundle.getAppDataStatus(user, app), changedDataBundle.getNewAppData(user, app), changedDataBundle.getOldAppData(user, app));
-                }
-            }
-            return query;
-        }
-
-
-        private string generateSingleQuery(DesktopUser user, string queryType, AppDataItem newAppData, AppDataItem oldAppData)
-        {
-            string updateUserRola = "update rola_users set ID_rola = @newRolaId where ID_rola = @oldRolaId and ID_User = @userId; ";
-
-            string deleteUserApp = "update app_users set Grant_app=0 where ID_app = @appId and ID_user = @userId; ";
-
-            string deleteUserAppAndRola = @"delete from rola_users where ID_rola=@rolaId and ID_user=@userId; 
-                                            update app_users set Grant_app=0 where ID_app = @appId and ID_user = @userId; ";
-
-            string insertUserApp = @"update app_users set Grant_app=1 where ID_app = @appId and ID_user = @userId; ";
-
-            string insertUserAppAndRola = @"update app_users set Grant_app=1 where ID_app = @appId and ID_user = @userId; 
-                                            insert into rola_users(ID_rola, ID_user, descr) values(@rolaId, @userId, null); ";
-
-            string newAppId = newAppData.appId;
-            string newRolaId = newAppData.rolaId;
-            string oldRolaId = "";
-            string oldAppId = "";
-
-            if (oldAppData != null)         //jest null wtedy, gdy robiony jest insert
-            {
-                oldRolaId = oldAppData.rolaId;
-                oldAppId = oldAppData.appId;
-            }
-
-            string query = "";
-            switch (queryType)
-            {
-                case "delete":
-                    if (oldRolaId.Equals(""))
-                    {
-                        query = deleteUserApp.Replace("@appId", oldAppId).Replace("@userId", user.id) + "\r\n";
-                    }
-                    else
-                    {
-                        query = deleteUserAppAndRola.Replace("@appId", oldAppId).Replace("@rolaId", oldRolaId).Replace("@userId", user.id) + "\r\n";
-                    }
-                    break;
-                case "update":
-                        query = updateUserRola.Replace("@newRolaId", newRolaId).Replace("@oldRolaId", oldRolaId).Replace("@userId", user.id) + "\r\n";
-                    break;
-                case "insert":
-                    if (newRolaId.Equals(""))
-                    {
-                        query = insertUserApp.Replace("@appId", newAppId).Replace("@userId", user.id) + "\r\n";
-                    }
-                    else
-                    {
-                        query = insertUserAppAndRola.Replace("@appId", newAppId).Replace("@rolaId", newRolaId).Replace("@userId", user.id) + "\r\n";
-                    }
-                    break;
-            }
-            return query;
-        }
-
 
         #endregion
 
@@ -1269,38 +909,13 @@ namespace UniwersalnyDesktop
         {
 
         }
-        private void editProfileLabel_Click(object sender, EventArgs e)
-        {
-            ProfileEditor profileEditor = new ProfileEditor(this.profileDict, this.allUsersDict, this.appDictionary);
-            profileEditor.Show();
-        }
+
         #endregion
 
         #region metody pomocnicze
-        private List<string> convertColumnDataToList(List<string[]> tableData, int columnNr = 0)
-        {
-            List<string> columnData = new List<string>();
-            for (int i = 0; i < tableData.Count; i++)
-            {
-                string columnItem = tableData[i][columnNr];
-                columnData.Add(columnItem);
-            }
-            return columnData;
-        }
-
 
         private void resetAdminForm()
         {
-            allUsersDict.Clear();
-            profileUsersDict.Clear();
-            windowsUsersDict.Clear();
-            duplicatedWindowsUsers.Clear();
-            appDictionary.Clear();
-            rolaDict.Clear();
-            userAppChangeDict.Clear();
-            userBackupDict.Clear();
-            moduleDict.Clear();
-
             userTreeView.Nodes.Clear();
             appListView.Items.Clear();
             rolaListView.Items.Clear();
@@ -1319,8 +934,7 @@ namespace UniwersalnyDesktop
             saveAndCloseButton.Enabled = false;
             statusInformationButton.Enabled = false;
 
-            readAllData();
-            setupAdminForm();
+            initialSetup();
         }
 
         #endregion

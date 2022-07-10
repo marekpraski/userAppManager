@@ -54,6 +54,7 @@
       <DependentUpon>AddUserForm.cs</DependentUpon>
     </Compile>
     <Compile Include="DesktopItems\AppProfileParameters.cs" />
+    <Compile Include="DesktopItems\DesktopDataHandler.cs" />
     <Compile Include="DesktopItems\IProfileItem.cs" />
     <Compile Include="PasswordChanger.cs">
       <SubType>Form</SubType>

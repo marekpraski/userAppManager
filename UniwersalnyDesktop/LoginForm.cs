@@ -99,7 +99,7 @@ namespace UniwersalnyDesktop
 
         private void openAdminForm()
         {
-            AdminForm adminForm = new AdminForm(userLogin, dbConnection, dbReader);
+            AdminForm adminForm = new AdminForm(userLogin);
             //this.Hide();
             adminForm.ShowDialog();
         }

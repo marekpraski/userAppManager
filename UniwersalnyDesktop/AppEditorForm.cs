@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Data.SqlClient;
 
 
 namespace UniwersalnyDesktop
@@ -20,8 +19,8 @@ namespace UniwersalnyDesktop
 
 
 
-        public AppEditorForm(SqlConnection dbConnection, string sqlQuery, Dictionary<string, App> appDictionary)
-            : base(dbConnection, sqlQuery)
+        public AppEditorForm(string sqlQuery, Dictionary<string, App> appDictionary)
+            : base(sqlQuery)
         {
             this.appDictionary = appDictionary;
             InitializeComponent();

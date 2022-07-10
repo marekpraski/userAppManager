@@ -1,7 +1,6 @@
 ﻿
 using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Data.SqlClient;
 
 namespace UniwersalnyDesktop
 {
@@ -18,8 +17,8 @@ namespace UniwersalnyDesktop
         private int accessRigthsColumnIndex = 2;
 
 
-        public RolaEditorForm(SqlConnection dbConnection, string sqlQuery, App app)
-            : base(dbConnection, sqlQuery)
+        public RolaEditorForm(string sqlQuery, App app)
+            : base(sqlQuery)
         {
             this.currentApp = app;
             InitializeComponent();

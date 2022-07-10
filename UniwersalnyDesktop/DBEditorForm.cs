@@ -27,7 +27,7 @@ namespace UniwersalnyDesktop
 
         protected DBEditorFormatter formatter = new DBEditorFormatter();
         protected QueryData queryData;
-        protected SqlConnection dbConnection = null;
+        protected SqlConnection dbConnection = LoginForm.dbConnection;
 
         
 
@@ -38,10 +38,9 @@ namespace UniwersalnyDesktop
         }
 
 
-        public DBEditorForm( SqlConnection dbConnection, string sqlQuery)
+        public DBEditorForm(string sqlQuery)
         {
             InitializeComponent();
-            this.dbConnection = dbConnection;
             this.sqlQuery = sqlQuery;
             setUpDatagrid();
         }
