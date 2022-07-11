@@ -341,7 +341,8 @@ namespace UniwersalnyDesktop
             //{
             //    MessageBox.Show("Musisz wskazać poprawną ścieżkę do Microstation", "Uwaga", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             //}
-        } 
+        }
         #endregion
+
     }
 }

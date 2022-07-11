@@ -34,14 +34,15 @@
             this.userNameTextBox = new System.Windows.Forms.TextBox();
             this.passwordTextBox = new System.Windows.Forms.TextBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.btnZaloguj = new System.Windows.Forms.Button();
+            this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.btnUstawienia = new System.Windows.Forms.ToolStripButton();
             this.btnZmienProfil = new System.Windows.Forms.ToolStripButton();
-            this.btnZaloguj = new System.Windows.Forms.Button();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
+            this.btnOProgramie = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -83,12 +84,44 @@
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnUstawienia,
-            this.btnZmienProfil});
+            this.btnZmienProfil,
+            this.btnOProgramie});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(324, 25);
             this.toolStrip1.TabIndex = 5;
             this.toolStrip1.Text = "toolStrip1";
+            // 
+            // btnZaloguj
+            // 
+            this.btnZaloguj.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(48)))));
+            this.btnZaloguj.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.btnZaloguj.ForeColor = System.Drawing.Color.White;
+            this.btnZaloguj.Location = new System.Drawing.Point(177, 237);
+            this.btnZaloguj.Name = "btnZaloguj";
+            this.btnZaloguj.Size = new System.Drawing.Size(75, 23);
+            this.btnZaloguj.TabIndex = 9;
+            this.btnZaloguj.Text = "Zaloguj";
+            this.btnZaloguj.UseVisualStyleBackColor = false;
+            this.btnZaloguj.Click += new System.EventHandler(this.btnZaloguj_Click);
+            // 
+            // pictureBoxLogo
+            // 
+            this.pictureBoxLogo.Location = new System.Drawing.Point(100, 43);
+            this.pictureBoxLogo.Name = "pictureBoxLogo";
+            this.pictureBoxLogo.Size = new System.Drawing.Size(150, 102);
+            this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBoxLogo.TabIndex = 10;
+            this.pictureBoxLogo.TabStop = false;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
+            this.pictureBox2.Location = new System.Drawing.Point(12, 170);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(56, 64);
+            this.pictureBox2.TabIndex = 8;
+            this.pictureBox2.TabStop = false;
             // 
             // btnUstawienia
             // 
@@ -109,36 +142,15 @@
             this.btnZmienProfil.Size = new System.Drawing.Size(23, 22);
             this.btnZmienProfil.Text = "Zmień profil";
             // 
-            // btnZaloguj
+            // btnOProgramie
             // 
-            this.btnZaloguj.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(48)))));
-            this.btnZaloguj.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnZaloguj.ForeColor = System.Drawing.Color.White;
-            this.btnZaloguj.Location = new System.Drawing.Point(177, 237);
-            this.btnZaloguj.Name = "btnZaloguj";
-            this.btnZaloguj.Size = new System.Drawing.Size(75, 23);
-            this.btnZaloguj.TabIndex = 9;
-            this.btnZaloguj.Text = "Zaloguj";
-            this.btnZaloguj.UseVisualStyleBackColor = false;
-            this.btnZaloguj.Click += new System.EventHandler(this.btnZaloguj_Click);
-            // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
-            this.pictureBox2.Location = new System.Drawing.Point(12, 170);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(56, 64);
-            this.pictureBox2.TabIndex = 8;
-            this.pictureBox2.TabStop = false;
-            // 
-            // pictureBoxLogo
-            // 
-            this.pictureBoxLogo.Location = new System.Drawing.Point(100, 43);
-            this.pictureBoxLogo.Name = "pictureBoxLogo";
-            this.pictureBoxLogo.Size = new System.Drawing.Size(150, 102);
-            this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.pictureBoxLogo.TabIndex = 10;
-            this.pictureBoxLogo.TabStop = false;
+            this.btnOProgramie.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnOProgramie.Image = global::UniwersalnyDesktop.Properties.Resources.Info16x16;
+            this.btnOProgramie.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnOProgramie.Name = "btnOProgramie";
+            this.btnOProgramie.Size = new System.Drawing.Size(23, 22);
+            this.btnOProgramie.Text = "O programie";
+            this.btnOProgramie.Click += new System.EventHandler(this.btnOProgramie_Click);
             // 
             // LoginForm
             // 
@@ -158,8 +170,8 @@
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.LoginForm_KeyPress);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -177,6 +189,7 @@
         private System.Windows.Forms.Button btnZaloguj;
         private System.Windows.Forms.ToolStripButton btnZmienProfil;
         private System.Windows.Forms.PictureBox pictureBoxLogo;
+        private System.Windows.Forms.ToolStripButton btnOProgramie;
     }
 }
 

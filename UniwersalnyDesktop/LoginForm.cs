@@ -150,8 +150,13 @@ namespace UniwersalnyDesktop
             {
                 return ProgramSettings.UserType.RegularUser;
             }
-        } 
+        }
         #endregion
 
+        private void btnOProgramie_Click(object sender, EventArgs e)
+        {
+            Form newForm = new About();
+            newForm.ShowDialog();
+        }
     }
 }

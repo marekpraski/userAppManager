@@ -143,6 +143,16 @@ namespace UniwersalnyDesktop.Properties {
         /// <summary>
         ///   Wyszukuje zlokalizowany zasób typu System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Info16x16 {
+            get {
+                object obj = ResourceManager.GetObject("Info16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Wyszukuje zlokalizowany zasób typu System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap LinkRemoved_16x {
             get {
                 object obj = ResourceManager.GetObject("LinkRemoved_16x", resourceCulture);
@@ -156,6 +166,16 @@ namespace UniwersalnyDesktop.Properties {
         internal static System.Drawing.Bitmap LinkValidator_16x {
             get {
                 object obj = ResourceManager.GetObject("LinkValidator_16x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Wyszukuje zlokalizowany zasób typu System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Logo {
+            get {
+                object obj = ResourceManager.GetObject("Logo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
