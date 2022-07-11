@@ -80,7 +80,7 @@ namespace UniwersalnyDesktop
             tabPage.Padding = new System.Windows.Forms.Padding(3);
             tabPage.Size = new System.Drawing.Size(tabPageWidth, tabPageHeigth);
             tabPage.TabIndex = 0;
-            tabPage.Text = user.name + " " + user.surname;
+            tabPage.Text = user.firstName + " " + user.surname;
             tabPage.UseVisualStyleBackColor = true;
 
             int tabPageHeaderLength = TextRenderer.MeasureText(tabPage.Text, tabPage.Font).Width + 10;      //dodaję poprawkę na marginesy

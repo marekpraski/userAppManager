@@ -14,7 +14,7 @@ namespace UniwersalnyDesktop
 
         #region prywatne właściwości
 
-        private string adminLogin;                              //login użytkownika, ale z założenia jest to Administrator skoro jest w tym oknie, inna nazwa bo chcę odróżnić od "user" który jest zwykłym użytkownikiem
+        private DesktopUser user;                              // użytkownik, ale z założenia jest to Administrator skoro jest w tym oknie, inna nazwa bo chcę odróżnić od "user" który jest zwykłym użytkownikiem
         private DesktopDataHandler dataHandler;
 
         //słowniki danych podstawowych
@@ -62,16 +62,16 @@ namespace UniwersalnyDesktop
 
         #endregion
 
-        public AdminForm(string adminLogin)
+        public AdminForm(DesktopUser user)
         {
-            this.adminLogin = adminLogin;
+            this.user = user;
             InitializeComponent();
             initialSetup();
         }
 
         private void initialSetup()
         {
-            this.dataHandler = new DesktopDataHandler(this.adminLogin);
+            this.dataHandler = new DesktopDataHandler(this.user.sqlLogin);
             createDictionaries();
             getAllData();
             setupAdminForm();
@@ -272,7 +272,7 @@ namespace UniwersalnyDesktop
 
         private void EditUsersLabel_Click(object sender, EventArgs e)
         {
-            string query = "select  ID_user, imie_user, nazwisko_user,login_user, windows_user from users_list where login_user is not null and login_user <> '" + adminLogin + "'";
+            string query = "select  ID_user, imie_user, nazwisko_user,login_user, windows_user from users_list where login_user is not null and login_user <> '" + user.sqlLogin + "'";
             UserEditorForm userEditor = new UserEditorForm(query);
             userEditor.ShowDialog();
         }

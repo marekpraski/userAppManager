@@ -62,7 +62,7 @@ namespace UniwersalnyDesktop
             {
 
                 DesktopUser desktopUser = new DesktopUser();
-                desktopUser.name = userData.getDataValue(i, "imie_user").ToString();
+                desktopUser.firstName = userData.getDataValue(i, "imie_user").ToString();
                 desktopUser.surname = userData.getDataValue(i, "nazwisko_user").ToString();
                 desktopUser.sqlLogin = userData.getDataValue(i, "login_user").ToString();
                 desktopUser.windowsLogin = userData.getDataValue(i, "windows_user").ToString();

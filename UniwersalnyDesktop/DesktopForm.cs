@@ -7,16 +7,17 @@ using System.Windows.Forms;
 namespace UniwersalnyDesktop
 {
    
-    /* 
-     * główny formularz Desktopu otwierany po zalogowaniu w LoginForm
-     */
+    /// <summary>
+    /// główny formularz Desktopu otwierany po zalogowaniu w LoginForm
+    /// </summary>
     public partial class DesktopForm : Form
     {
-        private DBReader dbReader;
+        private DBReader dbReader = new DBReader(LoginForm.dbConnection);
+        private DesktopUser user;
+        private string currentPath = LoginForm.mainPath;     //katalog z którego uruchamiany jest program, wykrywany przez DBConnector i ustawiany tutaj
+                                                                //dla DEBUGA ustawiony jest w metodzie ReadAllData
 
         private QueryData desktopData;         //ap.ID_app=0, ap.appName=1, ap.appPath=2, ap.appDisplayName=3, au.Grant_app=4, ap.name_db=5
-        private QueryData userData;         //login_user=0, windows_user=1,imie_user=2, nazwisko_user=3
-        private string userPassword;
 
         //zmienne dotyczące rozmiarów i identyfikatorów tworzonych obiektów
         private int squareButtonsGroupboxWidth;
@@ -27,15 +28,10 @@ namespace UniwersalnyDesktop
         private int numberOfRectangularButtons;
         private int numberOfSquareButtonsInOneGroupbox = DesktopLayoutSettings.numberOfSquareButtonsInOneBlock;    //ustawienia domyślne, ale daję tu żeby program mógł automatycznie zmienić
 
-        private string currentPath="";     //katalog z którego uruchamiany jest program, wykrywany przez DBConnector i ustawiany tutaj
-                                           //dla DEBUGA ustawiony jest w metodzie ReadAllData
 
-        public DesktopForm(QueryData userData, string userPassword, DBReader dbReader, string currentPath)
+        public DesktopForm(DesktopUser user)
         {            
-            this.userData = userData;
-            this.userPassword = userPassword;
-            this.dbReader = dbReader;
-            this.currentPath = currentPath;
+            this.user = user;
             readDesktopData();
             if (desktopData.getQueryData().Count > 0)
             {
@@ -84,17 +80,16 @@ namespace UniwersalnyDesktop
 
         private void readDesktopData()
         {
-            string userLogin = userData.getDataValue(0, "login_user").ToString();
             string query = @"select ap.ID_app, ap.name_app, ap.path_app, ap.show_name, au.Grant_app, ap.name_db, ap.runFromDesktop from [dbo].[app_list] as ap 
                                                     inner join app_users as au on ap.ID_app = au.ID_app 
                                                     inner join users_list as ul on ul.ID_user = au.ID_user 
-                                                    where ap.name_db is not null and srod_app = 'Windows' and ap.runFromDesktop = 1 and ul.login_user = '" + userLogin + "'";
+                                                    where ap.name_db is not null and srod_app = 'Windows' and ap.runFromDesktop = 1 and ul.login_user = '" + user.sqlLogin + "'";
             desktopData = dbReader.readFromDB(query);
         }
 
         private void setupDesktop()
         {
-            this.Text = "Zalogowano jako " + userData.getDataValue(0, "imie_user").ToString() + " " + userData.getDataValue(0, "nazwisko_user").ToString();
+            this.Text = "Zalogowano jako " + user.displayName;
             generateDesktopLayout();
         }
 
@@ -234,10 +229,9 @@ namespace UniwersalnyDesktop
 
         private void runApp(string appToRun)
         {
-            string userLogin = userData.getQueryData()[0].ToList()[0].ToString();
             string appLocation = currentPath + @"\..\" + appToRun;
             FileManipulator fm = new FileManipulator();
-            fm.runProgram(appLocation, userLogin + " " + userPassword);
+            fm.runProgram(appLocation, user.sqlLogin + " " + user.sqlPassword);
 
         }
 

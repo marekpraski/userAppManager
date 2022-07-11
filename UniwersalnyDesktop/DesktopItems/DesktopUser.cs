@@ -5,18 +5,19 @@ namespace UniwersalnyDesktop
 {
     public class DesktopUser : ICloneable, IProfileItem
     {
-        public string name { get; set; }
+        public string firstName { get; set; }
         public string surname { get; set; }
         public string id { get; set; }
         public string windowsLogin { get; set; }
         public string sqlLogin { get; set; }
+        public string sqlPassword { get; set; }
         public Dictionary<App, AppDataItem> userAppDict { get; }
 
         public string displayName => getDisplayName();
 
         private string getDisplayName()
         {
-            return name + " " + surname;
+            return firstName + " " + surname;
         }
 
         public DesktopUser()
@@ -150,7 +151,7 @@ namespace UniwersalnyDesktop
         {
             DesktopUser other = new DesktopUser();
 
-            other.name = String.Copy(name);
+            other.firstName = String.Copy(firstName);
             other.surname = String.Copy(surname);
             other.id = String.Copy(id);
             other.windowsLogin = String.Copy(windowsLogin);

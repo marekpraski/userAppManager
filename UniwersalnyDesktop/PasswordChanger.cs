@@ -15,7 +15,7 @@ namespace UniwersalnyDesktop
 
         private void FillUserInformation()
         {
-            string query = "SELECT * FROM users_list WHERE login_user = '" + LoginForm.userLogin + "' ";
+            string query = "SELECT * FROM users_list WHERE login_user = '" + LoginForm.user.sqlLogin + "' ";
 
             QueryData qd = new DBReader(LoginForm.dbConnection).readFromDB(query);
             lab_FirstName.Text = qd.getDataValue(0,"imie_user").ToString();
@@ -66,7 +66,7 @@ namespace UniwersalnyDesktop
                 string query = "sp_password '"+tbStareHaslo.Text+"','"+tbNoweHaslo1.Text+"'";
                 if (new DBWriter(LoginForm.dbConnection).executeQuery(query))
                 {
-                    LoginForm.userPassword = tbNoweHaslo1.Text;
+                    LoginForm.user.sqlPassword = tbNoweHaslo1.Text;
                     MessageBox.Show("Has³o zosta³o zmienione", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.None);
                     this.Close();
                 }
