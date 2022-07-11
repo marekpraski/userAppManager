@@ -1,8 +1,9 @@
-﻿using DatabaseInterface;
+﻿
 using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
+using UtilityTools;
 
 namespace UniwersalnyDesktop
 {
@@ -12,40 +13,51 @@ namespace UniwersalnyDesktop
     /// </summary>
     public partial class DesktopForm : Form
     {
-        private DBReader dbReader = new DBReader(LoginForm.dbConnection);
-        private DesktopUser user;
+        private DesktopUser user = LoginForm.user;
         private string currentPath = LoginForm.mainPath;     //katalog z którego uruchamiany jest program, wykrywany przez DBConnector i ustawiany tutaj
                                                                 //dla DEBUGA ustawiony jest w metodzie ReadAllData
-
-        private QueryData desktopData;         //ap.ID_app=0, ap.appName=1, ap.appPath=2, ap.appDisplayName=3, au.Grant_app=4, ap.name_db=5
 
         //zmienne dotyczące rozmiarów i identyfikatorów tworzonych obiektów
         private int squareButtonsGroupboxWidth;
         private int squareButtonsGroupboxHeight;
         private int rectangularButtonsGroupboxHeight;
         private int groupboxID = 0;
-        private int buttonID = 0;
         private int numberOfRectangularButtons;
         private int numberOfSquareButtonsInOneGroupbox = DesktopLayoutSettings.numberOfSquareButtonsInOneBlock;    //ustawienia domyślne, ale daję tu żeby program mógł automatycznie zmienić
 
+        private DesktopDataHandler dataHandler;
+        private Dictionary<string, DesktopProfile> profileDict;
 
-        public DesktopForm(DesktopUser user)
-        {            
-            this.user = user;
-            readDesktopData();
-            if (desktopData.getQueryData().Count > 0)
-            {
-                InitializeComponent();
-                setupDesktop();
-            }
-            // niczego nie przeczytał bo użytkownik nie ma uprawnień do żadnych programów
-            // w chwili obecnej z tą kwerendą która jest zdefiniowana w ProgramSettings nie zadziała, bo wyświetlam wszystkie programy niezależnie od dostępu użytkownika
-            //trzeba by filtrować np. po Grant_app
-            else
-            {
+        private DesktopProfile selectedProfile;
+
+        public DesktopForm()
+        {
+            dataHandler = new DesktopDataHandler();
+            InitializeComponent();
+        }
+
+        private void DesktopForm_Load(object sender, EventArgs e)
+        {
+            getDesktopData();
+            if (profileDict == null || profileDict.Count == 0) {
                 MyMessageBox.display("użytkownik nie ma dostępu do żadnych programów", MessageBoxType.Error);
-                this.Dispose();
-            }         
+                return;
+            }
+            fillProfileCombo();
+        }
+
+        private void fillProfileCombo()
+        {
+            if (profileDict == null || profileDict.Count == 0)
+                return;
+            foreach(string profileId in profileDict.Keys)
+            {
+                ComboboxItem cbItem = new ComboboxItem(profileDict[profileId].name, profileId);
+                cbProfile.Items.Add(cbItem);
+            }
+            cbProfile.DisplayMember = "displayText";
+            cbProfile.ValueMember = "value";
+            cbProfile.SelectedIndex = 0;
         }
 
         #region Region - interakcja z użytkownikiem
@@ -66,25 +78,33 @@ namespace UniwersalnyDesktop
             //Application.Exit();
         }
 
-
         #endregion
 
         #region wybór opcji z paska menu
 
-        private void zmienHasloMenuItem_Click(object sender, EventArgs e)
+        private void btnZmienHaslo_Click(object sender, EventArgs e)
         {
             Form formChangePass = new PasswordChanger();
             formChangePass.ShowDialog();
         }
+
+        private void cbProfile_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string profileId = (cbProfile.SelectedItem as ComboboxItem).value.ToString();
+            this.selectedProfile = profileDict[profileId];
+            resetDesktop();
+            setupDesktop();
+        }
+
+        private void resetDesktop()
+        {
+            tabSoftmine.Controls.Clear();
+        }
         #endregion
 
-        private void readDesktopData()
+        private void getDesktopData()
         {
-            string query = @"select ap.ID_app, ap.name_app, ap.path_app, ap.show_name, au.Grant_app, ap.name_db, ap.runFromDesktop from [dbo].[app_list] as ap 
-                                                    inner join app_users as au on ap.ID_app = au.ID_app 
-                                                    inner join users_list as ul on ul.ID_user = au.ID_user 
-                                                    where ap.name_db is not null and srod_app = 'Windows' and ap.runFromDesktop = 1 and ul.login_user = '" + user.sqlLogin + "'";
-            desktopData = dbReader.readFromDB(query);
+            this.profileDict = dataHandler.profileDict;
         }
 
         private void setupDesktop()
@@ -107,14 +127,82 @@ namespace UniwersalnyDesktop
 
             //liczbę wszystkich buttonów dzielę na liczbę buttonów kwadratowych w jednym bloku
             //resztę umieszczam jako prostokątne w osobnym bloku
-            numberOfRectangularButtons = desktopData.getQueryData().Count - (numberOfSquareButtonGroupboxes * numberOfSquareButtonsInOneGroupbox);
+            numberOfRectangularButtons = selectedProfile.applications.Count - (numberOfSquareButtonGroupboxes * numberOfSquareButtonsInOneGroupbox);
+            Button[] buttons = generateButtons(numberOfSquareButtonsInOneGroupbox * numberOfSquareButtonGroupboxes, numberOfRectangularButtons);
             calculateGroupboxSize();
-            for (int i=0; i<numberOfSquareButtonGroupboxes; i++)
+            int i;
+            for (i=0; i<numberOfSquareButtonGroupboxes; i++)
             {
-                generateOneGroupbox(DesktopLayoutSettings.GroupboxType.squareButtons);
+                GroupBox gbs = generateOneGroupbox(DesktopLayoutSettings.GroupboxType.squareButtons);
+                addButtonsToGroupbox(gbs, buttons, DesktopLayoutSettings.ButtonType.square, i);
             }
-            generateOneGroupbox(DesktopLayoutSettings.GroupboxType.rectangularButtons);
+            GroupBox gbr = generateOneGroupbox(DesktopLayoutSettings.GroupboxType.rectangularButtons);
+            addButtonsToGroupbox(gbr, buttons, DesktopLayoutSettings.ButtonType.rectangular, i);
             setDesktopFormSize();
+        }
+
+        private void addButtonsToGroupbox(GroupBox gb, Button[] buttons, DesktopLayoutSettings.ButtonType buttonType, int gbIndex)
+        {
+            switch (buttonType)
+            {
+                case DesktopLayoutSettings.ButtonType.square:
+                    addSquareButtons(gb, buttons, gbIndex);
+                    break;
+                case DesktopLayoutSettings.ButtonType.rectangular:
+                    addRectangularButtons(gb, buttons, gbIndex);                   
+                    break;
+            }
+        }
+
+        private void addSquareButtons(GroupBox gb, Button[] buttons, int gbIndex)
+        {
+            int btnEndIndex = gbIndex * numberOfSquareButtonsInOneGroupbox + numberOfSquareButtonsInOneGroupbox;
+            int buttonNrInGroupbox = 0;
+            for (int btnIndex = gbIndex * numberOfSquareButtonsInOneGroupbox; btnIndex < btnEndIndex; btnIndex++)
+            {
+                int buttonHorizontalLocation = DesktopLayoutSettings.horizontalButtonPadding;
+                int buttonVerticalLocation = DesktopLayoutSettings.verticalButtonPadding;
+                Button button = buttons[btnIndex];
+                button.Location = new Point(buttonHorizontalLocation + buttonNrInGroupbox * (button.Width + DesktopLayoutSettings.horizontalButtonPadding), buttonVerticalLocation);
+               
+                gb.Controls.Add(button);
+                buttonNrInGroupbox++;
+            }
+        }
+        private void addRectangularButtons(GroupBox gb, Button[] buttons, int gbIndex)
+        {
+            int buttonNrInGroupbox = 0;
+            for (int btnIndex = gbIndex * numberOfSquareButtonsInOneGroupbox; btnIndex < buttons.Length; btnIndex++)
+            {
+                int buttonHorizontalLocation = DesktopLayoutSettings.horizontalButtonPadding;
+                int buttonVerticalLocation = DesktopLayoutSettings.verticalButtonPadding;
+                Button button = buttons[btnIndex];
+
+                button.Location = new Point(buttonHorizontalLocation, buttonVerticalLocation + buttonNrInGroupbox * (button.Height + DesktopLayoutSettings.verticalButtonPadding));
+                gb.Controls.Add(button);
+                buttonNrInGroupbox++;
+            }
+        }
+
+        private Button[] generateButtons(int numberOfSquareButtons, int numberOfRectangularButtons)
+        {
+            Button[] bts = new Button[numberOfSquareButtons + numberOfRectangularButtons];
+
+            int index = 0;
+            Dictionary<string, IProfileItem> appDictionary = profileDict[selectedProfile.id].applications;
+            Button b;
+            foreach (string appId in appDictionary.Keys)
+            {
+                App app = appDictionary[appId] as App;
+                if (index < numberOfSquareButtons)
+                    b = generateOneButton(app, DesktopLayoutSettings.ButtonType.square, index);
+                else
+                    b = generateOneButton(app, DesktopLayoutSettings.ButtonType.rectangular, index);
+
+                bts[index] = b;
+                index++;
+            }
+            return bts;
         }
 
         //oszacowuję wysokość desktopu przy zdefiniowanej w DesktopLayoutSettings liczbie kwadratowych buttonów w rzędzie
@@ -126,7 +214,7 @@ namespace UniwersalnyDesktop
 
         private int calculateNumberOfSquareButtonGroupboxes()
         {
-            return desktopData.getQueryData().Count / numberOfSquareButtonsInOneGroupbox;
+            return selectedProfile.applications.Count / numberOfSquareButtonsInOneGroupbox;
         }
 
         private void calculateGroupboxSize()
@@ -145,56 +233,35 @@ namespace UniwersalnyDesktop
             this.Height = tabControl1.Height + 80;
         }
        
-        private void generateOneButton(GroupBox groupBox, DesktopLayoutSettings.ButtonType buttonType, int buttonNr)
+        private Button generateOneButton(App app, DesktopLayoutSettings.ButtonType buttonType, int index)
         {
             Button button = new Button();
-            int buttonHorizontalLocation = DesktopLayoutSettings.horizontalButtonPadding;
-            int buttonVerticalLocation = DesktopLayoutSettings.verticalButtonPadding;
+            
+            button.Click += new EventHandler(ButtonClick);
+            button.Name = index.ToString();
+            button.Tag = app.executionPath;
+            button.Text = app.displayName;
+
+            if(!user.hasApp(app))
+            {
+                button.Enabled = false;
+            }
+
             switch (buttonType)
             {
                 case DesktopLayoutSettings.ButtonType.rectangular:
                     int rectangularButtonWidth = numberOfSquareButtonsInOneGroupbox * (DesktopLayoutSettings.squareButtonWidth + DesktopLayoutSettings.horizontalButtonPadding) - DesktopLayoutSettings.horizontalButtonPadding;
                     button.Size = new Size(rectangularButtonWidth, DesktopLayoutSettings.rectangularButtonHeigth);
-                    button.Location = new Point(buttonHorizontalLocation, buttonVerticalLocation + buttonNr * (button.Height + DesktopLayoutSettings.verticalButtonPadding));
                     break;
                 case DesktopLayoutSettings.ButtonType.square:
                     button.Size = new Size(DesktopLayoutSettings.squareButtonWidth, DesktopLayoutSettings.squareButtonHeigth);
-                    button.Location = new Point(buttonHorizontalLocation + buttonNr * (button.Width + DesktopLayoutSettings.horizontalButtonPadding), buttonVerticalLocation);
                     break;
             }
-            
-            button.Click += new EventHandler(ButtonClick);
-            button.Name = "button" + buttonID;
-            string appName = desktopData.getQueryData()[buttonID][1].ToString();
-            string programPath = desktopData.getQueryData()[buttonID][2].ToString();
-            string buttonProgram = programPath + @"\" + appName + ".exe";       //program uruchamiany z tego przycisku
-            button.Tag = buttonProgram;
-            if (appName.Equals(""))
-            {
-                button.Text = "button" + buttonID;
-                button.Enabled = false;
-            }
-            else
-            {
-                string appDisplayName = desktopData.getQueryData()[buttonID][3].ToString();
-                button.Text = appDisplayName;
-                if(!checkUserAccess())
-                {
-                    button.Enabled = false;
-                }
-            }
-            Controls.Add(button);           //czemu?
-            groupBox.Controls.Add(button);
+            return button;
         }
 
-        //sprawdza czy użytkownik ma uprawnienia do uruchomienia danej aplikacji
-        private bool checkUserAccess()
-        {
-            int grantApp = int.Parse(desktopData.getQueryData()[buttonID][4].ToString());
-            return (grantApp > 0);
-        }
 
-        private void generateOneGroupbox(DesktopLayoutSettings.GroupboxType groupboxType)
+        private GroupBox generateOneGroupbox(DesktopLayoutSettings.GroupboxType groupboxType)
         {
             GroupBox groupBox = new GroupBox();
             groupBox.Name = "groupBox" + groupboxID;
@@ -205,25 +272,21 @@ namespace UniwersalnyDesktop
             {
                 case DesktopLayoutSettings.GroupboxType.squareButtons:
                     groupBox.Size = new System.Drawing.Size(squareButtonsGroupboxWidth, squareButtonsGroupboxHeight);
-                    for (int i = 0; i < numberOfSquareButtonsInOneGroupbox; i++)
-                    {
-                        generateOneButton(groupBox, DesktopLayoutSettings.ButtonType.square, i);
-                        buttonID++;
-                    }
                     break;
                 case DesktopLayoutSettings.GroupboxType.rectangularButtons:
                     rectangularButtonsGroupboxHeight = numberOfRectangularButtons * (DesktopLayoutSettings.rectangularButtonHeigth + DesktopLayoutSettings.verticalButtonPadding);
                     groupBox.Size = new System.Drawing.Size(squareButtonsGroupboxWidth, rectangularButtonsGroupboxHeight);
-                    for (int i = 0; i < numberOfRectangularButtons; i++)
-                    {
-                        generateOneButton(groupBox, DesktopLayoutSettings.ButtonType.rectangular, i);
-                        buttonID++;
-                    }
                     break;
             }
 
             this.tabSoftmine.Controls.Add(groupBox);
             groupboxID++;
+            int x = groupBox.Location.X;
+            int y = groupBox.Location.Y;
+            int wi = groupBox.Size.Width;
+            int hi = groupBox.Size.Height;
+
+            return groupBox;
         }
        
 

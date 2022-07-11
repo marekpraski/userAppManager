@@ -62,6 +62,7 @@
     <Compile Include="DesktopItems\AppProfileParameters.cs" />
     <Compile Include="DesktopItems\DesktopDataHandler.cs" />
     <Compile Include="DesktopItems\IProfileItem.cs" />
+    <Compile Include="enums\UserType.cs" />
     <Compile Include="PasswordChanger.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -307,6 +308,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Info16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ChangePassword_16x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

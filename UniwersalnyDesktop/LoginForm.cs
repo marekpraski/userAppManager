@@ -85,13 +85,12 @@ namespace UniwersalnyDesktop
                 return;
             }
             getUserData(qd);
-            ProgramSettings.UserType userType = getUserType();
-            switch (userType)
+            switch (user.type)
             {
-                case ProgramSettings.UserType.Administrator:
+                case UserType.Administrator:
                     openAdminForm();
                     break;
-                case ProgramSettings.UserType.RegularUser:
+                case UserType.RegularUser:
                     openDesktopForm();
                     break;
             }
@@ -99,20 +98,20 @@ namespace UniwersalnyDesktop
 
         private void openDesktopForm()
         {
-            DesktopForm desktop = new DesktopForm(user);
+            DesktopForm desktop = new DesktopForm();
             //this.Hide();
             desktop.ShowDialog();
         }
 
         private void openAdminForm()
         {
-            AdminForm adminForm = new AdminForm(user);
+            AdminForm adminForm = new AdminForm();
             //this.Hide();
             adminForm.ShowDialog();
         }
         #endregion
 
-        #region tworzenie połaczenia sql do bazy
+        #region tworzenie połączenia sql do bazy
         private SqlConnection createSqlConnection()
         {
             //if (!dbConnector.validateConfigFile(mainPath))
@@ -136,23 +135,21 @@ namespace UniwersalnyDesktop
 
         private QueryData readUserata()
         {
-            string query = @"select  login_user, windows_user, imie_user, nazwisko_user from users_list where login_user = '" + user.sqlLogin + "'";
+            string query = @"select ID_user, login_user, windows_user, imie_user, nazwisko_user from users_list where login_user = '" + user.sqlLogin + "'";
             return new DBReader(dbConnection).readFromDB(query);
         }
         private void getUserData(QueryData qd)
         {
+            user.id = qd.getDataValue(0, "ID_user").ToString();
             user.firstName = qd.getDataValue(0, "imie_user").ToString();
             user.surname = qd.getDataValue(0, "nazwisko_user").ToString();
             user.windowsLogin = qd.getDataValue(0, "windows_user").ToString();
+            if (user.displayName.Equals(ProgramSettings.administratorName))
+                user.type = UserType.Administrator;
+            else
+                user.type = UserType.RegularUser;
         }
 
-        private ProgramSettings.UserType getUserType()
-        {            
-            if (user.displayName.Equals(ProgramSettings.administratorName))
-                return ProgramSettings.UserType.Administrator;
-            else
-                return ProgramSettings.UserType.RegularUser;
-        }
         #endregion
 
     }

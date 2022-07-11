@@ -14,13 +14,12 @@ namespace UniwersalnyDesktop
 
         #region prywatne właściwości
 
-        private DesktopUser user;                              // użytkownik, ale z założenia jest to Administrator skoro jest w tym oknie, inna nazwa bo chcę odróżnić od "user" który jest zwykłym użytkownikiem
+        private DesktopUser user = LoginForm.user;                              // użytkownik, ale z założenia jest to Administrator skoro jest w tym oknie, inna nazwa bo chcę odróżnić od "user" który jest zwykłym użytkownikiem
         private DesktopDataHandler dataHandler;
 
         //słowniki danych podstawowych
         //
         private Dictionary<string, DesktopUser> allUsersDict;            //lista wszystkich użytkowników desktopu, kluczem jest Id
-        private Dictionary<string, DesktopUser> profileUsersDict;            //lista użytkowników sql, kluczem jest Id, wartością nazwa użytkownika wyświetlana w drzewie
 
         private Dictionary<string, DesktopProfile> profileDict;     //słownik wszystkich profili zdefiniowanych w Desktopie, kluczem jest id
         private Dictionary<string, App> appDictionary;             //lista wszystkich aplikacji zdefiniowanych w desktopie, kluczem jest Id
@@ -62,16 +61,15 @@ namespace UniwersalnyDesktop
 
         #endregion
 
-        public AdminForm(DesktopUser user)
+        public AdminForm()
         {
-            this.user = user;
             InitializeComponent();
             initialSetup();
         }
 
         private void initialSetup()
         {
-            this.dataHandler = new DesktopDataHandler(this.user.sqlLogin);
+            this.dataHandler = new DesktopDataHandler();
             createDictionaries();
             getAllData();
             setupAdminForm();
@@ -123,7 +121,6 @@ namespace UniwersalnyDesktop
         private void getAllData()
         {
             this.allUsersDict = this.dataHandler.allUsersDict;
-            this.profileUsersDict = this.dataHandler.profileUsersDict;
             this.profileDict = this.dataHandler.profileDict;
             this.appDictionary = this.dataHandler.appDictionary;
             this.moduleDict = this.dataHandler.moduleDict;

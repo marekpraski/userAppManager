@@ -11,6 +11,7 @@ namespace UniwersalnyDesktop
         public string windowsLogin { get; set; }
         public string sqlLogin { get; set; }
         public string sqlPassword { get; set; }
+        public UserType type { get; set; } = UserType.Undefined;
         public Dictionary<App, AppDataItem> userAppDict { get; }
 
         public string displayName => getDisplayName();
