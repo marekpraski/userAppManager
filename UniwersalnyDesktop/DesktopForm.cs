@@ -85,10 +85,10 @@ namespace UniwersalnyDesktop
         private void readDesktopData()
         {
             string userLogin = userData.getDataValue(0, "login_user").ToString();
-            string query = @"select ap.ID_app, ap.name_app, ap.path_app, ap.show_name, au.Grant_app, ap.name_db, app.runFromDesktop from [dbo].[app_list] as ap 
+            string query = @"select ap.ID_app, ap.name_app, ap.path_app, ap.show_name, au.Grant_app, ap.name_db, ap.runFromDesktop from [dbo].[app_list] as ap 
                                                     inner join app_users as au on ap.ID_app = au.ID_app 
                                                     inner join users_list as ul on ul.ID_user = au.ID_user 
-                                                    where ap.name_db is not null and srod_app = 'Windows' and app.runFromDesktop = 1 and ul.login_user = '" + userLogin + "'";
+                                                    where ap.name_db is not null and srod_app = 'Windows' and ap.runFromDesktop = 1 and ul.login_user = '" + userLogin + "'";
             desktopData = dbReader.readFromDB(query);
         }
 
@@ -108,7 +108,7 @@ namespace UniwersalnyDesktop
                 numberOfSquareButtonGroupboxes = calculateNumberOfSquareButtonGroupboxes();
                 estimatedDesktopHeigth = estimateDesktopHeigth(numberOfSquareButtonGroupboxes);
             }
-            while (estimatedDesktopHeigth > DesktopLayoutSettings.maxDesktopHeigth);
+            while (estimatedDesktopHeigth > DesktopLayoutSettings.maxTabCtrlHeigth);
 
             //liczbę wszystkich buttonów dzielę na liczbę buttonów kwadratowych w jednym bloku
             //resztę umieszczam jako prostokątne w osobnym bloku
@@ -142,10 +142,12 @@ namespace UniwersalnyDesktop
 
         private void setDesktopFormSize()
         {
-            int desktopWidth = 2 * DesktopLayoutSettings.horizontalGroupboxPadding + squareButtonsGroupboxWidth + DesktopLayoutSettings.desktopFormHorizontalPadding;
-            int desktopHeigth = 2 * DesktopLayoutSettings.firstGroupboxVerticalLocation + squareButtonsGroupboxHeight * (groupboxID - 1) + DesktopLayoutSettings.desktopFormVerticalPadding + rectangularButtonsGroupboxHeight;
-            this.Width = desktopWidth;
-            this.Height = desktopHeigth;
+            int tabCtrlWidth = 2 * DesktopLayoutSettings.horizontalGroupboxPadding + squareButtonsGroupboxWidth + DesktopLayoutSettings.tabCtrlHorizontalPadding;
+            int tabCtrlHeight = 2 * DesktopLayoutSettings.firstGroupboxVerticalLocation + squareButtonsGroupboxHeight * (groupboxID - 1) + DesktopLayoutSettings.tabCtrlVerticalPadding + rectangularButtonsGroupboxHeight;
+            this.tabControl1.Width = tabCtrlWidth;
+            this.tabControl1.Height = tabCtrlHeight;
+            this.Width = tabControl1.Width + 40;
+            this.Height = tabControl1.Height + 80;
         }
        
         private void generateOneButton(GroupBox groupBox, DesktopLayoutSettings.ButtonType buttonType, int buttonNr)
@@ -186,7 +188,7 @@ namespace UniwersalnyDesktop
                     button.Enabled = false;
                 }
             }
-            Controls.Add(button);
+            Controls.Add(button);           //czemu?
             groupBox.Controls.Add(button);
         }
 
@@ -225,7 +227,7 @@ namespace UniwersalnyDesktop
                     break;
             }
 
-            this.Controls.Add(groupBox);
+            this.tabSoftmine.Controls.Add(groupBox);
             groupboxID++;
         }
        
@@ -239,5 +241,107 @@ namespace UniwersalnyDesktop
 
         }
 
+        #region przyciski zakładki Bentley
+        private void btnMicroModeler3D_Click(object sender, EventArgs e)
+        {
+            //createConfFile("1");
+            //createUcfFile("Path3D");
+            //try
+            //{
+            //    string s = "";
+            //    FileStream file = new FileStream(SMLogowanie.mainPath + "conf/path_micro.xml", FileMode.Open, FileAccess.Read);
+            //    //StreamReader streamReader = new StreamReader(file);
+            //    XmlTextReader xmlReader = new XmlTextReader(file);
+            //    while (xmlReader.Read())
+            //    {
+            //        if (xmlReader.Name == "Path3D")
+            //        {
+            //            s = xmlReader.ReadElementString();
+            //        }
+            //    }
+
+            //    xmlReader.Close();
+            //    file.Close();
+
+            //    ProcessStartInfo startInfo = new ProcessStartInfo(s);
+            //    if (cbDgnList.Text == "")
+            //    {
+            //        startInfo.Arguments = @"-wusoftmine";
+            //        Process process = Process.Start(startInfo);
+            //    }
+            //    else
+            //    {
+            //        try
+            //        {
+            //            if (File.Exists(cbDgnList.Text))
+            //            {
+            //                startInfo.Arguments = "\"" + cbDgnList.Text + "\" -wusoftmine";
+            //                Process process = Process.Start(startInfo);
+            //            }
+            //            else
+            //            {
+            //                MessageBox.Show("Podana ścieżka do pliku jest nieprawidłowa : " + cbDgnList.Text);
+            //            }
+            //        }
+            //        catch
+            //        {
+
+            //        }
+
+            //    }
+            //}
+            //catch (Exception exc)
+            //{
+            //    MessageBox.Show("Musisz wskazać poprawną ścieżkę do Microstation", "Uwaga", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //}
+        }
+
+        private void btnMicrostation2_Click(object sender, EventArgs e)
+        {
+            //try
+            //{
+            //    FileStream file = new FileStream(SMLogowanie.mainPath + "conf/path_micro.xml", FileMode.Open, FileAccess.Read);
+            //    //StreamReader streamReader = new StreamReader(file);
+            //    XmlTextReader xmlReader = new XmlTextReader(file);
+
+            //    string s = xmlReader.ReadElementString();
+            //    //streamReader.Close();
+            //    xmlReader.Close();
+            //    file.Close();
+
+            //    ProcessStartInfo startInfo = new ProcessStartInfo(s);
+            //    if (cbDgnList.Text == "")
+            //    {
+            //        startInfo.Arguments = @"-wuuntitled";
+            //        Process process = Process.Start(startInfo);
+            //    }
+            //    else
+            //    {
+            //        //startInfo.Arguments = @"ustation " + cbDgnList.Text;
+            //        try
+            //        {
+            //            if (File.Exists(cbDgnList.Text))
+            //            {
+            //                startInfo.Arguments = "\"" + cbDgnList.Text + "\" -wusoftmine";
+            //                Process process = Process.Start(startInfo);
+            //            }
+            //            else
+            //            {
+            //                MessageBox.Show("Podana ścieżka do pliku jest nieprawidłowa : " + cbDgnList.Text);
+            //            }
+            //        }
+            //        catch
+            //        {
+
+            //        }
+            //    }
+
+            //}
+            //catch (Exception exc)
+            //{
+            //    MessageBox.Show("Musisz wskazać poprawną ścieżkę do Microstation", "Uwaga", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //}
+        } 
+        #endregion
     }
 }

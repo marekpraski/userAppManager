@@ -25,15 +25,15 @@ namespace UniwersalnyDesktop
         public static int verticalButtonPadding = 10;
 
         //rozlokowanie groupboxów
-        public static int firstGroupboxVerticalLocation = 20;
-        public static int horizontalGroupboxPadding = 10;
+        public static int firstGroupboxVerticalLocation = 0;
+        public static int horizontalGroupboxPadding = 0;
         public static int verticalGroupboxPadding = 0;
 
         //korekta do wymiarów desktopu, żeby uwzględnić grubość obrzeży
-        public static int desktopFormHorizontalPadding = 20;
-        public static int desktopFormVerticalPadding = 40;
+        public static int tabCtrlHorizontalPadding = 10;
+        public static int tabCtrlVerticalPadding = 30;
 
         //max wysokość desktopu
-        public static int maxDesktopHeigth = 600;
+        public static int maxTabCtrlHeigth = 600;
     }
 }

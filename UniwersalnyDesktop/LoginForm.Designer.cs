@@ -34,10 +34,10 @@
             this.userNameTextBox = new System.Windows.Forms.TextBox();
             this.passwordTextBox = new System.Windows.Forms.TextBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.btnZaloguj = new System.Windows.Forms.Button();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.btnUstawienia = new System.Windows.Forms.ToolStripButton();
             this.btnZmienProfil = new System.Windows.Forms.ToolStripButton();
+            this.btnZaloguj = new System.Windows.Forms.Button();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -47,7 +47,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(97, 194);
+            this.label1.Location = new System.Drawing.Point(86, 173);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(62, 13);
             this.label1.TabIndex = 0;
@@ -56,7 +56,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(97, 220);
+            this.label2.Location = new System.Drawing.Point(86, 204);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(36, 13);
             this.label2.TabIndex = 1;
@@ -64,17 +64,17 @@
             // 
             // userNameTextBox
             // 
-            this.userNameTextBox.Location = new System.Drawing.Point(163, 191);
+            this.userNameTextBox.Location = new System.Drawing.Point(152, 170);
             this.userNameTextBox.Name = "userNameTextBox";
-            this.userNameTextBox.Size = new System.Drawing.Size(156, 20);
+            this.userNameTextBox.Size = new System.Drawing.Size(138, 20);
             this.userNameTextBox.TabIndex = 2;
             this.userNameTextBox.TextChanged += new System.EventHandler(this.UserNameTextBox_TextChanged);
             // 
             // passwordTextBox
             // 
-            this.passwordTextBox.Location = new System.Drawing.Point(163, 217);
+            this.passwordTextBox.Location = new System.Drawing.Point(152, 201);
             this.passwordTextBox.Name = "passwordTextBox";
-            this.passwordTextBox.Size = new System.Drawing.Size(156, 20);
+            this.passwordTextBox.Size = new System.Drawing.Size(138, 20);
             this.passwordTextBox.TabIndex = 3;
             this.passwordTextBox.TextChanged += new System.EventHandler(this.PasswordTextBox_TextChanged);
             this.passwordTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.passwordTextbox_KeyDown);
@@ -86,31 +86,9 @@
             this.btnZmienProfil});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(353, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(324, 25);
             this.toolStrip1.TabIndex = 5;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // btnZaloguj
-            // 
-            this.btnZaloguj.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(48)))));
-            this.btnZaloguj.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnZaloguj.ForeColor = System.Drawing.Color.White;
-            this.btnZaloguj.Location = new System.Drawing.Point(188, 253);
-            this.btnZaloguj.Name = "btnZaloguj";
-            this.btnZaloguj.Size = new System.Drawing.Size(75, 23);
-            this.btnZaloguj.TabIndex = 9;
-            this.btnZaloguj.Text = "Zaloguj";
-            this.btnZaloguj.UseVisualStyleBackColor = false;
-            this.btnZaloguj.Click += new System.EventHandler(this.btnZaloguj_Click);
-            // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
-            this.pictureBox2.Location = new System.Drawing.Point(23, 182);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(56, 64);
-            this.pictureBox2.TabIndex = 8;
-            this.pictureBox2.TabStop = false;
             // 
             // btnUstawienia
             // 
@@ -131,6 +109,28 @@
             this.btnZmienProfil.Size = new System.Drawing.Size(23, 22);
             this.btnZmienProfil.Text = "Zmień profil";
             // 
+            // btnZaloguj
+            // 
+            this.btnZaloguj.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(48)))));
+            this.btnZaloguj.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.btnZaloguj.ForeColor = System.Drawing.Color.White;
+            this.btnZaloguj.Location = new System.Drawing.Point(177, 237);
+            this.btnZaloguj.Name = "btnZaloguj";
+            this.btnZaloguj.Size = new System.Drawing.Size(75, 23);
+            this.btnZaloguj.TabIndex = 9;
+            this.btnZaloguj.Text = "Zaloguj";
+            this.btnZaloguj.UseVisualStyleBackColor = false;
+            this.btnZaloguj.Click += new System.EventHandler(this.btnZaloguj_Click);
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
+            this.pictureBox2.Location = new System.Drawing.Point(12, 170);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(56, 64);
+            this.pictureBox2.TabIndex = 8;
+            this.pictureBox2.TabStop = false;
+            // 
             // pictureBoxLogo
             // 
             this.pictureBoxLogo.Location = new System.Drawing.Point(100, 43);
@@ -144,7 +144,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(353, 288);
+            this.ClientSize = new System.Drawing.Size(324, 281);
             this.Controls.Add(this.pictureBoxLogo);
             this.Controls.Add(this.btnZaloguj);
             this.Controls.Add(this.pictureBox2);

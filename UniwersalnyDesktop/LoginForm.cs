@@ -22,12 +22,12 @@ namespace UniwersalnyDesktop
         public LoginForm()
         {
             InitializeComponent();
-#if DEBUG
-            userLogin = "root";
-            userPassword = "root";
-            logIn();
-            this.Hide();
-#endif
+//#if DEBUG
+//            userLogin = "root";
+//            userPassword = "root";
+//            logIn();
+//            this.Hide();
+//#endif
         }
 
         #region interakcja z użytkownikiem
