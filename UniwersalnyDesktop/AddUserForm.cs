@@ -15,6 +15,7 @@ namespace UniwersalnyDesktop
         public string windowField;
         private NumberHandler nh = new NumberHandler();
         private readonly string[] authorisationTypes = new string[] { "Domenowe i sql", "Tylko domenowe", "Tylko sql" };
+        private string desktopDbName = LoginForm.dbConnection.Database;
 
         public AddUserForm()
         {
@@ -233,19 +234,64 @@ namespace UniwersalnyDesktop
                 return;
             }
 
+            bool success = false;
             if (typUzytkownikaCB.SelectedItem.ToString() == authorisationTypes[1])
-                addWindowsUser();
+                success = tryAddWindowsUser();
 
             else if (typUzytkownikaCB.SelectedItem.ToString() == authorisationTypes[2])
-                addSqlUser();
+                success = tryAddSqlUser();
 
             else if (typUzytkownikaCB.SelectedItem.ToString() == authorisationTypes[0])
-                addMixedUser();
+                success = tryAddMixedUser();
+
+            if (success)
+            {
+                this.DialogResult = DialogResult.OK;
+            }
         }
 
         #endregion
 
         #region dodawanie użytkowników do bazy
+        private bool tryAddWindowsUser()
+        {
+            try
+            {
+                addWindowsUser();
+                return true;
+            }
+            catch (Exception e)
+            {
+                MessageBoxError.ShowBox(e);
+                return false;
+            }
+        }
+        private bool tryAddSqlUser()
+        {
+            try
+            {
+                addSqlUser();
+                return true;
+            }
+            catch (Exception e)
+            {
+                MessageBoxError.ShowBox(e);
+                return false;
+            }
+        }
+        private bool tryAddMixedUser()
+        {
+            try
+            {
+                addMixedUser();
+                return true;
+            }
+            catch (Exception e)
+            {
+                MessageBoxError.ShowBox(e);
+                return false;
+            }
+        }
 
         private void addWindowsUser()
         {
@@ -275,7 +321,7 @@ namespace UniwersalnyDesktop
                         string sql = "INSERT INTO " + nazwaTabeli + " ( " + string.Join(",", nazwyKolumn.ToArray()) + " ) VALUES ( '" + string.Join("','", nazwyWartosci.ToArray()) + "'); ";
 
                         string procedura = "BEGIN TRY " +
-                            " exec AddUserDB " + "'" + domainName + "\\" + user.SamAccountName.ToString() + "'" + ", NULL, 'SoftMineDesktop', 'SoftMine','dbo'" +
+                            " exec AddUserDB " + "'" + domainName + "\\" + user.SamAccountName.ToString() + "'" + ", NULL, '" + desktopDbName + "', 'SoftMine','dbo'" +
                             " SELECT 'SUCCESS' " +
                             " END TRY " +
                             " BEGIN CATCH " +
@@ -340,7 +386,7 @@ namespace UniwersalnyDesktop
                 string sql = "INSERT INTO " + nazwaTabeli + " ( " + string.Join(",", nazwyKolumn.ToArray()) + " ) VALUES ( '" + string.Join("','", nazwyWartosci.ToArray()) + "'); ";
 
                 string procedura = " BEGIN TRY " +
-                        " exec AddUserDB " + "'" + loginTB.Text.ToString() + "'" + ", '" + tbHaslo.Text + "' , 'SoftMineDesktop', 'SoftMine','dbo' " +
+                        " exec AddUserDB " + "'" + loginTB.Text.ToString() + "'" + ", '" + tbHaslo.Text + "' , '" + desktopDbName + "', 'SoftMine','dbo' " +
                         " SELECT 'SUCCESS' " +
                         " END TRY " +
                         " BEGIN CATCH " +
@@ -403,14 +449,14 @@ namespace UniwersalnyDesktop
 
                 string sql = "INSERT INTO " + nazwaTabeli + " ( " + string.Join(",", nazwyKolumn.ToArray()) + " ) VALUES ( '" + string.Join("','", nazwyWartosci.ToArray()) + "'); ";
                 string procedura1 = " BEGIN TRY " +
-                                    " exec AddUserDB " + "'" + loginTB.Text.ToString() + "'" + ", '" + tbHaslo.Text + "' , 'SoftMineDesktop', 'SoftMine','dbo' " +
+                                    " exec AddUserDB " + "'" + loginTB.Text.ToString() + "'" + ", '" + tbHaslo.Text + "' , '" + desktopDbName + "', 'SoftMine','dbo' " +
                                     " SELECT 'SUCCESS' " +
                                     " END TRY " +
                                     " BEGIN CATCH " +
                                     " SELECT ERROR_MESSAGE() AS ErrorMessage; " +
                                     " END CATCH ";
                 string procedura2 = " BEGIN TRY " +
-                                    "exec AddUserDB " + "'" + windowField + "'" + ", NULL, 'SoftMineDesktop', 'SoftMine','dbo' " +
+                                    "exec AddUserDB " + "'" + windowField + "'" + ", NULL, '" + desktopDbName + "', 'SoftMine','dbo' " +
                                         " SELECT 'SUCCESS' " +
                                         " END TRY " +
                                         " BEGIN CATCH " +

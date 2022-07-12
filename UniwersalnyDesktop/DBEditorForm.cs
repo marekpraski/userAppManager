@@ -171,9 +171,8 @@ namespace UniwersalnyDesktop
 
 
 
-    protected void setUpDatagrid()
+        protected void setUpDatagrid()
         {
-
             //pierwsza kolumna nie jest do edycji, w niej musi być primaryKey;
             baseDatagrid.Columns[0].ReadOnly = true;
             baseDatagrid.Columns[0].DefaultCellStyle.BackColor = Color.LightGray;
@@ -218,8 +217,6 @@ namespace UniwersalnyDesktop
                 }
             }
         }
-
-
 
         private void loadRowPacket()
         {

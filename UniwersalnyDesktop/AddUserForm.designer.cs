@@ -34,6 +34,7 @@
             this.cbUzytkownik = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.gbDane = new System.Windows.Forms.GroupBox();
+            this.tbHaslo = new System.Windows.Forms.TextBox();
             this.oddzialTB = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.nazwiskoTB = new System.Windows.Forms.TextBox();
@@ -47,7 +48,6 @@
             this.errorProvider2 = new System.Windows.Forms.ErrorProvider(this.components);
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnZapisz = new System.Windows.Forms.ToolStripButton();
-            this.tbHaslo = new System.Windows.Forms.TextBox();
             this.gbDane.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider2)).BeginInit();
@@ -56,6 +56,7 @@
             // 
             // typUzytkownikaCB
             // 
+            this.typUzytkownikaCB.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.typUzytkownikaCB.FormattingEnabled = true;
             this.typUzytkownikaCB.Location = new System.Drawing.Point(124, 28);
             this.typUzytkownikaCB.Name = "typUzytkownikaCB";
@@ -74,6 +75,7 @@
             // 
             // cbUzytkownik
             // 
+            this.cbUzytkownik.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbUzytkownik.FormattingEnabled = true;
             this.cbUzytkownik.Location = new System.Drawing.Point(126, 61);
             this.cbUzytkownik.Name = "cbUzytkownik";
@@ -108,6 +110,13 @@
             this.gbDane.TabIndex = 18;
             this.gbDane.TabStop = false;
             this.gbDane.Text = "Dane";
+            // 
+            // tbHaslo
+            // 
+            this.tbHaslo.Location = new System.Drawing.Point(117, 116);
+            this.tbHaslo.Name = "tbHaslo";
+            this.tbHaslo.Size = new System.Drawing.Size(167, 20);
+            this.tbHaslo.TabIndex = 28;
             // 
             // oddzialTB
             // 
@@ -209,13 +218,6 @@
             this.btnZapisz.Size = new System.Drawing.Size(23, 22);
             this.btnZapisz.Text = "Zapisz";
             this.btnZapisz.Click += new System.EventHandler(this.btnZapisz_Click);
-            // 
-            // tbHaslo
-            // 
-            this.tbHaslo.Location = new System.Drawing.Point(117, 116);
-            this.tbHaslo.Name = "tbHaslo";
-            this.tbHaslo.Size = new System.Drawing.Size(167, 20);
-            this.tbHaslo.TabIndex = 28;
             // 
             // AddUserForm
             // 

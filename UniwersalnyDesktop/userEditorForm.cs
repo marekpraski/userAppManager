@@ -6,7 +6,6 @@ namespace UniwersalnyDesktop
     public partial class UserEditorForm : DBEditorForm
     {
 
-
         public UserEditorForm(string sqlQuery)
             : base(sqlQuery)
         {
@@ -30,7 +29,9 @@ namespace UniwersalnyDesktop
         private void btnNowy_Click(object sender, EventArgs e)
         {
             AddUserForm addUserForm = new AddUserForm();
-            addUserForm.Show();
+            addUserForm.ShowDialog();
+            if (addUserForm.DialogResult == System.Windows.Forms.DialogResult.OK)
+                setUpDatagrid();
         }
 
         #endregion

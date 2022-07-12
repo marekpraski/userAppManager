@@ -20,12 +20,12 @@ namespace UniwersalnyDesktop
             InitializeComponent();
             LoginForm.user = new DesktopUser();
             loadLogoFromFile();
-//#if DEBUG
-//            user.sqlLogin = "root";
-//            user.sqlPassword = "root";
-//            logIn();
-//            this.Hide();
-//#endif
+#if DEBUG
+            user.sqlLogin = "root";
+            user.sqlPassword = "root";
+            logIn();
+            this.Hide();
+#endif
         }
 
         private void loadLogoFromFile()
@@ -37,7 +37,7 @@ namespace UniwersalnyDesktop
             }
             catch (Exception e)
             {
-                MessageBoxError.ShowBox("Brak pliku logo", "Błąd", e.ToString());
+                //nic nie robię, po prostu wyświetlam bez logo
             }
         }
 
