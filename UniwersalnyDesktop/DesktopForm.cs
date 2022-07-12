@@ -13,21 +13,22 @@ namespace UniwersalnyDesktop
     /// </summary>
     public partial class DesktopForm : Form
     {
-        private DesktopUser user = LoginForm.user;
-        private string currentPath = LoginForm.mainPath;     //katalog z którego uruchamiany jest program, wykrywany przez DBConnector i ustawiany tutaj
-                                                                //dla DEBUGA ustawiony jest w metodzie ReadAllData
 
+        #region prywatne własciwości związane z układem i rozmiarami formatki
         //zmienne dotyczące rozmiarów i identyfikatorów tworzonych obiektów
         private int squareButtonsGroupboxWidth;
         private int squareButtonsGroupboxHeight;
         private int rectangularButtonsGroupboxHeight;
         private int groupboxID = 0;
         private int numberOfRectangularButtons;
-        private int numberOfSquareButtonsInOneGroupbox = DesktopLayoutSettings.numberOfSquareButtonsInOneBlock;    //ustawienia domyślne, ale daję tu żeby program mógł automatycznie zmienić
+        private int numberOfSquareButtonsInOneGroupbox = DesktopLayoutSettings.numberOfSquareButtonsInOneBlock;    //ustawienia domyślne, ale daję tu żeby program mógł automatycznie zmienić 
+        #endregion
 
+        private DesktopUser user = LoginForm.user;
+        private string currentPath = LoginForm.mainPath;     //katalog z którego uruchamiany jest program, wykrywany przez DBConnector i ustawiany tutaj
+                                                             //dla DEBUGA ustawiony jest w metodzie ReadAllData
         private DesktopDataHandler dataHandler;
         private Dictionary<string, DesktopProfile> profileDict;
-
         private DesktopProfile selectedProfile;
 
         public DesktopForm()
@@ -36,21 +37,39 @@ namespace UniwersalnyDesktop
             InitializeComponent();
         }
 
+        #region metody podczas ładowania formatki
         private void DesktopForm_Load(object sender, EventArgs e)
         {
             getDesktopData();
-            if (profileDict == null || profileDict.Count == 0) {
+            if (profileDict == null || profileDict.Count == 0)
+            {
                 MyMessageBox.display("użytkownik nie ma dostępu do żadnych programów", MessageBoxType.Error);
                 return;
             }
             fillProfileCombo();
         }
+        #endregion
 
+        #region metody podczas zamykania formatki
+        private void DesktopForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            //Application.Exit();
+        }
+        #endregion
+
+        #region czytanie danych Desktopu z bazy
+        private void getDesktopData()
+        {
+            this.profileDict = dataHandler.profileDict;
+        }
+        #endregion
+
+        #region wypełnianie kombo profili
         private void fillProfileCombo()
         {
             if (profileDict == null || profileDict.Count == 0)
                 return;
-            foreach(string profileId in profileDict.Keys)
+            foreach (string profileId in profileDict.Keys)
             {
                 ComboboxItem cbItem = new ComboboxItem(profileDict[profileId].name, profileId);
                 cbProfile.Items.Add(cbItem);
@@ -58,9 +77,10 @@ namespace UniwersalnyDesktop
             cbProfile.DisplayMember = "displayText";
             cbProfile.ValueMember = "value";
             cbProfile.SelectedIndex = 0;
-        }
+        } 
+        #endregion
 
-        #region Region - interakcja z użytkownikiem
+        #region naciśnięcie przycisku aplikacji
 
         private void ButtonClick(object sender, EventArgs e)
         {
@@ -72,10 +92,12 @@ namespace UniwersalnyDesktop
             }
         }
 
-
-        private void DesktopForm_FormClosed(object sender, FormClosedEventArgs e)
+        private void runApp(string appToRun)
         {
-            //Application.Exit();
+            string appLocation = currentPath + @"\..\" + appToRun;
+            FileManipulator fm = new FileManipulator();
+            fm.runProgram(appLocation, user.sqlLogin + " " + user.sqlPassword);
+
         }
 
         #endregion
@@ -99,14 +121,11 @@ namespace UniwersalnyDesktop
         private void resetDesktop()
         {
             tabSoftmine.Controls.Clear();
+            this.groupboxID = 0;
         }
         #endregion
 
-        private void getDesktopData()
-        {
-            this.profileDict = dataHandler.profileDict;
-        }
-
+        #region tworzenie layoutu formatki
         private void setupDesktop()
         {
             this.Text = "Zalogowano jako " + user.displayName;
@@ -118,7 +137,8 @@ namespace UniwersalnyDesktop
             int numberOfSquareButtonGroupboxes = 1;
             int estimatedDesktopHeigth = 100;
             numberOfSquareButtonsInOneGroupbox--;       //najpierw pomniejszam o jeden, żeby gdy wejdę do pętli to w pierwszej pętli liczyć dla liczby ustawionej przez użytkownika
-            do {
+            do
+            {
                 numberOfSquareButtonsInOneGroupbox++;
                 numberOfSquareButtonGroupboxes = calculateNumberOfSquareButtonGroupboxes();
                 estimatedDesktopHeigth = estimateDesktopHeigth(numberOfSquareButtonGroupboxes);
@@ -127,11 +147,11 @@ namespace UniwersalnyDesktop
 
             //liczbę wszystkich buttonów dzielę na liczbę buttonów kwadratowych w jednym bloku
             //resztę umieszczam jako prostokątne w osobnym bloku
-            numberOfRectangularButtons = selectedProfile.applications.Count - (numberOfSquareButtonGroupboxes * numberOfSquareButtonsInOneGroupbox);
+            numberOfRectangularButtons = selectedProfile.validApplications.Count - (numberOfSquareButtonGroupboxes * numberOfSquareButtonsInOneGroupbox);
             Button[] buttons = generateButtons(numberOfSquareButtonsInOneGroupbox * numberOfSquareButtonGroupboxes, numberOfRectangularButtons);
             calculateGroupboxSize();
             int i;
-            for (i=0; i<numberOfSquareButtonGroupboxes; i++)
+            for (i = 0; i < numberOfSquareButtonGroupboxes; i++)
             {
                 GroupBox gbs = generateOneGroupbox(DesktopLayoutSettings.GroupboxType.squareButtons);
                 addButtonsToGroupbox(gbs, buttons, DesktopLayoutSettings.ButtonType.square, i);
@@ -139,128 +159,11 @@ namespace UniwersalnyDesktop
             GroupBox gbr = generateOneGroupbox(DesktopLayoutSettings.GroupboxType.rectangularButtons);
             addButtonsToGroupbox(gbr, buttons, DesktopLayoutSettings.ButtonType.rectangular, i);
             setDesktopFormSize();
-        }
+            cbProfile.Width = this.Size.Width - 120;
+        } 
+        #endregion
 
-        private void addButtonsToGroupbox(GroupBox gb, Button[] buttons, DesktopLayoutSettings.ButtonType buttonType, int gbIndex)
-        {
-            switch (buttonType)
-            {
-                case DesktopLayoutSettings.ButtonType.square:
-                    addSquareButtons(gb, buttons, gbIndex);
-                    break;
-                case DesktopLayoutSettings.ButtonType.rectangular:
-                    addRectangularButtons(gb, buttons, gbIndex);                   
-                    break;
-            }
-        }
-
-        private void addSquareButtons(GroupBox gb, Button[] buttons, int gbIndex)
-        {
-            int btnEndIndex = gbIndex * numberOfSquareButtonsInOneGroupbox + numberOfSquareButtonsInOneGroupbox;
-            int buttonNrInGroupbox = 0;
-            for (int btnIndex = gbIndex * numberOfSquareButtonsInOneGroupbox; btnIndex < btnEndIndex; btnIndex++)
-            {
-                int buttonHorizontalLocation = DesktopLayoutSettings.horizontalButtonPadding;
-                int buttonVerticalLocation = DesktopLayoutSettings.verticalButtonPadding;
-                Button button = buttons[btnIndex];
-                button.Location = new Point(buttonHorizontalLocation + buttonNrInGroupbox * (button.Width + DesktopLayoutSettings.horizontalButtonPadding), buttonVerticalLocation);
-               
-                gb.Controls.Add(button);
-                buttonNrInGroupbox++;
-            }
-        }
-        private void addRectangularButtons(GroupBox gb, Button[] buttons, int gbIndex)
-        {
-            int buttonNrInGroupbox = 0;
-            for (int btnIndex = gbIndex * numberOfSquareButtonsInOneGroupbox; btnIndex < buttons.Length; btnIndex++)
-            {
-                int buttonHorizontalLocation = DesktopLayoutSettings.horizontalButtonPadding;
-                int buttonVerticalLocation = DesktopLayoutSettings.verticalButtonPadding;
-                Button button = buttons[btnIndex];
-
-                button.Location = new Point(buttonHorizontalLocation, buttonVerticalLocation + buttonNrInGroupbox * (button.Height + DesktopLayoutSettings.verticalButtonPadding));
-                gb.Controls.Add(button);
-                buttonNrInGroupbox++;
-            }
-        }
-
-        private Button[] generateButtons(int numberOfSquareButtons, int numberOfRectangularButtons)
-        {
-            Button[] bts = new Button[numberOfSquareButtons + numberOfRectangularButtons];
-
-            int index = 0;
-            Dictionary<string, IProfileItem> appDictionary = profileDict[selectedProfile.id].applications;
-            Button b;
-            foreach (string appId in appDictionary.Keys)
-            {
-                App app = appDictionary[appId] as App;
-                if (index < numberOfSquareButtons)
-                    b = generateOneButton(app, DesktopLayoutSettings.ButtonType.square, index);
-                else
-                    b = generateOneButton(app, DesktopLayoutSettings.ButtonType.rectangular, index);
-
-                bts[index] = b;
-                index++;
-            }
-            return bts;
-        }
-
-        //oszacowuję wysokość desktopu przy zdefiniowanej w DesktopLayoutSettings liczbie kwadratowych buttonów w rzędzie
-        //jeżeli wysokość desktopu wychodzi większa niż założona, zwiększam liczbę buttonów w rzedzie aż uzyskam przyzwoity rozmiar
-        private int estimateDesktopHeigth(int nrOfGroupBoxes)
-        {
-                return (nrOfGroupBoxes + 1) * DesktopLayoutSettings.squareButtonHeigth;      //dodaję 1 żeby szacunkowo uwzględnić poziome przyciski oraz odstępy między groupboxami
-        }
-
-        private int calculateNumberOfSquareButtonGroupboxes()
-        {
-            return selectedProfile.applications.Count / numberOfSquareButtonsInOneGroupbox;
-        }
-
-        private void calculateGroupboxSize()
-        {
-            squareButtonsGroupboxWidth = numberOfSquareButtonsInOneGroupbox * (DesktopLayoutSettings.squareButtonWidth + DesktopLayoutSettings.horizontalButtonPadding) + DesktopLayoutSettings.horizontalButtonPadding;
-            squareButtonsGroupboxHeight = DesktopLayoutSettings.squareButtonHeigth + 2 * DesktopLayoutSettings.verticalButtonPadding;
-        }
-
-        private void setDesktopFormSize()
-        {
-            int tabCtrlWidth = 2 * DesktopLayoutSettings.horizontalGroupboxPadding + squareButtonsGroupboxWidth + DesktopLayoutSettings.tabCtrlHorizontalPadding;
-            int tabCtrlHeight = 2 * DesktopLayoutSettings.firstGroupboxVerticalLocation + squareButtonsGroupboxHeight * (groupboxID - 1) + DesktopLayoutSettings.tabCtrlVerticalPadding + rectangularButtonsGroupboxHeight;
-            this.tabControl1.Width = tabCtrlWidth;
-            this.tabControl1.Height = tabCtrlHeight;
-            this.Width = tabControl1.Width + 40;
-            this.Height = tabControl1.Height + 80;
-        }
-       
-        private Button generateOneButton(App app, DesktopLayoutSettings.ButtonType buttonType, int index)
-        {
-            Button button = new Button();
-            
-            button.Click += new EventHandler(ButtonClick);
-            button.Name = index.ToString();
-            button.Tag = app.executionPath;
-            button.Text = app.displayName;
-
-            if(!user.hasApp(app))
-            {
-                button.Enabled = false;
-            }
-
-            switch (buttonType)
-            {
-                case DesktopLayoutSettings.ButtonType.rectangular:
-                    int rectangularButtonWidth = numberOfSquareButtonsInOneGroupbox * (DesktopLayoutSettings.squareButtonWidth + DesktopLayoutSettings.horizontalButtonPadding) - DesktopLayoutSettings.horizontalButtonPadding;
-                    button.Size = new Size(rectangularButtonWidth, DesktopLayoutSettings.rectangularButtonHeigth);
-                    break;
-                case DesktopLayoutSettings.ButtonType.square:
-                    button.Size = new Size(DesktopLayoutSettings.squareButtonWidth, DesktopLayoutSettings.squareButtonHeigth);
-                    break;
-            }
-            return button;
-        }
-
-
+        #region tworzenie groupboxów
         private GroupBox generateOneGroupbox(DesktopLayoutSettings.GroupboxType groupboxType)
         {
             GroupBox groupBox = new GroupBox();
@@ -281,22 +184,139 @@ namespace UniwersalnyDesktop
 
             this.tabSoftmine.Controls.Add(groupBox);
             groupboxID++;
-            int x = groupBox.Location.X;
-            int y = groupBox.Location.Y;
-            int wi = groupBox.Size.Width;
-            int hi = groupBox.Size.Height;
 
             return groupBox;
         }
-       
+        #endregion
 
-        private void runApp(string appToRun)
+        #region dodawanie przycisków do groupboxów
+        private void addButtonsToGroupbox(GroupBox gb, Button[] buttons, DesktopLayoutSettings.ButtonType buttonType, int gbIndex)
         {
-            string appLocation = currentPath + @"\..\" + appToRun;
-            FileManipulator fm = new FileManipulator();
-            fm.runProgram(appLocation, user.sqlLogin + " " + user.sqlPassword);
-
+            switch (buttonType)
+            {
+                case DesktopLayoutSettings.ButtonType.square:
+                    addSquareButtons(gb, buttons, gbIndex);
+                    break;
+                case DesktopLayoutSettings.ButtonType.rectangular:
+                    addRectangularButtons(gb, buttons, gbIndex);
+                    break;
+            }
         }
+
+        private void addSquareButtons(GroupBox gb, Button[] buttons, int gbIndex)
+        {
+            int btnEndIndex = gbIndex * numberOfSquareButtonsInOneGroupbox + numberOfSquareButtonsInOneGroupbox;
+            int buttonNrInGroupbox = 0;
+            for (int btnIndex = gbIndex * numberOfSquareButtonsInOneGroupbox; btnIndex < btnEndIndex; btnIndex++)
+            {
+                int buttonHorizontalLocation = DesktopLayoutSettings.horizontalButtonPadding;
+                int buttonVerticalLocation = DesktopLayoutSettings.verticalButtonPadding;
+                Button button = buttons[btnIndex];
+                button.Location = new Point(buttonHorizontalLocation + buttonNrInGroupbox * (button.Width + DesktopLayoutSettings.horizontalButtonPadding), buttonVerticalLocation);
+
+                gb.Controls.Add(button);
+                buttonNrInGroupbox++;
+            }
+        }
+        private void addRectangularButtons(GroupBox gb, Button[] buttons, int gbIndex)
+        {
+            int buttonNrInGroupbox = 0;
+            for (int btnIndex = gbIndex * numberOfSquareButtonsInOneGroupbox; btnIndex < buttons.Length; btnIndex++)
+            {
+                int buttonHorizontalLocation = DesktopLayoutSettings.horizontalButtonPadding;
+                int buttonVerticalLocation = DesktopLayoutSettings.verticalButtonPadding;
+                Button button = buttons[btnIndex];
+
+                button.Location = new Point(buttonHorizontalLocation, buttonVerticalLocation + buttonNrInGroupbox * (button.Height + DesktopLayoutSettings.verticalButtonPadding));
+                gb.Controls.Add(button);
+                buttonNrInGroupbox++;
+            }
+        } 
+        #endregion
+
+        #region tworzenie przycisków
+        private Button[] generateButtons(int numberOfSquareButtons, int numberOfRectangularButtons)
+        {
+            List<Button> bts = new List<Button>(numberOfSquareButtons + numberOfRectangularButtons);
+
+            int index = 0;
+            Dictionary<string, IProfileItem> appDictionary = profileDict[selectedProfile.id].validApplications;
+            Button b;
+            foreach (string appId in appDictionary.Keys)
+            {
+                App app = appDictionary[appId] as App;
+                if (index < numberOfSquareButtons)
+                    b = generateOneButton(app, DesktopLayoutSettings.ButtonType.square, index);
+                else
+                    b = generateOneButton(app, DesktopLayoutSettings.ButtonType.rectangular, index);
+
+                if (b != null)
+                    bts.Add(b);
+                index++;
+            }
+            return bts.ToArray();
+        }
+        private Button generateOneButton(App app, DesktopLayoutSettings.ButtonType buttonType, int index)
+        {
+            if (!app.isValid)
+                return null;
+
+            Button button = new Button();
+            button.Click += new EventHandler(ButtonClick);
+            button.Name = index.ToString();
+            button.Tag = app.executionPath;
+            button.Text = app.displayName;
+            string t = app.displayName;
+            bool v = user.hasApp(app);
+
+            if (user.hasApp(app))
+                button.Enabled = true;
+            else
+                button.Enabled = false;
+
+            switch (buttonType)
+            {
+                case DesktopLayoutSettings.ButtonType.rectangular:
+                    int rectangularButtonWidth = numberOfSquareButtonsInOneGroupbox * (DesktopLayoutSettings.squareButtonWidth + DesktopLayoutSettings.horizontalButtonPadding) - DesktopLayoutSettings.horizontalButtonPadding;
+                    button.Size = new Size(rectangularButtonWidth, DesktopLayoutSettings.rectangularButtonHeigth);
+                    break;
+                case DesktopLayoutSettings.ButtonType.square:
+                    button.Size = new Size(DesktopLayoutSettings.squareButtonWidth, DesktopLayoutSettings.squareButtonHeigth);
+                    break;
+            }
+            return button;
+        } 
+        #endregion
+
+        #region obliczanie wielkości groupboxów i formatki
+        //oszacowuję wysokość desktopu przy zdefiniowanej w DesktopLayoutSettings liczbie kwadratowych buttonów w rzędzie
+        //jeżeli wysokość desktopu wychodzi większa niż założona, zwiększam liczbę buttonów w rzedzie aż uzyskam przyzwoity rozmiar
+        private int estimateDesktopHeigth(int nrOfGroupBoxes)
+        {
+            return (nrOfGroupBoxes + 1) * DesktopLayoutSettings.squareButtonHeigth;      //dodaję 1 żeby szacunkowo uwzględnić poziome przyciski oraz odstępy między groupboxami
+        }
+
+        private int calculateNumberOfSquareButtonGroupboxes()
+        {
+            return selectedProfile.validApplications.Count / numberOfSquareButtonsInOneGroupbox;
+        }
+
+        private void calculateGroupboxSize()
+        {
+            squareButtonsGroupboxWidth = numberOfSquareButtonsInOneGroupbox * (DesktopLayoutSettings.squareButtonWidth + DesktopLayoutSettings.horizontalButtonPadding) + DesktopLayoutSettings.horizontalButtonPadding;
+            squareButtonsGroupboxHeight = DesktopLayoutSettings.squareButtonHeigth + 2 * DesktopLayoutSettings.verticalButtonPadding;
+        }
+
+        private void setDesktopFormSize()
+        {
+            int tabCtrlWidth = 2 * DesktopLayoutSettings.horizontalGroupboxPadding + squareButtonsGroupboxWidth + DesktopLayoutSettings.tabCtrlHorizontalPadding;
+            int tabCtrlHeight = 2 * DesktopLayoutSettings.firstGroupboxVerticalLocation + squareButtonsGroupboxHeight * (groupboxID - 1) + DesktopLayoutSettings.tabCtrlVerticalPadding + rectangularButtonsGroupboxHeight;
+            this.tabControl1.Width = tabCtrlWidth;
+            this.tabControl1.Height = tabCtrlHeight;
+            this.Width = tabControl1.Width + 40;
+            this.Height = tabControl1.Height + 80;
+        } 
+        #endregion
 
         #region przyciski zakładki Bentley
         private void btnMicroModeler3D_Click(object sender, EventArgs e)

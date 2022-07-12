@@ -11,6 +11,11 @@ namespace UniwersalnyDesktop
         public string domena { get; set; }
         public string ldap { get; set; }
         public Dictionary<string, IProfileItem> applications { get; } = new Dictionary<string, IProfileItem>();    //kluczem jest id aplikacji
+        /// <summary>
+        /// yylko te aplikacje, które spełniają kryteria ważności, m.in mają nazwę i ścieżkę wywołania
+        /// </summary>
+        public Dictionary<string, IProfileItem> validApplications { get => getValidApplications(); }    //kluczem jest id aplikacji
+
         public Dictionary<string, IProfileItem> users { get; } = new Dictionary<string, IProfileItem>();  //kluczem jest id użytkownika
 
         public DesktopProfile()
@@ -82,6 +87,20 @@ namespace UniwersalnyDesktop
             }
             return items;
         }
+
+        private Dictionary<string, IProfileItem> getValidApplications()
+        {
+            if (this.applications == null)
+                return null;
+            Dictionary<string, IProfileItem> items = new Dictionary<string, IProfileItem>();
+            foreach (string id in this.applications.Keys)
+            {
+                if((applications[id] as App).isValid)
+                    items.Add(id, applications[id]);
+            }
+            return items;
+        }
+
         internal Dictionary<string, IProfileItem> getIProfileItems(Dictionary<string, DesktopUser> userDict)
         {
             Dictionary<string, IProfileItem> items = new Dictionary<string, IProfileItem>();
@@ -91,5 +110,6 @@ namespace UniwersalnyDesktop
             }
             return items;
         }
+
     }
 }

@@ -35,10 +35,10 @@
             this.btnMicrostation2 = new System.Windows.Forms.Button();
             this.btnMicroModeler3D = new System.Windows.Forms.Button();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.cbProfile = new System.Windows.Forms.ComboBox();
             this.btnZmienHaslo = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.cbProfile = new System.Windows.Forms.ComboBox();
             this.tabControl1.SuspendLayout();
             this.tabBentley.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -108,15 +108,6 @@
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // cbProfile
-            // 
-            this.cbProfile.FormattingEnabled = true;
-            this.cbProfile.Location = new System.Drawing.Point(83, 1);
-            this.cbProfile.Name = "cbProfile";
-            this.cbProfile.Size = new System.Drawing.Size(250, 21);
-            this.cbProfile.TabIndex = 4;
-            this.cbProfile.SelectedIndexChanged += new System.EventHandler(this.cbProfile_SelectedIndexChanged);
-            // 
             // btnZmienHaslo
             // 
             this.btnZmienHaslo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -144,6 +135,16 @@
             this.toolStripButton3.Name = "toolStripButton3";
             this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton3.Text = "toolStripButton3";
+            // 
+            // cbProfile
+            // 
+            this.cbProfile.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbProfile.FormattingEnabled = true;
+            this.cbProfile.Location = new System.Drawing.Point(83, 1);
+            this.cbProfile.Name = "cbProfile";
+            this.cbProfile.Size = new System.Drawing.Size(292, 21);
+            this.cbProfile.TabIndex = 4;
+            this.cbProfile.SelectedIndexChanged += new System.EventHandler(this.cbProfile_SelectedIndexChanged);
             // 
             // DesktopForm
             // 

@@ -45,37 +45,40 @@ namespace UniwersalnyDesktop
 
         private void readAllData()
         {
-            getUserData();
-            getAllProfileData();
+            getUsers();
+            getAllProfiles();
             string appQuery = @"select ap.ID_app, ap.show_name, ap.name_app, ap.path_app, ap.name_db, ap.srod_app, ap.variant, ap.runFromDesktop from [dbo].[app_list] as ap ";
-            getAppData(appQuery);
+            getAllApps(appQuery);
             getAppModules();
-            getRolaData();
+            getRola();
             getProfileApps();
-            getAllUserApps();
+            getUsersApps();
         }
         private void readRegularUserData()
         {
-            getUserProfileData();
-            string appQuery = @"select ap.ID_app, ap.name_app, ap.path_app, ap.show_name, au.Grant_app, ap.name_db, ap.runFromDesktop from [dbo].[app_list] as ap 
+            setUser();
+            getUserProfiles();
+            string appQuery = @"select ap.ID_app, ap.name_app, ap.path_app, ap.show_name, ap.name_db, ap.runFromDesktop from [dbo].[app_list] as ap 
                             inner join app_users as au on ap.ID_app = au.ID_app 
-                            where ap.name_db is not null and srod_app = 'Windows' and ap.runFromDesktop = 1 and ap.show_name  is not null and au.ID_user = " + user.id;
-            getAppData(appQuery);
-            getProfileApps();
+                            where ap.name_db is not null and srod_app = 'Windows' and ap.runFromDesktop = 1 
+                            and ap.show_name  is not null and au.ID_user = " + user.id;
+            getAllApps(appQuery);
             getAppModules();
-            getRolaData();
+            getRola();
+            getProfileApps();
+            getUsersApps();
         }
 
         private void readUndefinedUserData()
         {
-            getUserData();
-            getAllProfileData();
+            getUsers();
+            getAllProfiles();
         }
 
         #endregion
 
         #region czytanie użytkowników z bazy danych 
-        private void getUserData()
+        private void getUsers()
         {
             string query = "select  ID_user, imie_user, nazwisko_user,login_user, windows_user from users_list where login_user is not null and login_user <> '" + user.sqlLogin + "'";
             QueryData userData = dbReader.readFromDB(query);
@@ -91,12 +94,18 @@ namespace UniwersalnyDesktop
                 allUsersDict.Add(desktopUser.id, desktopUser);
             }
         }
+        /// <summary>
+        /// w przypadku konkretnie zalogowanego zwykłego użytkowonika dodaję go tylko do słownika
+        /// </summary>
+        private void setUser()
+        {
+            allUsersDict.Add(user.id, user);
+        }
 
         #endregion
 
         #region czytanie profili z bazy danych
-
-        private void getAllProfileData()
+        private void getAllProfiles()
         {
             string query = @"  select ID_profile, name_profile, domena, ldap from [profile_desktop]";
             string query2 = @"SELECT  ID_profile, lu.ID_user FROM [profile_users] pu
@@ -108,7 +117,7 @@ namespace UniwersalnyDesktop
             addProfilesToDict(qd[0]);
             assignUsersToProfiles(qd[1]);
         }
-        private void getUserProfileData()
+        private void getUserProfiles()
         {
             string query = @"select pd.ID_profile, pd.name_profile, pd.domena, pd.ldap from [profile_desktop] pd
                             inner join 
@@ -144,7 +153,7 @@ namespace UniwersalnyDesktop
 
         #region czytanie aplikacji, modułów i ról z bazy danych
 
-        private void getAppData(string query)
+        private void getAllApps(string query)
         {
             UtilityTools.NumberHandler nh = new UtilityTools.NumberHandler();
             QueryData appData = dbReader.readFromDB(query);
@@ -153,6 +162,7 @@ namespace UniwersalnyDesktop
             {
                 App app = new App();
                 app.id = appData.getDataValue(i, "ID_app").ToString();
+                app.name = appData.getDataValue(i, "name_app").ToString();
                 app.displayName = appData.getDataValue(i, "show_name").ToString();
                 app.defaultDatabaseName = appData.getDataValue(i, "name_db").ToString();
                 app.executionPath = appData.getDataValue(i, "path_app").ToString();
@@ -181,7 +191,7 @@ namespace UniwersalnyDesktop
             }
         }
 
-        private void getRolaData()
+        private void getRola()
         {
             App app;
 
@@ -250,7 +260,7 @@ namespace UniwersalnyDesktop
 
         #region czytanie z bazy danych ról użytkowników w aplikacjach
         //dane każdego użytkownika uzupełniam o zestawienie aplikacji do których ma uprawnienia wraz z rolami
-        private void getAllUserApps()
+        private void getUsersApps()
         {
             DesktopUser user = null;
 
@@ -259,7 +269,7 @@ namespace UniwersalnyDesktop
                 string query = @"select ap.ID_app from [dbo].[app_list] as ap 
                                 inner join app_users as au on ap.ID_app = au.ID_app 
                                 inner join users_list as ul on ul.ID_user = au.ID_user 
-                                where ap.show_name is not null and au.Grant_app = 1 and ul.ID_user = " + userId;
+                                where au.Grant_app > 0 and ul.ID_user = " + userId;
                 List<string[]> appList = dbReader.readFromDB(query).getQueryDataAsStrings();
                 List<string> appIdList = convertColumnDataToList(appList);                  //ta kwerenda zwraca pojedynczą listę, tj tylko id
 

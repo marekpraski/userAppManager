@@ -8,10 +8,16 @@ namespace UniwersalnyDesktop
     public class App : IProfileItem
     {
         public string displayName { get; set; }
+        public string name { get; set; }
         public string id { get; set; }
         public string executionPath { get; set; }
         public string defaultDatabaseName { get; set; }
         public bool runFromDesktop { get; set; }
+        /// <summary>
+        /// zwraca true jeżeli aplikacja spełnia warunki umożliwiające jej wyświetlenie na przycisku i uruchomienie
+        /// </summary>
+        public bool isValid { get => assertAppDataIsValid(); }
+
         public List<string> rolaIdList { get; }     //zawiera ID ról
         public List<Rola> rolaList { get; }
         public Dictionary<string, Rola> rolaDict { get; }   //kluczem jest Id roli
@@ -66,6 +72,11 @@ namespace UniwersalnyDesktop
         public bool hasModules()
         {
             return (moduleIdList.Count > 0);
+        }
+
+        private bool assertAppDataIsValid()
+        {
+            return !String.IsNullOrEmpty(this.displayName) && !String.IsNullOrEmpty(this.executionPath) && !String.IsNullOrEmpty(this.name);
         }
 
         #region gettery
