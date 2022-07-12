@@ -154,7 +154,7 @@
     <Compile Include="DesktopForm.Designer.cs">
       <DependentUpon>DesktopForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DesktopLayoutSettings.cs" />
+    <Compile Include="DesktopSettings.cs" />
     <Compile Include="FileManipulator.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>

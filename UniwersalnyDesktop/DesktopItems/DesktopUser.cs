@@ -11,6 +11,7 @@ namespace UniwersalnyDesktop
         public string windowsLogin { get; set; }
         public string sqlLogin { get; set; }
         public string sqlPassword { get; set; }
+        public string lastUsedProfileId { get; private set; }
         public UserType type { get; set; } = UserType.Undefined;
         public Dictionary<App, AppDataItem> userAppDict { get; }
 
@@ -24,6 +25,12 @@ namespace UniwersalnyDesktop
         public DesktopUser()
         {
             userAppDict = new Dictionary<App, AppDataItem>();
+        }
+        public void setLastUsedProfileId(string profileId)
+        {
+            if (String.IsNullOrEmpty(profileId))
+                this.lastUsedProfileId = "-1";
+            this.lastUsedProfileId = profileId;
         }
 
         /*

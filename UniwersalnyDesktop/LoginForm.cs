@@ -1,6 +1,7 @@
 ﻿using DatabaseInterface;
 using System;
 using System.Data.SqlClient;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using UtilityTools;
@@ -18,12 +19,26 @@ namespace UniwersalnyDesktop
         {
             InitializeComponent();
             LoginForm.user = new DesktopUser();
+            loadLogoFromFile();
 //#if DEBUG
 //            user.sqlLogin = "root";
 //            user.sqlPassword = "root";
 //            logIn();
 //            this.Hide();
 //#endif
+        }
+
+        private void loadLogoFromFile()
+        {
+            user.setLastUsedProfileId(new DesktopSettings().readUserSettings());
+            try
+            {
+                pictureBoxLogo.Image = Image.FromFile(mainPath + @"\logo.jpg");
+            }
+            catch (Exception e)
+            {
+                MessageBoxError.ShowBox("Brak pliku logo", "Błąd", e.ToString());
+            }
         }
 
         #region interakcja z użytkownikiem

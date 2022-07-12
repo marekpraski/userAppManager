@@ -1,11 +1,16 @@
 ﻿
+using System;
+using System.Xml.Linq;
+using UtilityTools;
+
 namespace UniwersalnyDesktop
 {
     
-    class DesktopLayoutSettings
+    public class DesktopSettings
     {
+        #region statyczne właściwości publiczne związane z ustawieniami formatki
         public enum ButtonType { square, rectangular }
-        public enum GroupboxType { squareButtons, rectangularButtons}
+        public enum GroupboxType { squareButtons, rectangularButtons }
 
         public static int numberOfSquareButtonsInOneBlock = 4;
 
@@ -30,5 +35,19 @@ namespace UniwersalnyDesktop
 
         //max wysokość desktopu
         public static int maxTabCtrlHeigth = 600;
+        #endregion
+
+        private string configFilePath = LoginForm.mainPath + "desktopConfig.xml";
+        public void saveCurrentSettings(string profileId)
+        {
+            XElement settings = new XElement("Ustawienia",
+                new XElement("idProfilu", profileId));
+            new XmlWriter().saveAsXmlFile(settings, configFilePath);
+        }
+
+        internal string readUserSettings()
+        {
+            return new XmlReader(configFilePath).getNodeValue("idProfilu");
+        }
     }
 }

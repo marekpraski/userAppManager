@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using UtilityTools;
 
 namespace UniwersalnyDesktop
@@ -21,7 +22,7 @@ namespace UniwersalnyDesktop
         private int rectangularButtonsGroupboxHeight;
         private int groupboxID = 0;
         private int numberOfRectangularButtons;
-        private int numberOfSquareButtonsInOneGroupbox = DesktopLayoutSettings.numberOfSquareButtonsInOneBlock;    //ustawienia domyślne, ale daję tu żeby program mógł automatycznie zmienić 
+        private int numberOfSquareButtonsInOneGroupbox = DesktopSettings.numberOfSquareButtonsInOneBlock;    //ustawienia domyślne, ale daję tu żeby program mógł automatycznie zmienić 
         #endregion
 
         private DesktopUser user = LoginForm.user;
@@ -47,14 +48,29 @@ namespace UniwersalnyDesktop
                 return;
             }
             fillProfileCombo();
+            cbProfile.SelectedIndex = getIndexFromProfileId(user.lastUsedProfileId);
         }
+
+        private int getIndexFromProfileId(string lastUsedProfileId)
+        {
+            for (int i = 0; i < cbProfile.Items.Count; i++)
+            {
+                ComboboxItem item = cbProfile.Items[i] as ComboboxItem;
+                if (item.value.ToString() == lastUsedProfileId)
+                    return i;
+            }
+            return -1;
+        }
+
         #endregion
 
         #region metody podczas zamykania formatki
         private void DesktopForm_FormClosed(object sender, FormClosedEventArgs e)
         {
+            new DesktopSettings().saveCurrentSettings(selectedProfile.id);
             //Application.Exit();
         }
+
         #endregion
 
         #region czytanie danych Desktopu z bazy
@@ -76,7 +92,6 @@ namespace UniwersalnyDesktop
             }
             cbProfile.DisplayMember = "displayText";
             cbProfile.ValueMember = "value";
-            cbProfile.SelectedIndex = 0;
         } 
         #endregion
 
@@ -143,7 +158,7 @@ namespace UniwersalnyDesktop
                 numberOfSquareButtonGroupboxes = calculateNumberOfSquareButtonGroupboxes();
                 estimatedDesktopHeigth = estimateDesktopHeigth(numberOfSquareButtonGroupboxes);
             }
-            while (estimatedDesktopHeigth > DesktopLayoutSettings.maxTabCtrlHeigth);
+            while (estimatedDesktopHeigth > DesktopSettings.maxTabCtrlHeigth);
 
             //liczbę wszystkich buttonów dzielę na liczbę buttonów kwadratowych w jednym bloku
             //resztę umieszczam jako prostokątne w osobnym bloku
@@ -153,31 +168,31 @@ namespace UniwersalnyDesktop
             int i;
             for (i = 0; i < numberOfSquareButtonGroupboxes; i++)
             {
-                GroupBox gbs = generateOneGroupbox(DesktopLayoutSettings.GroupboxType.squareButtons);
-                addButtonsToGroupbox(gbs, buttons, DesktopLayoutSettings.ButtonType.square, i);
+                GroupBox gbs = generateOneGroupbox(DesktopSettings.GroupboxType.squareButtons);
+                addButtonsToGroupbox(gbs, buttons, DesktopSettings.ButtonType.square, i);
             }
-            GroupBox gbr = generateOneGroupbox(DesktopLayoutSettings.GroupboxType.rectangularButtons);
-            addButtonsToGroupbox(gbr, buttons, DesktopLayoutSettings.ButtonType.rectangular, i);
+            GroupBox gbr = generateOneGroupbox(DesktopSettings.GroupboxType.rectangularButtons);
+            addButtonsToGroupbox(gbr, buttons, DesktopSettings.ButtonType.rectangular, i);
             setDesktopFormSize();
             cbProfile.Width = this.Size.Width - 120;
         } 
         #endregion
 
         #region tworzenie groupboxów
-        private GroupBox generateOneGroupbox(DesktopLayoutSettings.GroupboxType groupboxType)
+        private GroupBox generateOneGroupbox(DesktopSettings.GroupboxType groupboxType)
         {
             GroupBox groupBox = new GroupBox();
             groupBox.Name = "groupBox" + groupboxID;
-            int groupboxVerticalLocation = DesktopLayoutSettings.firstGroupboxVerticalLocation + DesktopLayoutSettings.verticalGroupboxPadding + groupboxID * squareButtonsGroupboxHeight;
-            groupBox.Location = new System.Drawing.Point(DesktopLayoutSettings.horizontalGroupboxPadding, groupboxVerticalLocation);
+            int groupboxVerticalLocation = DesktopSettings.firstGroupboxVerticalLocation + DesktopSettings.verticalGroupboxPadding + groupboxID * squareButtonsGroupboxHeight;
+            groupBox.Location = new System.Drawing.Point(DesktopSettings.horizontalGroupboxPadding, groupboxVerticalLocation);
 
             switch (groupboxType)
             {
-                case DesktopLayoutSettings.GroupboxType.squareButtons:
+                case DesktopSettings.GroupboxType.squareButtons:
                     groupBox.Size = new System.Drawing.Size(squareButtonsGroupboxWidth, squareButtonsGroupboxHeight);
                     break;
-                case DesktopLayoutSettings.GroupboxType.rectangularButtons:
-                    rectangularButtonsGroupboxHeight = numberOfRectangularButtons * (DesktopLayoutSettings.rectangularButtonHeigth + DesktopLayoutSettings.verticalButtonPadding);
+                case DesktopSettings.GroupboxType.rectangularButtons:
+                    rectangularButtonsGroupboxHeight = numberOfRectangularButtons * (DesktopSettings.rectangularButtonHeigth + DesktopSettings.verticalButtonPadding);
                     groupBox.Size = new System.Drawing.Size(squareButtonsGroupboxWidth, rectangularButtonsGroupboxHeight);
                     break;
             }
@@ -190,14 +205,14 @@ namespace UniwersalnyDesktop
         #endregion
 
         #region dodawanie przycisków do groupboxów
-        private void addButtonsToGroupbox(GroupBox gb, Button[] buttons, DesktopLayoutSettings.ButtonType buttonType, int gbIndex)
+        private void addButtonsToGroupbox(GroupBox gb, Button[] buttons, DesktopSettings.ButtonType buttonType, int gbIndex)
         {
             switch (buttonType)
             {
-                case DesktopLayoutSettings.ButtonType.square:
+                case DesktopSettings.ButtonType.square:
                     addSquareButtons(gb, buttons, gbIndex);
                     break;
-                case DesktopLayoutSettings.ButtonType.rectangular:
+                case DesktopSettings.ButtonType.rectangular:
                     addRectangularButtons(gb, buttons, gbIndex);
                     break;
             }
@@ -209,10 +224,10 @@ namespace UniwersalnyDesktop
             int buttonNrInGroupbox = 0;
             for (int btnIndex = gbIndex * numberOfSquareButtonsInOneGroupbox; btnIndex < btnEndIndex; btnIndex++)
             {
-                int buttonHorizontalLocation = DesktopLayoutSettings.horizontalButtonPadding;
-                int buttonVerticalLocation = DesktopLayoutSettings.verticalButtonPadding;
+                int buttonHorizontalLocation = DesktopSettings.horizontalButtonPadding;
+                int buttonVerticalLocation = DesktopSettings.verticalButtonPadding;
                 Button button = buttons[btnIndex];
-                button.Location = new Point(buttonHorizontalLocation + buttonNrInGroupbox * (button.Width + DesktopLayoutSettings.horizontalButtonPadding), buttonVerticalLocation);
+                button.Location = new Point(buttonHorizontalLocation + buttonNrInGroupbox * (button.Width + DesktopSettings.horizontalButtonPadding), buttonVerticalLocation);
 
                 gb.Controls.Add(button);
                 buttonNrInGroupbox++;
@@ -223,11 +238,11 @@ namespace UniwersalnyDesktop
             int buttonNrInGroupbox = 0;
             for (int btnIndex = gbIndex * numberOfSquareButtonsInOneGroupbox; btnIndex < buttons.Length; btnIndex++)
             {
-                int buttonHorizontalLocation = DesktopLayoutSettings.horizontalButtonPadding;
-                int buttonVerticalLocation = DesktopLayoutSettings.verticalButtonPadding;
+                int buttonHorizontalLocation = DesktopSettings.horizontalButtonPadding;
+                int buttonVerticalLocation = DesktopSettings.verticalButtonPadding;
                 Button button = buttons[btnIndex];
 
-                button.Location = new Point(buttonHorizontalLocation, buttonVerticalLocation + buttonNrInGroupbox * (button.Height + DesktopLayoutSettings.verticalButtonPadding));
+                button.Location = new Point(buttonHorizontalLocation, buttonVerticalLocation + buttonNrInGroupbox * (button.Height + DesktopSettings.verticalButtonPadding));
                 gb.Controls.Add(button);
                 buttonNrInGroupbox++;
             }
@@ -246,9 +261,9 @@ namespace UniwersalnyDesktop
             {
                 App app = appDictionary[appId] as App;
                 if (index < numberOfSquareButtons)
-                    b = generateOneButton(app, DesktopLayoutSettings.ButtonType.square, index);
+                    b = generateOneButton(app, DesktopSettings.ButtonType.square, index);
                 else
-                    b = generateOneButton(app, DesktopLayoutSettings.ButtonType.rectangular, index);
+                    b = generateOneButton(app, DesktopSettings.ButtonType.rectangular, index);
 
                 if (b != null)
                     bts.Add(b);
@@ -256,7 +271,7 @@ namespace UniwersalnyDesktop
             }
             return bts.ToArray();
         }
-        private Button generateOneButton(App app, DesktopLayoutSettings.ButtonType buttonType, int index)
+        private Button generateOneButton(App app, DesktopSettings.ButtonType buttonType, int index)
         {
             if (!app.isValid)
                 return null;
@@ -276,12 +291,12 @@ namespace UniwersalnyDesktop
 
             switch (buttonType)
             {
-                case DesktopLayoutSettings.ButtonType.rectangular:
-                    int rectangularButtonWidth = numberOfSquareButtonsInOneGroupbox * (DesktopLayoutSettings.squareButtonWidth + DesktopLayoutSettings.horizontalButtonPadding) - DesktopLayoutSettings.horizontalButtonPadding;
-                    button.Size = new Size(rectangularButtonWidth, DesktopLayoutSettings.rectangularButtonHeigth);
+                case DesktopSettings.ButtonType.rectangular:
+                    int rectangularButtonWidth = numberOfSquareButtonsInOneGroupbox * (DesktopSettings.squareButtonWidth + DesktopSettings.horizontalButtonPadding) - DesktopSettings.horizontalButtonPadding;
+                    button.Size = new Size(rectangularButtonWidth, DesktopSettings.rectangularButtonHeigth);
                     break;
-                case DesktopLayoutSettings.ButtonType.square:
-                    button.Size = new Size(DesktopLayoutSettings.squareButtonWidth, DesktopLayoutSettings.squareButtonHeigth);
+                case DesktopSettings.ButtonType.square:
+                    button.Size = new Size(DesktopSettings.squareButtonWidth, DesktopSettings.squareButtonHeigth);
                     break;
             }
             return button;
@@ -293,7 +308,7 @@ namespace UniwersalnyDesktop
         //jeżeli wysokość desktopu wychodzi większa niż założona, zwiększam liczbę buttonów w rzedzie aż uzyskam przyzwoity rozmiar
         private int estimateDesktopHeigth(int nrOfGroupBoxes)
         {
-            return (nrOfGroupBoxes + 1) * DesktopLayoutSettings.squareButtonHeigth;      //dodaję 1 żeby szacunkowo uwzględnić poziome przyciski oraz odstępy między groupboxami
+            return (nrOfGroupBoxes + 1) * DesktopSettings.squareButtonHeigth;      //dodaję 1 żeby szacunkowo uwzględnić poziome przyciski oraz odstępy między groupboxami
         }
 
         private int calculateNumberOfSquareButtonGroupboxes()
@@ -303,14 +318,14 @@ namespace UniwersalnyDesktop
 
         private void calculateGroupboxSize()
         {
-            squareButtonsGroupboxWidth = numberOfSquareButtonsInOneGroupbox * (DesktopLayoutSettings.squareButtonWidth + DesktopLayoutSettings.horizontalButtonPadding) + DesktopLayoutSettings.horizontalButtonPadding;
-            squareButtonsGroupboxHeight = DesktopLayoutSettings.squareButtonHeigth + 2 * DesktopLayoutSettings.verticalButtonPadding;
+            squareButtonsGroupboxWidth = numberOfSquareButtonsInOneGroupbox * (DesktopSettings.squareButtonWidth + DesktopSettings.horizontalButtonPadding) + DesktopSettings.horizontalButtonPadding;
+            squareButtonsGroupboxHeight = DesktopSettings.squareButtonHeigth + 2 * DesktopSettings.verticalButtonPadding;
         }
 
         private void setDesktopFormSize()
         {
-            int tabCtrlWidth = 2 * DesktopLayoutSettings.horizontalGroupboxPadding + squareButtonsGroupboxWidth + DesktopLayoutSettings.tabCtrlHorizontalPadding;
-            int tabCtrlHeight = 2 * DesktopLayoutSettings.firstGroupboxVerticalLocation + squareButtonsGroupboxHeight * (groupboxID - 1) + DesktopLayoutSettings.tabCtrlVerticalPadding + rectangularButtonsGroupboxHeight;
+            int tabCtrlWidth = 2 * DesktopSettings.horizontalGroupboxPadding + squareButtonsGroupboxWidth + DesktopSettings.tabCtrlHorizontalPadding;
+            int tabCtrlHeight = 2 * DesktopSettings.firstGroupboxVerticalLocation + squareButtonsGroupboxHeight * (groupboxID - 1) + DesktopSettings.tabCtrlVerticalPadding + rectangularButtonsGroupboxHeight;
             this.tabControl1.Width = tabCtrlWidth;
             this.tabControl1.Height = tabCtrlHeight;
             this.Width = tabControl1.Width + 40;
