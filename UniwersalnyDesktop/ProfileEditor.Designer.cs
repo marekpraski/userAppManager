@@ -31,12 +31,6 @@ namespace UniwersalnyDesktop
         {
             this.components = new System.ComponentModel.Container();
             this.dgvProfileApps = new System.Windows.Forms.DataGridView();
-            this.colId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colNazwa = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colSerwer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colBazaDanych = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colSterownik = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colRaport = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cbProfiles = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -57,11 +51,19 @@ namespace UniwersalnyDesktop
             this.labelDomena = new System.Windows.Forms.Label();
             this.labelLdap = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.tbSerwer = new System.Windows.Forms.TextBox();
-            this.btnKopiujSerwer = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.labelSerwer = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
+            this.dgvUzytkownik = new System.Windows.Forms.DataGridView();
+            this.colId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colNazwa = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colNazwaU = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProfileApps)).BeginInit();
             this.toolStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvUzytkownik)).BeginInit();
             this.SuspendLayout();
             // 
             // dgvProfileApps
@@ -71,60 +73,21 @@ namespace UniwersalnyDesktop
             this.dgvProfileApps.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvProfileApps.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colId,
-            this.colNazwa,
-            this.colSerwer,
-            this.colBazaDanych,
-            this.colSterownik,
-            this.colRaport});
-            this.dgvProfileApps.Location = new System.Drawing.Point(12, 84);
+            this.colNazwa});
+            this.dgvProfileApps.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.dgvProfileApps.Location = new System.Drawing.Point(243, 59);
             this.dgvProfileApps.Name = "dgvProfileApps";
             this.dgvProfileApps.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvProfileApps.Size = new System.Drawing.Size(1205, 380);
+            this.dgvProfileApps.Size = new System.Drawing.Size(252, 380);
             this.dgvProfileApps.TabIndex = 9;
-            // 
-            // colId
-            // 
-            this.colId.HeaderText = "id";
-            this.colId.Name = "colId";
-            this.colId.Visible = false;
-            // 
-            // colNazwa
-            // 
-            this.colNazwa.HeaderText = "Nazwa aplikacji";
-            this.colNazwa.Name = "colNazwa";
-            this.colNazwa.Width = 200;
-            // 
-            // colSerwer
-            // 
-            this.colSerwer.HeaderText = "Serwer";
-            this.colSerwer.Name = "colSerwer";
-            this.colSerwer.Width = 150;
-            // 
-            // colBazaDanych
-            // 
-            this.colBazaDanych.HeaderText = "Baza danych";
-            this.colBazaDanych.Name = "colBazaDanych";
-            this.colBazaDanych.Width = 150;
-            // 
-            // colSterownik
-            // 
-            this.colSterownik.HeaderText = "Sterownik ODBC";
-            this.colSterownik.Name = "colSterownik";
-            this.colSterownik.Width = 150;
-            // 
-            // colRaport
-            // 
-            this.colRaport.HeaderText = "Raport";
-            this.colRaport.Name = "colRaport";
-            this.colRaport.Width = 500;
             // 
             // cbProfiles
             // 
             this.cbProfiles.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbProfiles.FormattingEnabled = true;
-            this.cbProfiles.Location = new System.Drawing.Point(101, 28);
+            this.cbProfiles.Location = new System.Drawing.Point(69, 28);
             this.cbProfiles.Name = "cbProfiles";
-            this.cbProfiles.Size = new System.Drawing.Size(916, 21);
+            this.cbProfiles.Size = new System.Drawing.Size(704, 21);
             this.cbProfiles.TabIndex = 8;
             this.cbProfiles.SelectedIndexChanged += new System.EventHandler(this.cbProfiles_SelectedIndexChanged);
             // 
@@ -133,9 +96,9 @@ namespace UniwersalnyDesktop
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(9, 31);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(86, 13);
+            this.label1.Size = new System.Drawing.Size(30, 13);
             this.label1.TabIndex = 7;
-            this.label1.Text = "Profile desktopu:";
+            this.label1.Text = "Profil";
             // 
             // toolStrip1
             // 
@@ -154,7 +117,7 @@ namespace UniwersalnyDesktop
             this.btnUsunUzytkownika});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1229, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(785, 25);
             this.toolStrip1.TabIndex = 13;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -265,7 +228,7 @@ namespace UniwersalnyDesktop
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(642, 59);
+            this.label2.Location = new System.Drawing.Point(12, 90);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(45, 13);
             this.label2.TabIndex = 14;
@@ -274,7 +237,7 @@ namespace UniwersalnyDesktop
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(857, 59);
+            this.label3.Location = new System.Drawing.Point(12, 120);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(27, 13);
             this.label3.TabIndex = 16;
@@ -284,7 +247,7 @@ namespace UniwersalnyDesktop
             // 
             this.labelDomena.AutoSize = true;
             this.labelDomena.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelDomena.Location = new System.Drawing.Point(693, 59);
+            this.labelDomena.Location = new System.Drawing.Point(66, 90);
             this.labelDomena.Name = "labelDomena";
             this.labelDomena.Size = new System.Drawing.Size(41, 13);
             this.labelDomena.TabIndex = 18;
@@ -294,7 +257,7 @@ namespace UniwersalnyDesktop
             // 
             this.labelLdap.AutoSize = true;
             this.labelLdap.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelLdap.Location = new System.Drawing.Point(890, 59);
+            this.labelLdap.Location = new System.Drawing.Point(66, 120);
             this.labelLdap.Name = "labelLdap";
             this.labelLdap.Size = new System.Drawing.Size(41, 13);
             this.labelLdap.TabIndex = 19;
@@ -303,37 +266,88 @@ namespace UniwersalnyDesktop
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(101, 59);
+            this.label4.Location = new System.Drawing.Point(12, 59);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(38, 13);
             this.label4.TabIndex = 20;
             this.label4.Text = "serwer";
             // 
-            // tbSerwer
+            // labelSerwer
             // 
-            this.tbSerwer.Location = new System.Drawing.Point(145, 55);
-            this.tbSerwer.Name = "tbSerwer";
-            this.tbSerwer.Size = new System.Drawing.Size(250, 20);
-            this.tbSerwer.TabIndex = 21;
+            this.labelSerwer.AutoSize = true;
+            this.labelSerwer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelSerwer.Location = new System.Drawing.Point(66, 59);
+            this.labelSerwer.Name = "labelSerwer";
+            this.labelSerwer.Size = new System.Drawing.Size(41, 13);
+            this.labelSerwer.TabIndex = 21;
+            this.labelSerwer.Text = "label5";
             // 
-            // btnKopiujSerwer
+            // label5
             // 
-            this.btnKopiujSerwer.Image = global::UniwersalnyDesktop.Properties.Resources.ASX_FileToTable_blue_16x_;
-            this.btnKopiujSerwer.Location = new System.Drawing.Point(401, 55);
-            this.btnKopiujSerwer.Name = "btnKopiujSerwer";
-            this.btnKopiujSerwer.Size = new System.Drawing.Size(23, 23);
-            this.btnKopiujSerwer.TabIndex = 22;
-            this.toolTip1.SetToolTip(this.btnKopiujSerwer, "Przypisz serwer do wszystkich aplikacji");
-            this.btnKopiujSerwer.UseVisualStyleBackColor = true;
-            this.btnKopiujSerwer.Click += new System.EventHandler(this.btnKopiujSerwer_Click);
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(12, 207);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(27, 13);
+            this.label5.TabIndex = 22;
+            this.label5.Text = "logo";
+            // 
+            // pictureBoxLogo
+            // 
+            this.pictureBoxLogo.Location = new System.Drawing.Point(69, 160);
+            this.pictureBoxLogo.Name = "pictureBoxLogo";
+            this.pictureBoxLogo.Size = new System.Drawing.Size(150, 102);
+            this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBoxLogo.TabIndex = 23;
+            this.pictureBoxLogo.TabStop = false;
+            // 
+            // dgvUzytkownik
+            // 
+            this.dgvUzytkownik.AllowUserToAddRows = false;
+            this.dgvUzytkownik.AllowUserToDeleteRows = false;
+            this.dgvUzytkownik.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvUzytkownik.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn1,
+            this.colNazwaU});
+            this.dgvUzytkownik.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.dgvUzytkownik.Location = new System.Drawing.Point(511, 59);
+            this.dgvUzytkownik.Name = "dgvUzytkownik";
+            this.dgvUzytkownik.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvUzytkownik.Size = new System.Drawing.Size(262, 380);
+            this.dgvUzytkownik.TabIndex = 24;
+            // 
+            // colId
+            // 
+            this.colId.HeaderText = "id";
+            this.colId.Name = "colId";
+            this.colId.Visible = false;
+            // 
+            // colNazwa
+            // 
+            this.colNazwa.HeaderText = "Nazwa aplikacji";
+            this.colNazwa.Name = "colNazwa";
+            this.colNazwa.Width = 200;
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.HeaderText = "id";
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.Visible = false;
+            // 
+            // colNazwaU
+            // 
+            this.colNazwaU.HeaderText = "Użytkownik";
+            this.colNazwaU.Name = "colNazwaU";
+            this.colNazwaU.Width = 200;
             // 
             // ProfileEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1229, 473);
-            this.Controls.Add(this.btnKopiujSerwer);
-            this.Controls.Add(this.tbSerwer);
+            this.ClientSize = new System.Drawing.Size(785, 450);
+            this.Controls.Add(this.dgvUzytkownik);
+            this.Controls.Add(this.pictureBoxLogo);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.labelSerwer);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.labelLdap);
             this.Controls.Add(this.labelDomena);
@@ -348,6 +362,8 @@ namespace UniwersalnyDesktop
             ((System.ComponentModel.ISupportInitialize)(this.dgvProfileApps)).EndInit();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvUzytkownik)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -374,15 +390,15 @@ namespace UniwersalnyDesktop
         private System.Windows.Forms.ToolStripButton btnDodajUzytkownika;
         private System.Windows.Forms.ToolStripButton btnUsunUzytkownika;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox tbSerwer;
-        private System.Windows.Forms.Button btnKopiujSerwer;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.ToolStripButton btnZapisz;
+        private System.Windows.Forms.Label labelSerwer;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.PictureBox pictureBoxLogo;
+        private System.Windows.Forms.DataGridView dgvUzytkownik;
         private System.Windows.Forms.DataGridViewTextBoxColumn colId;
         private System.Windows.Forms.DataGridViewTextBoxColumn colNazwa;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colSerwer;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colBazaDanych;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colSterownik;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colRaport;
-        private System.Windows.Forms.ToolStripButton btnZapisz;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colNazwaU;
     }
 }

@@ -21,12 +21,12 @@ namespace UniwersalnyDesktop
             InitializeComponent();
             LoginForm.user = new DesktopUser();
             loadLogoFromFile();
-//#if DEBUG
-//            user.sqlLogin = "root";
-//            user.sqlPassword = "root";
-//            logIn();
-//            this.Hide();
-//#endif
+#if DEBUG
+            user.sqlLogin = "root";
+            user.sqlPassword = "root";
+            logIn();
+            this.Hide();
+#endif
         }
 
         private void loadLogoFromFile()

@@ -1,6 +1,8 @@
 ﻿using DatabaseInterface;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using UtilityTools;
@@ -106,7 +108,7 @@ namespace UniwersalnyDesktop
             ProfileItemSelector addAppForm = new ProfileItemSelector(profileDict[idProfile], new ProfileItemConverter().convertToIProfileItemDictionary(this.appDictionary));
             addAppForm.ShowDialog();
             if(addAppForm.DialogResult == DialogResult.OK)
-                fillDgv(idProfile);
+                fillDgv(dgvProfileApps, profileDict[this.selectedProfileId].applications, "colNazwa");
         }
 
         private void btnDodajUzytkownika_Click(object sender, EventArgs e)
@@ -115,7 +117,7 @@ namespace UniwersalnyDesktop
             ProfileItemSelector addAppForm = new ProfileItemSelector(profileDict[idProfile], new ProfileItemConverter().convertToIProfileItemDictionary(this.allUsersDict));
             addAppForm.ShowDialog();
             if (addAppForm.DialogResult == DialogResult.OK)
-                fillDgv(idProfile);
+                fillDgv(dgvUzytkownik, profileDict[this.selectedProfileId].users, "colNazwaU");
         }
 
         private void btnUsunAplikacje_Click(object sender, EventArgs e)
@@ -128,7 +130,7 @@ namespace UniwersalnyDesktop
             
             string query = "delete from profile_app where ID_profile = " + selectedProfileId + "  and ID_app in (" + String.Join(",", idApps) + "); ";
             new DBWriter(LoginForm.dbConnection).executeQuery(query);
-            fillDgv(selectedProfileId);
+            fillDgv(dgvProfileApps, profileDict[this.selectedProfileId].applications, "colNazwa");
         }
 
         private string[] getSelectedApps()
@@ -170,23 +172,14 @@ namespace UniwersalnyDesktop
 
         #endregion
 
-        #region kliknięcie przycisku "kopiuj nazwę serwera"
-        private void btnKopiujSerwer_Click(object sender, EventArgs e)
-        {
-            for (int i = 0; i < dgvProfileApps.RowCount; i++)
-            {
-                dgvProfileApps.Rows[i].Cells["colSerwer"].Value = tbSerwer.Text;
-            }
-        } 
-        #endregion
-
         #region zmiana wyboru w kombo
         private void cbProfiles_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.selectedProfileId = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
             toggleControlsEnabled(true);
             fillProfileDetais(selectedProfileId);
-            fillDgv(selectedProfileId);
+            fillDgv(dgvProfileApps, profileDict[this.selectedProfileId].applications, "colNazwa");
+            fillDgv(dgvUzytkownik, profileDict[this.selectedProfileId].users, "colNazwaU");
         }
 
         private void toggleControlsEnabled(bool isEnabled)
@@ -203,35 +196,43 @@ namespace UniwersalnyDesktop
         {
             labelDomena.Text = profileDict[profileId].domena;
             labelLdap.Text = profileDict[profileId].ldap;
+            pictureBoxLogo.Image = convertBytesToImage(profileDict[profileId].logoImageAsBytes);
+        }
+        private Image convertBytesToImage(byte[] imageAsBytes)
+        {
+            if (imageAsBytes == null || imageAsBytes.Length == 0)
+                return null;
+            using (MemoryStream ms = new MemoryStream(imageAsBytes))
+            {
+                return Image.FromStream(ms);
+            }
         }
         #endregion
 
-        #region wypełnianie datagrida
-        private void fillDgv(string profileId)
+        #region wypełnianie datagrida aplikacji
+
+        private void fillDgv(DataGridView dgv, Dictionary<string, IProfileItem> itemsDict, string sortColumnName)
         {
-            dgvProfileApps.Rows.Clear();
-            DesktopProfile profile = profileDict[profileId];
-            foreach (string appId in profile.applications.Keys)
+            dgv.Rows.Clear();
+            foreach (string id in itemsDict.Keys)
             {
-                App app = profile.applications[appId] as App;
-                addOneDgvRow(app, profileId);
+                IProfileItem item = itemsDict[id];
+                addOneRowToDgv(dgv, item);
             }
-            dgvProfileApps.Sort(dgvProfileApps.Columns["colNazwa"], System.ComponentModel.ListSortDirection.Ascending);
+
+            dgv.Sort(dgv.Columns[sortColumnName], System.ComponentModel.ListSortDirection.Ascending);
         }
 
-        private void addOneDgvRow(App app, string profileId)
+        private void addOneRowToDgv(DataGridView dgv, IProfileItem item)
         {
-            if (String.IsNullOrEmpty(app.displayName))
+            if (String.IsNullOrEmpty(item.displayName))
                 return;
-            dgvProfileApps.Rows.Add(
-                                app.id,
-                                app.displayName,
-                                app.getServerName(profileId),
-                                app.getDatabaseName(profileId),
-                                app.getOdbcDriver(profileId),
-                                app.getReportPath(profileId)
-                                );
+            dgv.Rows.Add(
+                        item.id,
+                        item.displayName
+                        );
         }
+
         #endregion
 
     }
