@@ -1,6 +1,7 @@
 ﻿using DatabaseInterface;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace UniwersalnyDesktop
 {
@@ -69,6 +70,36 @@ namespace UniwersalnyDesktop
             getUsersApps();
         }
 
+        internal bool insertProfileToDB(DesktopProfile profile)
+        {
+            string query = "  insert into [profile_desktop] ([name_profile], [domena], [ldap], [logo_profile] ) VALUES ('" + profile.name +
+                "', '" + profile.domena + "', '" + profile.ldap + "',  @logoImageBytes )";
+            if (runParameterisedQuery(query, profile.logoImage))
+                return true;
+            
+            return false;
+        }
+
+        internal bool updateProfileInDB(DesktopProfile profile)
+        {
+            string query = "update [profile_desktop] set name_profile = '" + profile.name +
+            "', domena = '" + profile.domena + "', ldap = '" + profile.ldap + "' , [logo_profile] =  @logoImageBytes where ID_profile = " + profile.id;
+            if (runParameterisedQuery(query, profile.logoImage))
+                return true;
+            
+            return false;
+        }
+        /// <summary>
+        /// jeżeli puszczam zwykłą kwerendę to nie chce zapisywać obrazka w formacie byte[]
+        /// </summary>
+        private bool runParameterisedQuery(string query, byte[] imageBytes)
+        {
+            DBWriter dbwriter = new DBWriter(LoginForm.dbConnection);
+            dbwriter.initiateParameterizedCommand();
+            dbwriter.addCommmandParameter("@logoImageBytes", SqlDbType.VarBinary, imageBytes);
+            return dbwriter.executeQuery(query);
+        }
+
         private void readUndefinedUserData()
         {
             getUsers();
@@ -94,6 +125,21 @@ namespace UniwersalnyDesktop
                 allUsersDict.Add(desktopUser.id, desktopUser);
             }
         }
+
+        internal DesktopProfile readProfileFromDB(string profileId)
+        {
+            DesktopProfile newProfile = new DesktopProfile();
+            string query = "select ID_profile, name_profile, domena, ldap from [profile_desktop] where ID_profile = " + profileId;
+            QueryData qd = new DBReader(LoginForm.dbConnection).readFromDB(query);
+            newProfile.id = qd.getDataValue(0, "ID_profile").ToString();
+            newProfile.name = qd.getDataValue(0, "name_profile").ToString();
+            newProfile.domena = qd.getDataValue(0, "domena").ToString();
+            newProfile.ldap = qd.getDataValue(0, "ldap").ToString();
+            newProfile.logoImage = readLogoImage(newProfile.id);
+
+            return newProfile;
+        }
+
         /// <summary>
         /// w przypadku konkretnie zalogowanego zwykłego użytkowonika dodaję go tylko do słownika
         /// </summary>

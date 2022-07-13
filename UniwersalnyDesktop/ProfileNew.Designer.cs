@@ -123,10 +123,11 @@ namespace UniwersalnyDesktop
             // 
             // pictureBoxLogo
             // 
-            this.pictureBoxLogo.Location = new System.Drawing.Point(67, 125);
+            this.pictureBoxLogo.Location = new System.Drawing.Point(115, 118);
             this.pictureBoxLogo.Name = "pictureBoxLogo";
-            this.pictureBoxLogo.Size = new System.Drawing.Size(276, 100);
-            this.pictureBoxLogo.TabIndex = 6;
+            this.pictureBoxLogo.Size = new System.Drawing.Size(150, 102);
+            this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBoxLogo.TabIndex = 11;
             this.pictureBoxLogo.TabStop = false;
             // 
             // ProfileNew
@@ -134,9 +135,9 @@ namespace UniwersalnyDesktop
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(665, 232);
+            this.Controls.Add(this.pictureBoxLogo);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.btnLogo);
-            this.Controls.Add(this.pictureBoxLogo);
             this.Controls.Add(this.tbLdap);
             this.Controls.Add(this.tbDomena);
             this.Controls.Add(this.tbNazwa);
@@ -162,9 +163,9 @@ namespace UniwersalnyDesktop
         private System.Windows.Forms.TextBox tbNazwa;
         private System.Windows.Forms.TextBox tbDomena;
         private System.Windows.Forms.TextBox tbLdap;
-        private System.Windows.Forms.PictureBox pictureBoxLogo;
         private System.Windows.Forms.Button btnLogo;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton btnZapisz;
+        private System.Windows.Forms.PictureBox pictureBoxLogo;
     }
 }

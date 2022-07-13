@@ -1,9 +1,7 @@
 ﻿using System;
-using DatabaseInterface;
 using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
-using System.Data;
 
 namespace UniwersalnyDesktop
 {
@@ -12,6 +10,7 @@ namespace UniwersalnyDesktop
         private readonly FormMode formMode;
         private readonly DesktopProfile editedProfile;
         private byte[] logoImage;
+        private DesktopDataHandler dataHandler = new DesktopDataHandler();
 
         public ProfileNew(FormMode formMode, DesktopProfile editedProfile)
         {
@@ -20,6 +19,7 @@ namespace UniwersalnyDesktop
             this.editedProfile = editedProfile;
         }
 
+        #region metody na starcie formatki
         private void ProfileNew_Load(object sender, EventArgs e)
         {
             if (formMode == FormMode.NEW)
@@ -33,8 +33,10 @@ namespace UniwersalnyDesktop
                 pictureBoxLogo.Image = convertBytesToImage(editedProfile.logoImage);
             }
         }
+        #endregion
 
-        private byte[] convertImageToBytes (Image img)
+        #region konwersja pliku graficznego do byte[] i odwrotnie
+        private byte[] convertImageToBytes(Image img)
         {
             using (MemoryStream ms = new MemoryStream())
             {
@@ -52,7 +54,9 @@ namespace UniwersalnyDesktop
                 return Image.FromStream(ms);
             }
         }
+        #endregion
 
+        #region naciśnięcie przycisku Zapisz
         private void btnZapisz_Click(object sender, EventArgs e)
         {
             if (String.IsNullOrEmpty(tbNazwa.Text))
@@ -63,64 +67,64 @@ namespace UniwersalnyDesktop
             else if (formMode == FormMode.EDIT)
                 updateProfileInDB();
         }
+        #endregion
 
-
+        #region zapisywanie do bazy
         private void insertProfileToDB()
-        {            
-            string query = "  insert into [profile_desktop] ([name_profile], [domena], [ldap], [logo_profile] ) VALUES ('" + tbNazwa.Text +
-                            "', '" + tbDomena.Text + "', '" + tbLdap.Text + "',  @logoImageBytes )";
-            if (runParameterisedQuery(query))
+        {
+            DesktopProfile newProfile = new DesktopProfile();
+            setProfileProperies(newProfile);
+
+            if (dataHandler.insertProfileToDB(newProfile))
             {
-                readNewProfileDataFromDB();
+                readProfileIdFromDB();
                 this.DialogResult = DialogResult.OK;
                 MessageBox.Show("Zapisano");
             }
-        }
-
-        private bool runParameterisedQuery(string query)
-        {
-            DBWriter dbwriter = new DBWriter(LoginForm.dbConnection);
-            dbwriter.initiateParameterizedCommand();
-            dbwriter.addCommmandParameter("@logoImageBytes", SqlDbType.VarBinary, this.logoImage);
-            return dbwriter.executeQuery(query);
         }
 
         private void updateProfileInDB()
         {
-            string query = "update [profile_desktop] set name_profile = '" + tbNazwa.Text +
-                        "', domena = '" + tbDomena.Text + "', ldap = '" + tbLdap.Text + "' , [logo_profile] =  @logoImageBytes where ID_profile = " + editedProfile.id;
-            if (runParameterisedQuery(query))
+            setProfileProperies(editedProfile);
+
+            if (dataHandler.updateProfileInDB(editedProfile))
             {
-                editedProfile.name = tbNazwa.Text;
-                editedProfile.domena = tbDomena.Text;
-                editedProfile.ldap = tbLdap.Text;
                 this.DialogResult = DialogResult.OK;
                 MessageBox.Show("Zapisano");
             }
         }
-
-        private void readNewProfileDataFromDB()
+        private void setProfileProperies(DesktopProfile profile)
         {
-            string query = "select ID_profile, name_profile, domena, ldap, logo_profile from [profile_desktop] where ID_profile = (select MAX(ID_profile) from profile_desktop)";
-            QueryData qd = new DBReader(LoginForm.dbConnection).readFromDB(query);
-            editedProfile.id = qd.getDataValue(0, "ID_profile").ToString();
-            editedProfile.name = qd.getDataValue(0, "name_profile").ToString();
-            editedProfile.domena = qd.getDataValue(0, "domena").ToString();
-            editedProfile.ldap = qd.getDataValue(0, "ldap").ToString();
-            editedProfile.logoImage = qd.getDataValue(0, "logo_profile") as byte[];
-            logoImage = editedProfile.logoImage;
+            profile.name = tbNazwa.Text;
+            profile.domena = tbDomena.Text;
+            profile.ldap = tbLdap.Text;
+            profile.logoImage = logoImage;
         }
 
+        #endregion
+
+        #region czytanie z bazy
+        private void readProfileIdFromDB()
+        {
+            DesktopProfile newProfile = dataHandler.readProfileFromDB(" ID_profile = (select MAX(ID_profile) from profile_desktop)");
+
+            editedProfile.id = newProfile.id;
+            logoImage = editedProfile.logoImage;
+        }
+        #endregion
+
+        #region wybór obrazka logo z komputera
         private void btnLogo_Click(object sender, EventArgs e)
         {
-            using(OpenFileDialog ofd = new OpenFileDialog() { Filter = "Pliki graficzne(*.jpg;*.jpeg;*.png|*.jpg;*.jpeg;*.png", Multiselect = false})
+            using (OpenFileDialog ofd = new OpenFileDialog() { Filter = "Pliki graficzne(*.jpg;*.jpeg;*.png|*.jpg;*.jpeg;*.png", Multiselect = false })
             {
-                if(ofd.ShowDialog() == DialogResult.OK)
+                if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     pictureBoxLogo.Image = Image.FromFile(ofd.FileName);
                     logoImage = convertImageToBytes(pictureBoxLogo.Image);
                 }
             }
-        }
+        } 
+        #endregion
     }
 }
