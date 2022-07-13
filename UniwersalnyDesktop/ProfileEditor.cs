@@ -102,8 +102,8 @@ namespace UniwersalnyDesktop
 
         private void btnDodajAplikacje_Click(object sender, EventArgs e)
         {
-            string idProfile = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
-            ProfileItemSelector addAppForm = new ProfileItemSelector(profileDict[idProfile], profileDict[idProfile].convertToIProfileItemDictionary(this.appDictionary));
+            string idProfile = selectedProfileId;
+            ProfileItemSelector addAppForm = new ProfileItemSelector(profileDict[idProfile], new ProfileItemConverter().convertToIProfileItemDictionary(this.appDictionary));
             addAppForm.ShowDialog();
             if(addAppForm.DialogResult == DialogResult.OK)
                 fillDgv(idProfile);
@@ -111,8 +111,8 @@ namespace UniwersalnyDesktop
 
         private void btnDodajUzytkownika_Click(object sender, EventArgs e)
         {
-            string idProfile = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
-            ProfileItemSelector addAppForm = new ProfileItemSelector(profileDict[idProfile], profileDict[idProfile].convertToIProfileItemDictionary(this.allUsersDict));
+            string idProfile = selectedProfileId;
+            ProfileItemSelector addAppForm = new ProfileItemSelector(profileDict[idProfile], new ProfileItemConverter().convertToIProfileItemDictionary(this.allUsersDict));
             addAppForm.ShowDialog();
             if (addAppForm.DialogResult == DialogResult.OK)
                 fillDgv(idProfile);
@@ -120,16 +120,15 @@ namespace UniwersalnyDesktop
 
         private void btnUsunAplikacje_Click(object sender, EventArgs e)
         {
-            string idProfile = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
             string[] idApps = getSelectedApps();
             for (int i = 0; i < idApps.Length; i++)
             {
-                profileDict[idProfile].removeAppFromProfile(idApps[i]);
+                profileDict[selectedProfileId].removeAppFromProfile(idApps[i]);
             }
             
-            string query = "delete from profile_app where ID_profile = " + idProfile + "  and ID_app in (" + String.Join(",", idApps) + "); ";
+            string query = "delete from profile_app where ID_profile = " + selectedProfileId + "  and ID_app in (" + String.Join(",", idApps) + "); ";
             new DBWriter(LoginForm.dbConnection).executeQuery(query);
-            fillDgv(idProfile);
+            fillDgv(selectedProfileId);
         }
 
         private string[] getSelectedApps()
@@ -151,8 +150,7 @@ namespace UniwersalnyDesktop
 
         private void btnEdytujProfil_Click(object sender, EventArgs e)
         {
-            string profileId = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
-            runProfileEditor(FormMode.EDIT, profileDict[profileId]);
+            runProfileEditor(FormMode.EDIT, profileDict[selectedProfileId]);
         }
 
         private void runProfileEditor(FormMode formMode, DesktopProfile profile)
@@ -164,6 +162,8 @@ namespace UniwersalnyDesktop
                 if(formMode == FormMode.NEW)
                     this.profileDict.Add(profile.id, profile);
                 fillProfileCombo();
+                if (formMode == FormMode.EDIT)
+                    cbProfiles.SelectedIndex = new ComboboxTools().getIndexFromStringValue(cbProfiles, selectedProfileId);
                 profileNewForm.Close();
             }
         }
@@ -184,8 +184,19 @@ namespace UniwersalnyDesktop
         private void cbProfiles_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.selectedProfileId = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
+            toggleControlsEnabled(true);
             fillProfileDetais(selectedProfileId);
             fillDgv(selectedProfileId);
+        }
+
+        private void toggleControlsEnabled(bool isEnabled)
+        {
+            btnDodajAplikacje.Enabled = isEnabled;
+            btnDodajUzytkownika.Enabled = isEnabled;
+            btnUsunAplikacje.Enabled = isEnabled;
+            btnUsunUzytkownika.Enabled = isEnabled;
+            btnUsunProfil.Enabled = isEnabled;
+            btnEdytujProfil.Enabled = isEnabled;
         }
 
         private void fillProfileDetais(string profileId)

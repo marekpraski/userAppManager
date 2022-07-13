@@ -26,7 +26,7 @@ namespace UniwersalnyDesktop
 
         private bool assertUserIsValid()
         {
-            return !String.IsNullOrEmpty(firstName) && !String.IsNullOrEmpty(surname) && !String.IsNullOrEmpty(sqlLogin) && !String.IsNullOrEmpty(sqlPassword);
+            return !String.IsNullOrEmpty(firstName) && !String.IsNullOrEmpty(surname) && !String.IsNullOrEmpty(sqlLogin);
         }
 
         public DesktopUser()

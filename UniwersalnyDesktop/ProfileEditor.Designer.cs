@@ -120,6 +120,7 @@ namespace UniwersalnyDesktop
             // 
             // cbProfiles
             // 
+            this.cbProfiles.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbProfiles.FormattingEnabled = true;
             this.cbProfiles.Location = new System.Drawing.Point(101, 28);
             this.cbProfiles.Name = "cbProfiles";
@@ -180,6 +181,7 @@ namespace UniwersalnyDesktop
             // btnEdytujProfil
             // 
             this.btnEdytujProfil.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnEdytujProfil.Enabled = false;
             this.btnEdytujProfil.Image = global::UniwersalnyDesktop.Properties.Resources.Edit_16x;
             this.btnEdytujProfil.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnEdytujProfil.Name = "btnEdytujProfil";
@@ -190,6 +192,7 @@ namespace UniwersalnyDesktop
             // btnUsunProfil
             // 
             this.btnUsunProfil.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnUsunProfil.Enabled = false;
             this.btnUsunProfil.Image = global::UniwersalnyDesktop.Properties.Resources.delete;
             this.btnUsunProfil.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnUsunProfil.Name = "btnUsunProfil";
@@ -209,6 +212,7 @@ namespace UniwersalnyDesktop
             // btnDodajAplikacje
             // 
             this.btnDodajAplikacje.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnDodajAplikacje.Enabled = false;
             this.btnDodajAplikacje.Image = global::UniwersalnyDesktop.Properties.Resources.LinkValidator_16x;
             this.btnDodajAplikacje.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnDodajAplikacje.Name = "btnDodajAplikacje";
@@ -219,6 +223,7 @@ namespace UniwersalnyDesktop
             // btnUsunAplikacje
             // 
             this.btnUsunAplikacje.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnUsunAplikacje.Enabled = false;
             this.btnUsunAplikacje.Image = global::UniwersalnyDesktop.Properties.Resources.LinkRemoved_16x;
             this.btnUsunAplikacje.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnUsunAplikacje.Name = "btnUsunAplikacje";
@@ -239,6 +244,7 @@ namespace UniwersalnyDesktop
             // btnDodajUzytkownika
             // 
             this.btnDodajUzytkownika.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnDodajUzytkownika.Enabled = false;
             this.btnDodajUzytkownika.Image = global::UniwersalnyDesktop.Properties.Resources.AddUser_16x;
             this.btnDodajUzytkownika.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnDodajUzytkownika.Name = "btnDodajUzytkownika";
@@ -249,6 +255,7 @@ namespace UniwersalnyDesktop
             // btnUsunUzytkownika
             // 
             this.btnUsunUzytkownika.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnUsunUzytkownika.Enabled = false;
             this.btnUsunUzytkownika.Image = global::UniwersalnyDesktop.Properties.Resources.DeleteUser_16x;
             this.btnUsunUzytkownika.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnUsunUzytkownika.Name = "btnUsunUzytkownika";

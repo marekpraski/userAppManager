@@ -52,6 +52,8 @@ namespace UniwersalnyDesktop
             Dictionary<string, IProfileItem> items = new Dictionary<string, IProfileItem>();
             foreach(string id in this.allItems.Keys)
             {
+                IProfileItem item = allItems[id];
+                bool v = allItems[id].isValid;
                 if (!profileItems.ContainsKey(id) && allItems[id].isValid)
                     items.Add(allItems[id].id, allItems[id]);
             }

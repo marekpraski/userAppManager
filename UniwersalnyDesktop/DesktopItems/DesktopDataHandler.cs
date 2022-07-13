@@ -136,8 +136,15 @@ namespace UniwersalnyDesktop
                 DesktopProfile newProfile = new DesktopProfile(id, name);
                 newProfile.domena = qd.getDataValue(i, "domena").ToString();
                 newProfile.ldap = qd.getDataValue(i, "ldap").ToString();
+                newProfile.logoImage = readLogoImage(id);
                 this.profileDict.Add(id, newProfile);
             }
+        }
+
+        private byte[] readLogoImage(string id)
+        {
+            string query = "select logo_profile from [profile_desktop] where ID_profile = " + id;
+            return new DBReader(LoginForm.dbConnection).readScalarFromDB(query) as byte[];
         }
 
         private void assignUsersToProfiles(QueryData qd)
@@ -289,15 +296,6 @@ namespace UniwersalnyDesktop
                     }
                 }
             }
-        }
-
-        private void getUserApps(string userId)
-        {
-            string query = @"select ap.ID_app from [dbo].[app_list] as ap 
-                                inner join app_users as au on ap.ID_app = au.ID_app 
-                                inner join users_list as ul on ul.ID_user = au.ID_user 
-                                where ap.show_name is not null and au.Grant_app = 1 and ul.ID_user = " + userId;
-
         }
 
         private string getAppRola(string userId, string appId)

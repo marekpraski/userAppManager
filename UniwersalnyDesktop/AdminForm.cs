@@ -194,7 +194,7 @@ namespace UniwersalnyDesktop
         }  
         #endregion
 
-        #region Region - interakcja z użytkownikiem - pasek narzędziowy
+        #region kliknięcie przycisku na pasku narzędziowym
 
         private void HelpButton_Click(object sender, EventArgs e)
         {
@@ -475,8 +475,9 @@ namespace UniwersalnyDesktop
                 return;
             ListViewItem selectedItem = profileListView.SelectedItems[0];
             string profileId = selectedItem.Name;
-            appDictionary = profileDict[profileId].getAppDictionary();
-            populateUserTreeview(profileDict[profileId].getUserDictionary());
+            ProfileItemConverter paConverter = new ProfileItemConverter();
+            appDictionary =  paConverter.convertToAppDictionary(profileDict[profileId].applications);
+            populateUserTreeview(paConverter.convertToDesktopUserDictionary(profileDict[profileId].users));
             populateAppListview();
         }
 
@@ -916,6 +917,7 @@ namespace UniwersalnyDesktop
             userTreeView.Nodes.Clear();
             appListView.Items.Clear();
             rolaListView.Items.Clear();
+            profileListView.Items.Clear();
 
             currentSelectedUser = null;
             previousSelectedUser = null;

@@ -35,7 +35,7 @@ namespace UniwersalnyDesktop
             this.tbNazwa = new System.Windows.Forms.TextBox();
             this.tbDomena = new System.Windows.Forms.TextBox();
             this.tbLdap = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnLogo = new System.Windows.Forms.Button();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnZapisz = new System.Windows.Forms.ToolStripButton();
             this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
@@ -91,14 +91,15 @@ namespace UniwersalnyDesktop
             this.tbLdap.Size = new System.Drawing.Size(276, 20);
             this.tbLdap.TabIndex = 5;
             // 
-            // button1
+            // btnLogo
             // 
-            this.button1.Location = new System.Drawing.Point(13, 162);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(40, 23);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "logo";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btnLogo.Location = new System.Drawing.Point(13, 162);
+            this.btnLogo.Name = "btnLogo";
+            this.btnLogo.Size = new System.Drawing.Size(40, 23);
+            this.btnLogo.TabIndex = 7;
+            this.btnLogo.Text = "logo";
+            this.btnLogo.UseVisualStyleBackColor = true;
+            this.btnLogo.Click += new System.EventHandler(this.btnLogo_Click);
             // 
             // toolStrip1
             // 
@@ -134,7 +135,7 @@ namespace UniwersalnyDesktop
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(665, 232);
             this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnLogo);
             this.Controls.Add(this.pictureBoxLogo);
             this.Controls.Add(this.tbLdap);
             this.Controls.Add(this.tbDomena);
@@ -162,7 +163,7 @@ namespace UniwersalnyDesktop
         private System.Windows.Forms.TextBox tbDomena;
         private System.Windows.Forms.TextBox tbLdap;
         private System.Windows.Forms.PictureBox pictureBoxLogo;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnLogo;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton btnZapisz;
     }
