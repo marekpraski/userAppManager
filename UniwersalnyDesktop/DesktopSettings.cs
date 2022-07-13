@@ -1,5 +1,6 @@
 ﻿
-using System;
+using System.Drawing;
+using System.IO;
 using System.Xml.Linq;
 using UtilityTools;
 
@@ -38,11 +39,27 @@ namespace UniwersalnyDesktop
         #endregion
 
         private string configFilePath = LoginForm.mainPath + "desktopConfig.xml";
-        public void saveCurrentSettings(string profileId)
+        private string logoFileName = LoginForm.mainPath + "logo.png";
+        public void saveCurrentSettings(DesktopProfile profile)
+        {
+            saveXmlSettings(profile);
+            saveLogoImageToDisk(profile);
+        }
+
+        private void saveXmlSettings(DesktopProfile profile)
         {
             XElement settings = new XElement("Ustawienia",
-                new XElement("idProfilu", profileId));
+                new XElement("idProfilu", profile.id));
             new XmlWriter().saveAsXmlFile(settings, configFilePath);
+        }
+
+        private void saveLogoImageToDisk(DesktopProfile profile)
+        {
+            using (MemoryStream ms = new MemoryStream(profile.logoImageAsBytes))
+            {
+                Image logo = Image.FromStream(ms);
+                logo.Save(logoFileName, System.Drawing.Imaging.ImageFormat.Png);
+            }
         }
 
         internal string readUserSettings()

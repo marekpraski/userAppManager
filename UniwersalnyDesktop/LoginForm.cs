@@ -2,6 +2,7 @@
 using System;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using UtilityTools;
@@ -20,12 +21,12 @@ namespace UniwersalnyDesktop
             InitializeComponent();
             LoginForm.user = new DesktopUser();
             loadLogoFromFile();
-#if DEBUG
-            user.sqlLogin = "root";
-            user.sqlPassword = "root";
-            logIn();
-            this.Hide();
-#endif
+//#if DEBUG
+//            user.sqlLogin = "root";
+//            user.sqlPassword = "root";
+//            logIn();
+//            this.Hide();
+//#endif
         }
 
         private void loadLogoFromFile()
@@ -33,7 +34,13 @@ namespace UniwersalnyDesktop
             user.setLastUsedProfileId(new DesktopSettings().readUserSettings());
             try
             {
-                pictureBoxLogo.Image = Image.FromFile(mainPath + @"\logo.jpg");
+                Image logo = null;
+                byte[] imageBytes = File.ReadAllBytes(mainPath + @"\logo.png");
+                using(MemoryStream ms = new MemoryStream(imageBytes))
+                {
+                    logo = Image.FromStream(ms);
+                }
+                pictureBoxLogo.Image = logo;
             }
             catch (Exception e)
             {

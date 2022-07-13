@@ -10,7 +10,7 @@ namespace UniwersalnyDesktop
         public string id { get; set; }
         public string domena { get; set; }
         public string ldap { get; set; }
-        public byte[] logoImage { get; set; }
+        public byte[] logoImageAsBytes { get; set; }
         public Dictionary<string, IProfileItem> applications { get; } = new Dictionary<string, IProfileItem>();    //kluczem jest id aplikacji
         /// <summary>
         /// yylko te aplikacje, które spełniają kryteria ważności, m.in mają nazwę i ścieżkę wywołania

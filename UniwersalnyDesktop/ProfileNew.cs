@@ -30,7 +30,7 @@ namespace UniwersalnyDesktop
                 tbNazwa.Text = editedProfile.name;
                 tbDomena.Text = editedProfile.domena;
                 tbLdap.Text = editedProfile.ldap;
-                pictureBoxLogo.Image = convertBytesToImage(editedProfile.logoImage);
+                pictureBoxLogo.Image = convertBytesToImage(editedProfile.logoImageAsBytes);
             }
         }
         #endregion
@@ -98,7 +98,7 @@ namespace UniwersalnyDesktop
             profile.name = tbNazwa.Text;
             profile.domena = tbDomena.Text;
             profile.ldap = tbLdap.Text;
-            profile.logoImage = logoImage;
+            profile.logoImageAsBytes = logoImage;
         }
 
         #endregion
@@ -109,7 +109,7 @@ namespace UniwersalnyDesktop
             DesktopProfile newProfile = dataHandler.readProfileFromDB(" ID_profile = (select MAX(ID_profile) from profile_desktop)");
 
             editedProfile.id = newProfile.id;
-            logoImage = editedProfile.logoImage;
+            logoImage = editedProfile.logoImageAsBytes;
         }
         #endregion
 

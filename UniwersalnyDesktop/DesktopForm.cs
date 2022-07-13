@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using UtilityTools;
@@ -56,7 +57,8 @@ namespace UniwersalnyDesktop
         #region metody podczas zamykania formatki
         private void DesktopForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            new DesktopSettings().saveCurrentSettings(selectedProfile.id);
+
+            new DesktopSettings().saveCurrentSettings(selectedProfile);
             //Application.Exit();
         }
 

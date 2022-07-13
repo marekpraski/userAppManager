@@ -74,7 +74,7 @@ namespace UniwersalnyDesktop
         {
             string query = "  insert into [profile_desktop] ([name_profile], [domena], [ldap], [logo_profile] ) VALUES ('" + profile.name +
                 "', '" + profile.domena + "', '" + profile.ldap + "',  @logoImageBytes )";
-            if (runParameterisedQuery(query, profile.logoImage))
+            if (runParameterisedQuery(query, profile.logoImageAsBytes))
                 return true;
             
             return false;
@@ -84,7 +84,7 @@ namespace UniwersalnyDesktop
         {
             string query = "update [profile_desktop] set name_profile = '" + profile.name +
             "', domena = '" + profile.domena + "', ldap = '" + profile.ldap + "' , [logo_profile] =  @logoImageBytes where ID_profile = " + profile.id;
-            if (runParameterisedQuery(query, profile.logoImage))
+            if (runParameterisedQuery(query, profile.logoImageAsBytes))
                 return true;
             
             return false;
@@ -135,7 +135,7 @@ namespace UniwersalnyDesktop
             newProfile.name = qd.getDataValue(0, "name_profile").ToString();
             newProfile.domena = qd.getDataValue(0, "domena").ToString();
             newProfile.ldap = qd.getDataValue(0, "ldap").ToString();
-            newProfile.logoImage = readLogoImage(newProfile.id);
+            newProfile.logoImageAsBytes = readLogoImage(newProfile.id);
 
             return newProfile;
         }
@@ -182,7 +182,7 @@ namespace UniwersalnyDesktop
                 DesktopProfile newProfile = new DesktopProfile(id, name);
                 newProfile.domena = qd.getDataValue(i, "domena").ToString();
                 newProfile.ldap = qd.getDataValue(i, "ldap").ToString();
-                newProfile.logoImage = readLogoImage(id);
+                newProfile.logoImageAsBytes = readLogoImage(id);
                 this.profileDict.Add(id, newProfile);
             }
         }
