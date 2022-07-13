@@ -5,5 +5,6 @@ namespace UniwersalnyDesktop
     {
         string id { get; set; }
         string displayName { get; }
+        bool isValid { get; }
     }
 }

@@ -250,7 +250,8 @@ namespace UniwersalnyDesktop
                         string appProfileParams = qd.getDataValue(i, "app_params").ToString();
                         AppProfileParameters appParams = new AppProfileParameters(profileId, appId, appProfileParams);
                         appDictionary[appId].addAppProfileParameters(appParams);
-                        profileDict[profileId].addAppToProfile(appDictionary[appId]);
+                        if(appDictionary[appId].isValid)
+                            profileDict[profileId].addAppToProfile(appDictionary[appId]);
                     }
                 }
             }

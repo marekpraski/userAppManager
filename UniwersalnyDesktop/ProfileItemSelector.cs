@@ -14,6 +14,10 @@ namespace UniwersalnyDesktop
         private Dictionary<string, IProfileItem> unusedItems = new Dictionary<string, IProfileItem>();
         List<IProfileItem> addedItems = new List<IProfileItem>();
 
+        /// <summary>
+        /// należy przekazać słownik wszystkich elementów; w tym oknie z tego słownika wybierane są, przez walidację, tylko te elementy, które nadają się do dodania 
+        /// tzn są ważne (właściwość isValid, oraz edytowany profil jeszcze ich nie zawiera
+        /// </summary>
         public ProfileItemSelector(DesktopProfile editedProfile, Dictionary<string, IProfileItem> allItems)
         {
             InitializeComponent();
@@ -48,7 +52,7 @@ namespace UniwersalnyDesktop
             Dictionary<string, IProfileItem> items = new Dictionary<string, IProfileItem>();
             foreach(string id in this.allItems.Keys)
             {
-                if (!profileItems.ContainsKey(id))
+                if (!profileItems.ContainsKey(id) && allItems[id].isValid)
                     items.Add(allItems[id].id, allItems[id]);
             }
             return items;
@@ -112,8 +116,11 @@ namespace UniwersalnyDesktop
                 if (isChecked)
                 {
                     string itemId = dgvItems.Rows[i].Cells["colId"].Value.ToString();
-                    itemAdd(itemId);
-                    addedItems.Add(allItems[itemId]);
+                    if (allItems[itemId].isValid)
+                    {
+                        itemAdd(itemId);
+                        addedItems.Add(allItems[itemId]);
+                    }
                 }
             }
         }

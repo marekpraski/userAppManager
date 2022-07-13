@@ -12,6 +12,8 @@ namespace UniwersalnyDesktop
         public string sqlLogin { get; set; }
         public string sqlPassword { get; set; }
         public string lastUsedProfileId { get; private set; }
+        public bool isValid { get => assertUserIsValid(); }
+
         public UserType type { get; set; } = UserType.Undefined;
         public Dictionary<App, AppDataItem> userAppDict { get; }
 
@@ -20,6 +22,11 @@ namespace UniwersalnyDesktop
         private string getDisplayName()
         {
             return firstName + " " + surname;
+        }
+
+        private bool assertUserIsValid()
+        {
+            return !String.IsNullOrEmpty(firstName) && !String.IsNullOrEmpty(surname) && !String.IsNullOrEmpty(sqlLogin) && !String.IsNullOrEmpty(sqlPassword);
         }
 
         public DesktopUser()

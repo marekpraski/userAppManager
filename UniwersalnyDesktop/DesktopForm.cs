@@ -48,18 +48,7 @@ namespace UniwersalnyDesktop
                 return;
             }
             fillProfileCombo();
-            cbProfile.SelectedIndex = getIndexFromProfileId(user.lastUsedProfileId);
-        }
-
-        private int getIndexFromProfileId(string lastUsedProfileId)
-        {
-            for (int i = 0; i < cbProfile.Items.Count; i++)
-            {
-                ComboboxItem item = cbProfile.Items[i] as ComboboxItem;
-                if (item.value.ToString() == lastUsedProfileId)
-                    return i;
-            }
-            return -1;
+            cbProfile.SelectedIndex = new ComboboxTools().getIndexFromStringValue(cbProfile, user.lastUsedProfileId);
         }
 
         #endregion

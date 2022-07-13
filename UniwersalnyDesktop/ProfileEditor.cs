@@ -12,6 +12,7 @@ namespace UniwersalnyDesktop
         private Dictionary<string, DesktopProfile> profileDict;     //słownik wszystkich profili zdefiniowanych w Desktopie, kluczem jest id
         private readonly Dictionary<string, DesktopUser> allUsersDict;
         private readonly Dictionary<string, App> appDictionary;
+        private string selectedProfileId;
 
         private ProfileEditor()
         {
@@ -44,10 +45,15 @@ namespace UniwersalnyDesktop
         private void btnZapisz_Click(object sender, EventArgs e)
         {
             dgvProfileApps.EndEdit();
-            string idProfile = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
-            updateProfileApps(idProfile);
-            string query = generateUpdateQuery(idProfile);
+            updateProfileApps(selectedProfileId);
+            string query = generateUpdateQuery(selectedProfileId);
             updateToDB(query);
+            if (cbProfiles.Text != profileDict[selectedProfileId].name)
+            {
+                profileDict[selectedProfileId].name = cbProfiles.Text;
+                fillProfileCombo();
+                cbProfiles.SelectedIndex = new ComboboxTools().getIndexFromStringValue(cbProfiles, selectedProfileId);
+            }
         }
 
         private void updateProfileApps(string idProfile)
@@ -59,7 +65,7 @@ namespace UniwersalnyDesktop
                 appParams.databaseName = dgvProfileApps.Rows[i].Cells["colBazaDanych"].Value == null ? "" : dgvProfileApps.Rows[i].Cells["colBazaDanych"].Value.ToString();
                 appParams.serverName = dgvProfileApps.Rows[i].Cells["colSerwer"].Value == null ? "" : dgvProfileApps.Rows[i].Cells["colSerwer"].Value.ToString();
                 appParams.reportPath = dgvProfileApps.Rows[i].Cells["colRaport"].Value == null ? "" : dgvProfileApps.Rows[i].Cells["colRaport"].Value.ToString();
-                appParams.driverOdbc = dgvProfileApps.Rows[i].Cells["colSterownik"].Value == null ? "" : dgvProfileApps.Rows[i].Cells["colSterownik"].Value.ToString();
+                appParams.odbcDriver = dgvProfileApps.Rows[i].Cells["colSterownik"].Value == null ? "" : dgvProfileApps.Rows[i].Cells["colSterownik"].Value.ToString();
                 appDictionary[appId].addAppProfileParameters(appParams);
             }
         }
@@ -71,21 +77,24 @@ namespace UniwersalnyDesktop
             {
                 string appId = dgvProfileApps.Rows[i].Cells["colId"].Value.ToString();
                 string paramsAsXml = appDictionary[appId].getAppProfileSpecificSettingsAsXml(idProfile);
-                sb.Append(" Update [profile_app] set app_params = '");
+                sb.Append(" Update [profile_app] set app_params = ");
                 sb.Append(paramsAsXml);
-                sb.Append("' where ID_profile = ");
+                sb.Append(" where ID_profile = ");
                 sb.Append(idProfile);
                 sb.Append(" and ID_app = ");
                 sb.Append(appId);
                 sb.Append("; ");
             }
 
+            if(cbProfiles.Text != profileDict[idProfile].name)
+                sb.Append(" Update [profile_desktop] set [name_profile] = '" + cbProfiles.Text + "' where [ID_profile] = " + selectedProfileId);
+
             return sb.ToString();
         }
 
         private void updateToDB(string query)
         {
-            throw new NotImplementedException();
+            new DBWriter(LoginForm.dbConnection).executeQuery(query);
         }
         #endregion
 
@@ -94,7 +103,7 @@ namespace UniwersalnyDesktop
         private void btnDodajAplikacje_Click(object sender, EventArgs e)
         {
             string idProfile = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
-            ProfileItemSelector addAppForm = new ProfileItemSelector(profileDict[idProfile], profileDict[idProfile].getIProfileItems(this.appDictionary));
+            ProfileItemSelector addAppForm = new ProfileItemSelector(profileDict[idProfile], profileDict[idProfile].convertToIProfileItemDictionary(this.appDictionary));
             addAppForm.ShowDialog();
             if(addAppForm.DialogResult == DialogResult.OK)
                 fillDgv(idProfile);
@@ -103,7 +112,7 @@ namespace UniwersalnyDesktop
         private void btnDodajUzytkownika_Click(object sender, EventArgs e)
         {
             string idProfile = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
-            ProfileItemSelector addAppForm = new ProfileItemSelector(profileDict[idProfile], profileDict[idProfile].getIProfileItems(this.allUsersDict));
+            ProfileItemSelector addAppForm = new ProfileItemSelector(profileDict[idProfile], profileDict[idProfile].convertToIProfileItemDictionary(this.allUsersDict));
             addAppForm.ShowDialog();
             if (addAppForm.DialogResult == DialogResult.OK)
                 fillDgv(idProfile);
@@ -166,7 +175,7 @@ namespace UniwersalnyDesktop
         {
             for (int i = 0; i < dgvProfileApps.RowCount; i++)
             {
-                dgvProfileApps.Rows[i].Cells["col"].Value = tbSerwer.Text;
+                dgvProfileApps.Rows[i].Cells["colSerwer"].Value = tbSerwer.Text;
             }
         } 
         #endregion
@@ -174,9 +183,9 @@ namespace UniwersalnyDesktop
         #region zmiana wyboru w kombo
         private void cbProfiles_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string profileId = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
-            fillProfileDetais(profileId);
-            fillDgv(profileId);
+            this.selectedProfileId = (cbProfiles.SelectedItem as ComboboxItem).value.ToString();
+            fillProfileDetais(selectedProfileId);
+            fillDgv(selectedProfileId);
         }
 
         private void fillProfileDetais(string profileId)
@@ -208,6 +217,7 @@ namespace UniwersalnyDesktop
                                 app.displayName,
                                 app.getServerName(profileId),
                                 app.getDatabaseName(profileId),
+                                app.getOdbcDriver(profileId),
                                 app.getReportPath(profileId)
                                 );
         }

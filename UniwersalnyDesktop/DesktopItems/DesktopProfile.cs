@@ -78,16 +78,6 @@ namespace UniwersalnyDesktop
             return apps;
         }
 
-        internal Dictionary<string, IProfileItem> getIProfileItems(Dictionary<string, App> appDictionary)
-        {
-            Dictionary<string, IProfileItem> items = new Dictionary<string, IProfileItem>();
-            foreach(string id in appDictionary.Keys)
-            {
-                items.Add(id, appDictionary[id]);
-            }
-            return items;
-        }
-
         private Dictionary<string, IProfileItem> getValidApplications()
         {
             if (this.applications == null)
@@ -100,8 +90,17 @@ namespace UniwersalnyDesktop
             }
             return items;
         }
+        internal Dictionary<string, IProfileItem> convertToIProfileItemDictionary(Dictionary<string, App> appDictionary)
+        {
+            Dictionary<string, IProfileItem> items = new Dictionary<string, IProfileItem>();
+            foreach (string id in appDictionary.Keys)
+            {
+                items.Add(id, appDictionary[id]);
+            }
+            return items;
+        }
 
-        internal Dictionary<string, IProfileItem> getIProfileItems(Dictionary<string, DesktopUser> userDict)
+        internal Dictionary<string, IProfileItem> convertToIProfileItemDictionary(Dictionary<string, DesktopUser> userDict)
         {
             Dictionary<string, IProfileItem> items = new Dictionary<string, IProfileItem>();
             foreach (string id in userDict.Keys)

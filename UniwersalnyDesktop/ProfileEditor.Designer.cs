@@ -40,6 +40,7 @@ namespace UniwersalnyDesktop
             this.cbProfiles = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.btnZapisz = new System.Windows.Forms.ToolStripButton();
             this.btnDodajProfil = new System.Windows.Forms.ToolStripButton();
             this.btnEdytujProfil = new System.Windows.Forms.ToolStripButton();
             this.btnUsunProfil = new System.Windows.Forms.ToolStripButton();
@@ -59,7 +60,6 @@ namespace UniwersalnyDesktop
             this.tbSerwer = new System.Windows.Forms.TextBox();
             this.btnKopiujSerwer = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.btnZapisz = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProfileApps)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -156,6 +156,16 @@ namespace UniwersalnyDesktop
             this.toolStrip1.Size = new System.Drawing.Size(1229, 25);
             this.toolStrip1.TabIndex = 13;
             this.toolStrip1.Text = "toolStrip1";
+            // 
+            // btnZapisz
+            // 
+            this.btnZapisz.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnZapisz.Image = global::UniwersalnyDesktop.Properties.Resources.Save_16x;
+            this.btnZapisz.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnZapisz.Name = "btnZapisz";
+            this.btnZapisz.Size = new System.Drawing.Size(23, 22);
+            this.btnZapisz.Text = "Zapisz miany";
+            this.btnZapisz.Click += new System.EventHandler(this.btnZapisz_Click);
             // 
             // btnDodajProfil
             // 
@@ -309,16 +319,6 @@ namespace UniwersalnyDesktop
             this.toolTip1.SetToolTip(this.btnKopiujSerwer, "Przypisz serwer do wszystkich aplikacji");
             this.btnKopiujSerwer.UseVisualStyleBackColor = true;
             this.btnKopiujSerwer.Click += new System.EventHandler(this.btnKopiujSerwer_Click);
-            // 
-            // btnZapisz
-            // 
-            this.btnZapisz.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnZapisz.Image = global::UniwersalnyDesktop.Properties.Resources.Save_16x;
-            this.btnZapisz.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnZapisz.Name = "btnZapisz";
-            this.btnZapisz.Size = new System.Drawing.Size(23, 22);
-            this.btnZapisz.Text = "Zapisz miany";
-            this.btnZapisz.Click += new System.EventHandler(this.btnZapisz_Click);
             // 
             // ProfileEditor
             // 

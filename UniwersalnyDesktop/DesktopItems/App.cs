@@ -116,6 +116,10 @@ namespace UniwersalnyDesktop
         {
             return this.appProfileParamsDict[idProfile].reportPath;
         }
+        public string getOdbcDriver(string idProfile)
+        {
+            return this.appProfileParamsDict[idProfile].odbcDriver;
+        }
         public string getAppProfileSpecificSettingsAsXml(string idProfile)
         {
             return appProfileParamsDict[idProfile].getParametersAsXmlDbCompatibleString();

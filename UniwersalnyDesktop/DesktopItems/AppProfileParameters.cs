@@ -13,7 +13,7 @@ namespace UniwersalnyDesktop
         public string serverName { get; set; }
         public string databaseName { get; set; }
         public string reportPath { get; set; }
-        public string driverOdbc { get; set; }
+        public string odbcDriver { get; set; }
 
         public AppProfileParameters(string profileId, string appId)
         {
@@ -28,7 +28,7 @@ namespace UniwersalnyDesktop
             XElement appData = XElement.Parse(parametrsAsXmlString);
             this.serverName = appData.Element("server") == null ? "" : appData.Element("server").Value;
             this.databaseName = appData.Element("database") == null ? "" : appData.Element("database").Value;
-            this.driverOdbc = appData.Element("driver_odbc") == null ? "" : appData.Element("driver_odbc").Value;
+            this.odbcDriver = appData.Element("driver_odbc") == null ? "" : appData.Element("driver_odbc").Value;
             this.reportPath = appData.Element("raport") == null ? "" : appData.Element("raport").Value;
         }
 
@@ -41,7 +41,7 @@ namespace UniwersalnyDesktop
             new XElement("Root",
                 new XElement("server", this.serverName),
                 new XElement("database", this.databaseName),
-                new XElement("driver_odbc", this.driverOdbc),
+                new XElement("driver_odbc", this.odbcDriver),
                 new XElement("raport", this.reportPath)
                 );
             return  "'" + parameters.ToString() + "'";
