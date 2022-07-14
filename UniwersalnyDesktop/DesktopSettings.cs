@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Drawing;
 using System.IO;
 using System.Xml.Linq;
@@ -38,19 +39,30 @@ namespace UniwersalnyDesktop
         public static int maxTabCtrlHeigth = 600;
         #endregion
 
-        private string configFilePath = LoginForm.mainPath + "desktopConfig.xml";
+        private string desktopSettingsFilePath = LoginForm.mainPath + "desktopSettings.xml";    //plik w którym zapisany jest ostatnio używany profil desktopu
         private string logoFileName = LoginForm.mainPath + "logo.png";
+        public static string configXmlFilePath = @"..\conf\desktopConfig.xml";      //główny plik konfiguracyjny dla wszystkich uruchamianych programów
+
+        //imię i nazwisko oznaczające administratora, login może być dowolny; po wykryciu tego imienia i nazwiska przy logowaniu desktop otwiera AdminForm
+        public static string administratorName = "Desktop Administrator";
+
+        //
+        // DBEditorMainForm
+        //
+        public static int numberOfRowsToLoad = 50;     //ile wierszy ładuje się do datagrida w jednej operacji
+
         public void saveCurrentSettings(DesktopProfile profile)
         {
-            saveXmlSettings(profile);
+            saveDesktopSettings(profile);
             saveLogoImageToDisk(profile);
+            saveConfigXmlToDisk(profile);
         }
 
-        private void saveXmlSettings(DesktopProfile profile)
+        private void saveDesktopSettings(DesktopProfile profile)
         {
             XElement settings = new XElement("Ustawienia",
                 new XElement("idProfilu", profile.id));
-            new XmlWriter().saveAsXmlFile(settings, configFilePath);
+            new XmlWriter().saveAsXmlFile(settings, desktopSettingsFilePath);
         }
 
         private void saveLogoImageToDisk(DesktopProfile profile)
@@ -61,10 +73,14 @@ namespace UniwersalnyDesktop
                 logo.Save(logoFileName, System.Drawing.Imaging.ImageFormat.Png);
             }
         }
+        private void saveConfigXmlToDisk(DesktopProfile profile)
+        {
+            new TextFileTools().saveTextToFile(configXmlFilePath, profile.configXlm);
+        }
 
         internal string readUserSettings()
         {
-            return new XmlReader(configFilePath).getNodeValue("idProfilu");
+            return new XmlReader(desktopSettingsFilePath).getNodeValue("idProfilu");
         }
     }
 }

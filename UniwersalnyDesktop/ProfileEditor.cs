@@ -49,13 +49,8 @@ namespace UniwersalnyDesktop
             dgvProfileApps.EndEdit();
             updateProfileApps(selectedProfileId);
             string query = generateUpdateQuery(selectedProfileId);
-            updateToDB(query);
-            if (cbProfiles.Text != profileDict[selectedProfileId].name)
-            {
-                profileDict[selectedProfileId].name = cbProfiles.Text;
-                fillProfileCombo();
-                cbProfiles.SelectedIndex = new ComboboxTools().getIndexFromStringValue(cbProfiles, selectedProfileId);
-            }
+            if (updateToDB(query))
+                MessageBox.Show("Zapisano");
         }
 
         private void updateProfileApps(string idProfile)
@@ -64,10 +59,6 @@ namespace UniwersalnyDesktop
             {
                 string appId = dgvProfileApps.Rows[i].Cells["colId"].Value.ToString();
                 AppProfileParameters appParams = new AppProfileParameters(idProfile, appId);
-                appParams.databaseName = dgvProfileApps.Rows[i].Cells["colBazaDanych"].Value == null ? "" : dgvProfileApps.Rows[i].Cells["colBazaDanych"].Value.ToString();
-                appParams.serverName = dgvProfileApps.Rows[i].Cells["colSerwer"].Value == null ? "" : dgvProfileApps.Rows[i].Cells["colSerwer"].Value.ToString();
-                appParams.reportPath = dgvProfileApps.Rows[i].Cells["colRaport"].Value == null ? "" : dgvProfileApps.Rows[i].Cells["colRaport"].Value.ToString();
-                appParams.odbcDriver = dgvProfileApps.Rows[i].Cells["colSterownik"].Value == null ? "" : dgvProfileApps.Rows[i].Cells["colSterownik"].Value.ToString();
                 appDictionary[appId].addAppProfileParameters(appParams);
             }
         }
@@ -88,15 +79,12 @@ namespace UniwersalnyDesktop
                 sb.Append("; ");
             }
 
-            if(cbProfiles.Text != profileDict[idProfile].name)
-                sb.Append(" Update [profile_desktop] set [name_profile] = '" + cbProfiles.Text + "' where [ID_profile] = " + selectedProfileId);
-
             return sb.ToString();
         }
 
-        private void updateToDB(string query)
+        private bool updateToDB(string query)
         {
-            new DBWriter(LoginForm.dbConnection).executeQuery(query);
+            return new DBWriter(LoginForm.dbConnection).executeQuery(query);
         }
         #endregion
 
@@ -194,8 +182,7 @@ namespace UniwersalnyDesktop
 
         private void fillProfileDetais(string profileId)
         {
-            labelDomena.Text = profileDict[profileId].domena;
-            labelLdap.Text = profileDict[profileId].ldap;
+            labelSerwer.Text = profileDict[profileId].serwer;
             pictureBoxLogo.Image = convertBytesToImage(profileDict[profileId].logoImageAsBytes);
         }
         private Image convertBytesToImage(byte[] imageAsBytes)

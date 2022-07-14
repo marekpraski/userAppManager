@@ -30,15 +30,13 @@ namespace UniwersalnyDesktop
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.tbNazwa = new System.Windows.Forms.TextBox();
-            this.tbDomena = new System.Windows.Forms.TextBox();
-            this.tbLdap = new System.Windows.Forms.TextBox();
             this.btnLogo = new System.Windows.Forms.Button();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnZapisz = new System.Windows.Forms.ToolStripButton();
             this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.tbConfig = new System.Windows.Forms.TextBox();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
             this.SuspendLayout();
@@ -52,24 +50,6 @@ namespace UniwersalnyDesktop
             this.label1.TabIndex = 0;
             this.label1.Text = "nazwa";
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 60);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(45, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "domena";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(10, 91);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(27, 13);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "ldap";
-            // 
             // tbNazwa
             // 
             this.tbNazwa.Location = new System.Drawing.Point(67, 28);
@@ -77,23 +57,9 @@ namespace UniwersalnyDesktop
             this.tbNazwa.Size = new System.Drawing.Size(586, 20);
             this.tbNazwa.TabIndex = 3;
             // 
-            // tbDomena
-            // 
-            this.tbDomena.Location = new System.Drawing.Point(67, 57);
-            this.tbDomena.Name = "tbDomena";
-            this.tbDomena.Size = new System.Drawing.Size(276, 20);
-            this.tbDomena.TabIndex = 4;
-            // 
-            // tbLdap
-            // 
-            this.tbLdap.Location = new System.Drawing.Point(67, 88);
-            this.tbLdap.Name = "tbLdap";
-            this.tbLdap.Size = new System.Drawing.Size(276, 20);
-            this.tbLdap.TabIndex = 5;
-            // 
             // btnLogo
             // 
-            this.btnLogo.Location = new System.Drawing.Point(13, 162);
+            this.btnLogo.Location = new System.Drawing.Point(67, 68);
             this.btnLogo.Name = "btnLogo";
             this.btnLogo.Size = new System.Drawing.Size(40, 23);
             this.btnLogo.TabIndex = 7;
@@ -107,7 +73,7 @@ namespace UniwersalnyDesktop
             this.btnZapisz});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(665, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(1075, 25);
             this.toolStrip1.TabIndex = 8;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -123,26 +89,42 @@ namespace UniwersalnyDesktop
             // 
             // pictureBoxLogo
             // 
-            this.pictureBoxLogo.Location = new System.Drawing.Point(115, 118);
+            this.pictureBoxLogo.Location = new System.Drawing.Point(12, 97);
             this.pictureBoxLogo.Name = "pictureBoxLogo";
             this.pictureBoxLogo.Size = new System.Drawing.Size(150, 102);
             this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBoxLogo.TabIndex = 11;
             this.pictureBoxLogo.TabStop = false;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(243, 74);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(144, 13);
+            this.label2.TabIndex = 28;
+            this.label2.Text = "plik konfiguracyjny config.xml";
+            // 
+            // tbConfig
+            // 
+            this.tbConfig.Location = new System.Drawing.Point(177, 97);
+            this.tbConfig.Multiline = true;
+            this.tbConfig.Name = "tbConfig";
+            this.tbConfig.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.tbConfig.Size = new System.Drawing.Size(886, 561);
+            this.tbConfig.TabIndex = 29;
+            // 
             // ProfileNew
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(665, 232);
+            this.ClientSize = new System.Drawing.Size(1075, 670);
+            this.Controls.Add(this.tbConfig);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.pictureBoxLogo);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.btnLogo);
-            this.Controls.Add(this.tbLdap);
-            this.Controls.Add(this.tbDomena);
             this.Controls.Add(this.tbNazwa);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "ProfileNew";
             this.Text = "ProfileNew";
@@ -158,14 +140,12 @@ namespace UniwersalnyDesktop
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox tbNazwa;
-        private System.Windows.Forms.TextBox tbDomena;
-        private System.Windows.Forms.TextBox tbLdap;
         private System.Windows.Forms.Button btnLogo;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton btnZapisz;
         private System.Windows.Forms.PictureBox pictureBoxLogo;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox tbConfig;
     }
 }

@@ -57,8 +57,6 @@ namespace UniwersalnyDesktop
         #region metody podczas zamykania formatki
         private void DesktopForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-
-            new DesktopSettings().saveCurrentSettings(selectedProfile);
             //Application.Exit();
         }
 
@@ -116,19 +114,22 @@ namespace UniwersalnyDesktop
             formChangePass.ShowDialog();
         }
 
+        private void resetDesktop()
+        {
+            tabSoftmine.Controls.Clear();
+            this.groupboxID = 0;
+        }
+        #endregion
+
+        #region wybór profilu z kombo
         private void cbProfile_SelectedIndexChanged(object sender, EventArgs e)
         {
             string profileId = (cbProfile.SelectedItem as ComboboxItem).value.ToString();
             this.selectedProfile = profileDict[profileId];
             resetDesktop();
             setupDesktop();
-        }
-
-        private void resetDesktop()
-        {
-            tabSoftmine.Controls.Clear();
-            this.groupboxID = 0;
-        }
+            new DesktopSettings().saveCurrentSettings(selectedProfile);
+        } 
         #endregion
 
         #region tworzenie layoutu formatki

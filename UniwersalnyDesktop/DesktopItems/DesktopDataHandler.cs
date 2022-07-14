@@ -70,36 +70,6 @@ namespace UniwersalnyDesktop
             getUsersApps();
         }
 
-        internal bool insertProfileToDB(DesktopProfile profile)
-        {
-            string query = "  insert into [profile_desktop] ([name_profile], [domena], [ldap], [logo_profile] ) VALUES ('" + profile.name +
-                "', '" + profile.domena + "', '" + profile.ldap + "',  @logoImageBytes )";
-            if (runParameterisedQuery(query, profile.logoImageAsBytes))
-                return true;
-            
-            return false;
-        }
-
-        internal bool updateProfileInDB(DesktopProfile profile)
-        {
-            string query = "update [profile_desktop] set name_profile = '" + profile.name +
-            "', domena = '" + profile.domena + "', ldap = '" + profile.ldap + "' , [logo_profile] =  @logoImageBytes where ID_profile = " + profile.id;
-            if (runParameterisedQuery(query, profile.logoImageAsBytes))
-                return true;
-            
-            return false;
-        }
-        /// <summary>
-        /// jeżeli puszczam zwykłą kwerendę to nie chce zapisywać obrazka w formacie byte[]
-        /// </summary>
-        private bool runParameterisedQuery(string query, byte[] imageBytes)
-        {
-            DBWriter dbwriter = new DBWriter(LoginForm.dbConnection);
-            dbwriter.initiateParameterizedCommand();
-            dbwriter.addCommmandParameter("@logoImageBytes", SqlDbType.VarBinary, imageBytes);
-            return dbwriter.executeQuery(query);
-        }
-
         private void readUndefinedUserData()
         {
             getUsers();
@@ -151,9 +121,12 @@ namespace UniwersalnyDesktop
         #endregion
 
         #region czytanie profili z bazy danych
+        /// <summary>
+        /// gdy zalogowany jest administrator
+        /// </summary>
         private void getAllProfiles()
         {
-            string query = @"  select ID_profile, name_profile, domena, ldap from [profile_desktop]";
+            string query = @"  select ID_profile, name_profile, domena, ldap, config_profile from [profile_desktop]";
             string query2 = @"SELECT  ID_profile, lu.ID_user FROM [profile_users] pu
                                 inner join 
                                 users_list lu on pu.ID_user = lu.ID_user
@@ -163,9 +136,12 @@ namespace UniwersalnyDesktop
             addProfilesToDict(qd[0]);
             assignUsersToProfiles(qd[1]);
         }
+        /// <summary>
+        /// gdy zalogowany jest jeden zwykły użytkownik
+        /// </summary>
         private void getUserProfiles()
         {
-            string query = @"select pd.ID_profile, pd.name_profile, pd.domena, pd.ldap from [profile_desktop] pd
+            string query = @"select pd.ID_profile, pd.name_profile, pd.domena, pd.ldap, config_profile from [profile_desktop] pd
                             inner join 
                             profile_users pu on pu.ID_profile = pd.ID_profile
                             where pu.ID_user = " + user.id;
@@ -182,6 +158,7 @@ namespace UniwersalnyDesktop
                 DesktopProfile newProfile = new DesktopProfile(id, name);
                 newProfile.domena = qd.getDataValue(i, "domena").ToString();
                 newProfile.ldap = qd.getDataValue(i, "ldap").ToString();
+                newProfile.configXlm = qd.getDataValue(i, "config_profile").ToString();
                 newProfile.logoImageAsBytes = readLogoImage(id);
                 this.profileDict.Add(id, newProfile);
             }
@@ -361,7 +338,61 @@ namespace UniwersalnyDesktop
         }
         #endregion
 
-        #region Region : zapisywanie zmian do bazy
+        #region zapisywanie profili do bazy danych
+
+        internal bool insertProfileToDB(DesktopProfile profile)
+        {            
+            string baseQuery = "  insert into [profile_desktop] ([name_profile], [domena], [ldap], [config_profile], [logo_profile] ) VALUES ('" + profile.name +
+                "', '" + profile.domena + "', '" + profile.ldap + "', '" + profile.configXlm;
+            
+            if (profile.logoImageAsBytes != null)
+            {
+                string query = baseQuery  + "',  @logoImageBytes )";
+                if (runParameterisedQuery(query, profile.logoImageAsBytes))
+                    return true;
+            }
+            else
+            {
+                string query = baseQuery + "')";
+                if (new DBWriter(LoginForm.dbConnection).executeQuery(query))
+                    return true;
+            }
+
+            return false;
+        }
+
+        internal bool updateProfileInDB(DesktopProfile profile)
+        {
+            string baseQuery = "update [profile_desktop] set name_profile = '" + profile.name +
+            "', domena = '" + profile.domena + "', ldap = '" + profile.ldap + "', config_profile = '" + profile.configXlm;
+            if (profile.logoImageAsBytes != null)
+            {
+                string query = baseQuery + "' , [logo_profile] =  @logoImageBytes where ID_profile = " + profile.id;
+                if (runParameterisedQuery(query, profile.logoImageAsBytes))
+                    return true;
+            }
+            else
+            {
+                string query = baseQuery + "' where ID_profile = " + profile.id;
+                if (new DBWriter(LoginForm.dbConnection).executeQuery(query))
+                    return true;
+            }
+
+            return false;
+        }
+        /// <summary>
+        /// jeżeli puszczam zwykłą kwerendę to nie chce zapisywać obrazka w formacie byte[]
+        /// </summary>
+        private bool runParameterisedQuery(string query, byte[] imageBytes)
+        {
+            DBWriter dbwriter = new DBWriter(LoginForm.dbConnection);
+            dbwriter.initiateParameterizedCommand();
+            dbwriter.addCommmandParameter("@logoImageBytes", SqlDbType.VarBinary, imageBytes);
+            return dbwriter.executeQuery(query);
+        }
+        #endregion
+
+        #region zapisywanie zmian w przypisanych uprawnieniach użytkownika do bazy
 
         public void saveChanges(Dictionary<string, DesktopUser> userBackupDict, Dictionary<DesktopUser, Dictionary<App, AppDataItem>> userAppChangeDict)
         {

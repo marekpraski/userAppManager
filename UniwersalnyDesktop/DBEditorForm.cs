@@ -210,9 +210,9 @@ namespace UniwersalnyDesktop
                     remainingRowsLabel.Visible = true;
                     remainingRowsLabel.Text = "zostało " + rowsRemaining;
 
-                    if (rowsRemaining > ProgramSettings.numberOfRowsToLoad)
+                    if (rowsRemaining > DesktopSettings.numberOfRowsToLoad)
                     {
-                        loadNextButton.Text = "+" + ProgramSettings.numberOfRowsToLoad;
+                        loadNextButton.Text = "+" + DesktopSettings.numberOfRowsToLoad;
                     }
                 }
             }
@@ -220,7 +220,7 @@ namespace UniwersalnyDesktop
 
         private void loadRowPacket()
         {
-            for (int i = datagridRowIndex; i < ProgramSettings.numberOfRowsToLoad + rowsLoaded; i++)
+            for (int i = datagridRowIndex; i < DesktopSettings.numberOfRowsToLoad + rowsLoaded; i++)
             {
                 if (i < dbData.Count)
                 {
@@ -241,7 +241,7 @@ namespace UniwersalnyDesktop
             rowsLoaded = datagridRowIndex;
             int rowsRemaining = dbData.Count - rowsLoaded;
 
-            if ((rowsRemaining) < ProgramSettings.numberOfRowsToLoad)
+            if ((rowsRemaining) < DesktopSettings.numberOfRowsToLoad)
             {
                 loadNextButton.Text = "+" + rowsRemaining;
             }

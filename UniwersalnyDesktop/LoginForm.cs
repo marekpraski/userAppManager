@@ -139,7 +139,7 @@ namespace UniwersalnyDesktop
             //if (!dbConnector.validateConfigFile(mainPath))
             //    return null;
 
-            XmlReader confReader = new XmlReader(mainPath + @"..\conf\config.xml");
+            XmlReader confReader = new XmlReader(mainPath + DesktopSettings.configXmlFilePath);
 
             DBConnectionData connData = new DBConnectionData()
             {
@@ -166,7 +166,7 @@ namespace UniwersalnyDesktop
             user.firstName = qd.getDataValue(0, "imie_user").ToString();
             user.surname = qd.getDataValue(0, "nazwisko_user").ToString();
             user.windowsLogin = qd.getDataValue(0, "windows_user").ToString();
-            if (user.displayName.Equals(ProgramSettings.administratorName))
+            if (user.displayName.Equals(DesktopSettings.administratorName))
                 user.type = UserType.Administrator;
             else
                 user.type = UserType.RegularUser;

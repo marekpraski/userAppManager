@@ -9,7 +9,6 @@ namespace UniwersalnyDesktop
     {
         private readonly FormMode formMode;
         private readonly DesktopProfile editedProfile;
-        private byte[] logoImage;
         private DesktopDataHandler dataHandler = new DesktopDataHandler();
 
         public ProfileNew(FormMode formMode, DesktopProfile editedProfile)
@@ -28,8 +27,9 @@ namespace UniwersalnyDesktop
             {
                 this.Text = "Edycja profilu";
                 tbNazwa.Text = editedProfile.name;
-                tbDomena.Text = editedProfile.domena;
-                tbLdap.Text = editedProfile.ldap;
+                //
+                //sb.Append(" Update [profile_desktop] set [config_profile] = '" + tbConfig.Text + "' where [ID_profile] = " + selectedProfileId);
+                tbConfig.Text = editedProfile.configXlm;
                 pictureBoxLogo.Image = convertBytesToImage(editedProfile.logoImageAsBytes);
             }
         }
@@ -38,6 +38,8 @@ namespace UniwersalnyDesktop
         #region konwersja pliku graficznego do byte[] i odwrotnie
         private byte[] convertImageToBytes(Image img)
         {
+            if (img == null)
+                return null;
             using (MemoryStream ms = new MemoryStream())
             {
                 img.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
@@ -96,9 +98,8 @@ namespace UniwersalnyDesktop
         private void setProfileProperies(DesktopProfile profile)
         {
             profile.name = tbNazwa.Text;
-            profile.domena = tbDomena.Text;
-            profile.ldap = tbLdap.Text;
-            profile.logoImageAsBytes = logoImage;
+            profile.configXlm = tbConfig.Text;
+            profile.logoImageAsBytes = convertImageToBytes(pictureBoxLogo.Image);
         }
 
         #endregion
@@ -109,7 +110,6 @@ namespace UniwersalnyDesktop
             DesktopProfile newProfile = dataHandler.readProfileFromDB(" ID_profile = (select MAX(ID_profile) from profile_desktop)");
 
             editedProfile.id = newProfile.id;
-            logoImage = editedProfile.logoImageAsBytes;
         }
         #endregion
 
@@ -119,10 +119,7 @@ namespace UniwersalnyDesktop
             using (OpenFileDialog ofd = new OpenFileDialog() { Filter = "Pliki graficzne(*.jpg;*.jpeg;*.png|*.jpg;*.jpeg;*.png", Multiselect = false })
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
-                {
                     pictureBoxLogo.Image = Image.FromFile(ofd.FileName);
-                    logoImage = convertImageToBytes(pictureBoxLogo.Image);
-                }
             }
         } 
         #endregion

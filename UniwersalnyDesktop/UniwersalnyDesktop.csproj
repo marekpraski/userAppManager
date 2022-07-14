@@ -147,7 +147,6 @@
       <DependentUpon>DisplayChangesForm.cs</DependentUpon>
     </Compile>
     <Compile Include="DBEditorFormatter.cs" />
-    <Compile Include="ProgramSettings.cs" />
     <Compile Include="DesktopItems\Rola.cs" />
     <Compile Include="DesktopForm.cs">
       <SubType>Form</SubType>

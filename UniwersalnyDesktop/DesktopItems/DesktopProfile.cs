@@ -10,6 +10,9 @@ namespace UniwersalnyDesktop
         public string id { get; set; }
         public string domena { get; set; }
         public string ldap { get; set; }
+        public string serwer { get => geteSerwerName(); }
+
+        public string configXlm { get; set; }
         public byte[] logoImageAsBytes { get; set; }
         public Dictionary<string, IProfileItem> applications { get; } = new Dictionary<string, IProfileItem>();    //kluczem jest id aplikacji
         /// <summary>
@@ -73,6 +76,11 @@ namespace UniwersalnyDesktop
                     items.Add(id, applications[id]);
             }
             return items;
+        }
+
+        private string geteSerwerName()
+        {
+            return "";
         }
 
     }
